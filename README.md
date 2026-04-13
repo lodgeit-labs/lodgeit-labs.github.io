@@ -1,1 +1,1 @@
-# lodgeit-labs.github.io
+# LODGEiT Labs
