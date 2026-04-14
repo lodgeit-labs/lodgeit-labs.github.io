@@ -1,3 +1,0 @@
-# LODGEiT Labs
-
-Coming soon...
