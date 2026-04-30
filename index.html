@@ -25,7 +25,11 @@
                             850: '#151e2e',
                             900: '#0f172a',
                             950: '#0b1120',
-                        }
+                        },
+                        // Accents reserved for ecosystem cards.
+                        // emerald = methodology / discipline (brain-pattern)
+                        // rose    = research strand (FOL_solvers)
+                        // (blue/purple/yellow already in lodgeit/tailwind defaults)
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -72,7 +76,8 @@
                 <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
             </div>
             <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
-                <a href="#projects" class="hover:text-white transition">Projects</a>
+                <a href="#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="#projects" class="hover:text-white transition">Ecosystem</a>
                 <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
                 <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
             </nav>
@@ -110,21 +115,63 @@
             </div>
         </section>
 
+        <!-- The Discipline (methodology lead-in) -->
+        <section id="discipline" class="py-20 bg-slate-900/30 border-t border-slate-800">
+            <div class="max-w-5xl mx-auto px-6">
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 mb-6">
+                        <span class="flex w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span class="text-xs font-mono text-emerald-300 uppercase tracking-wider">The Memory Artifact</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">The discipline behind the determinism.</h2>
+                    <p class="text-lg text-slate-400 leading-relaxed">
+                        Every project below is downstream of one common engineering practice: a self-auditing, git-backed knowledge base that gives coding agents persistent memory, identity, and integrity discipline. We open-sourced the pattern so other teams can adopt it without rebuilding it from scratch.
+                    </p>
+                    <div class="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" class="px-6 py-3 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 hover:border-emerald-400 text-emerald-200 hover:text-white font-bold rounded-lg transition-all flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            Read the Brain Pattern
+                        </a>
+                        <a href="#projects" class="px-6 py-3 bg-transparent border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white font-bold rounded-lg transition-all flex items-center">
+                            See it in production <span class="ml-2">↓</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Projects Grid -->
         <section id="projects" class="py-20 bg-slate-900/50 border-y border-slate-800">
             <div class="max-w-7xl mx-auto px-6">
                 
                 <div class="mb-16">
-                    <h2 class="text-3xl font-bold text-white mb-4">Core Projects</h2>
-                    <p class="text-slate-400">The foundational layers of the LodgeiT ecosystem.</p>
+                    <h2 class="text-3xl font-bold text-white mb-4">The Ecosystem</h2>
+                    <p class="text-slate-400">Methodology, engines, infrastructure, and research — the foundational layers of LodgeiT Labs.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     
+                    <!-- brain-pattern (methodology — keystone) -->
+                    <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" class="block p-8 rounded-2xl border border-emerald-500/40 bg-obsidian card-hover relative overflow-hidden group ring-1 ring-emerald-500/20">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🧠</div>
+                        <div class="absolute top-4 left-4 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-mono uppercase tracking-wider">Methodology</div>
+                        <div class="w-12 h-12 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-6 mt-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Brain Pattern</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            A vendor-neutral architecture for AI-assisted software development. Markdown + git + ~1,000 lines of tooling gives your coding agent persistent memory, integrity discipline, and a self-auditing Prolog gate that blocks PRs which contradict what the repo claims about itself.
+                        </p>
+                        <div class="text-emerald-300 text-sm font-bold flex items-center">
+                            Read the Pattern <span class="ml-1">→</span>
+                        </div>
+                    </a>
+
                     <!-- ClawDog Project -->
                     <a href="https://www.lodgeit.org/clawdog" class="block p-8 rounded-2xl border border-slate-700 bg-obsidian card-hover relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🐕</div>
-                        <div class="w-12 h-12 rounded-lg bg-lodgeit-blue/20 text-lodgeit-blue flex items-center justify-center mb-6">
+                        <div class="absolute top-4 left-4 px-2 py-0.5 rounded-full bg-lodgeit-blue/15 border border-lodgeit-blue/30 text-lodgeit-light text-[10px] font-mono uppercase tracking-wider">Engine</div>
+                        <div class="w-12 h-12 rounded-lg bg-lodgeit-blue/20 text-lodgeit-blue flex items-center justify-center mb-6 mt-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
                         <h3 class="text-2xl font-bold text-white mb-3">ClawDog</h3>
@@ -137,9 +184,10 @@
                     </a>
 
                     <!-- Logical English Project -->
-                    <a href="https://github.com/lodgeit-labs/LogicalEnglish" class="block p-8 rounded-2xl border border-slate-700 bg-obsidian card-hover relative overflow-hidden group">
+                    <a href="https://github.com/lodgeit-labs/LogicalEnglish" target="_blank" class="block p-8 rounded-2xl border border-slate-700 bg-obsidian card-hover relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">📜</div>
-                        <div class="w-12 h-12 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center mb-6">
+                        <div class="absolute top-4 left-4 px-2 py-0.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-[10px] font-mono uppercase tracking-wider">Language</div>
+                        <div class="w-12 h-12 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center mb-6 mt-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         </div>
                         <h3 class="text-2xl font-bold text-white mb-3">Logical English</h3>
@@ -154,7 +202,8 @@
                     <!-- LodgeiT Lightning / L402 -->
                     <a href="https://lightning.lodgeit.org" target="_blank" class="block p-8 rounded-2xl border border-slate-700 bg-obsidian card-hover relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">⚡</div>
-                        <div class="w-12 h-12 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center mb-6">
+                        <div class="absolute top-4 left-4 px-2 py-0.5 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-300 text-[10px] font-mono uppercase tracking-wider">Infrastructure</div>
+                        <div class="w-12 h-12 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center mb-6 mt-6">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
                         <h3 class="text-2xl font-bold text-white mb-3">L402 Infrastructure</h3>
@@ -163,6 +212,22 @@
                         </p>
                         <div class="text-yellow-400 text-sm font-bold flex items-center">
                             View Network <span class="ml-1">→</span>
+                        </div>
+                    </a>
+
+                    <!-- FOL_solvers (research strand) -->
+                    <a href="https://github.com/lodgeit-labs/FOL_solvers" target="_blank" class="block p-8 rounded-2xl border border-slate-700 bg-obsidian card-hover relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">∀</div>
+                        <div class="absolute top-4 left-4 px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[10px] font-mono uppercase tracking-wider">Research</div>
+                        <div class="w-12 h-12 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center mb-6 mt-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">FOL Solvers</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            Research into first-order-logic solvers, knowledge representation, and the deterministic reasoning machinery upstream of every other LodgeiT engine. The lab where new proof shapes are tested before they graduate into production.
+                        </p>
+                        <div class="text-rose-300 text-sm font-bold flex items-center">
+                            View Research <span class="ml-1">→</span>
                         </div>
                     </a>
 
