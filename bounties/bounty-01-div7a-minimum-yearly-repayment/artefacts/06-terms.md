@@ -67,7 +67,7 @@ The registry is a public record. Once minted, it is not retractable except for n
 
 ## 9. Reserving the bounty
 
-Email `bounties@lodgeit.org` with:
+Email `support@lodgeit.net.au` with:
 
 - Bounty number and title
 - Your name, credential class, and current registration status (active / lapsed / retired — all fine)
@@ -78,4 +78,4 @@ We will confirm reservation and send you the artefact bundle within one business
 
 ---
 
-**LodgeiT Labs Pty Ltd** — bounties@lodgeit.org — [github.com/lodgeit-labs](https://github.com/lodgeit-labs)
+**LodgeiT Labs Pty Ltd** — support@lodgeit.net.au — [github.com/lodgeit-labs](https://github.com/lodgeit-labs)
