@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bounties | LodgeiT.org</title>
+    <meta name="description" content="Ten funded review bounties in Australian tax law — Div 7A, depreciation, FBT, CGT small-business, PSI. Named-credit attribution. CA, CTA, CPA, FIPA — lapsed membership welcome.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Funded review programme</p>
+            <h1 class="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Ten bounties. Ten domains. Named credit.</span>
+            </h1>
+            <p class="text-slate-300 text-lg leading-relaxed max-w-3xl mb-6">
+                We are building an open-source operating system for Australian tax compliance. The engines are deterministic — statute compiled into predicates, calculators that produce audit-provable output. Before we ship, we want the statute-to-predicate translation attested by people who have actually applied the law in practice.
+            </p>
+            <p class="text-slate-400 text-lg leading-relaxed max-w-3xl">
+                Each bounty is a bounded statutory question with a worked example, a set of forensic questions, and a structured verdict form. Expected effort: 1.5&ndash;3 hours. Paid on acceptance of your verdict.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">10 bounties</span>
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">$6,550 total pool</span>
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Named credit default</span>
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Retirees welcome</span>
+            </div>
+        </section>
+
+        <!-- Who this is for -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Who this is for</p>
+            <h2 class="text-3xl font-bold text-white mb-6">The reviewer we&rsquo;re looking for</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="rounded-2xl bg-obsidian border border-slate-800 p-6">
+                    <h3 class="text-lg font-bold text-white mb-3">Credentials we recognise</h3>
+                    <ul class="text-slate-400 space-y-2 leading-relaxed">
+                        <li>&mdash; Chartered Accountant (CA ANZ)</li>
+                        <li>&mdash; Chartered Tax Adviser (CTA, The Tax Institute)</li>
+                        <li>&mdash; CPA (CPA Australia)</li>
+                        <li>&mdash; FIPA / MIPA (Institute of Public Accountants)</li>
+                        <li>&mdash; Registered Tax Agent (TPB) with relevant domain experience</li>
+                    </ul>
+                    <p class="text-slate-500 text-sm mt-4 leading-relaxed">
+                        Lapsed membership is fine. Retirement is fine. If you did tax work at a Big-4, mid-tier, or public-practice firm and still enjoy the puzzle, you qualify.
+                    </p>
+                </div>
+                <div class="rounded-2xl bg-obsidian border border-slate-800 p-6">
+                    <h3 class="text-lg font-bold text-white mb-3">Better fun than Sudoku</h3>
+                    <p class="text-slate-400 leading-relaxed mb-3">
+                        Each bounty is a genuine statutory forensic exercise. We give you the section references, a worked example against our calculator&rsquo;s wire output, and a set of edge-case probes.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed">
+                        You return a structured verdict &mdash; ACCEPT, REJECT with reasons, or FIX with the correction. Your reasoning becomes part of the public attestation record for the engine you ratified.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">How it works</p>
+            <h2 class="text-3xl font-bold text-white mb-6">Four steps from open to paid</h2>
+            <div class="grid md:grid-cols-4 gap-4">
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <div class="text-lodgeit-light font-mono text-2xl font-black mb-2">01</div>
+                    <p class="text-slate-300 text-sm leading-relaxed">Choose a bounty. Email us to reserve it before you start work.</p>
+                </div>
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <div class="text-lodgeit-light font-mono text-2xl font-black mb-2">02</div>
+                    <p class="text-slate-300 text-sm leading-relaxed">Read the brief, the worked example, and the forensic questions. Statute is pre-cited in the appendix.</p>
+                </div>
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <div class="text-lodgeit-light font-mono text-2xl font-black mb-2">03</div>
+                    <p class="text-slate-300 text-sm leading-relaxed">Fill out the verdict form. ACCEPT / REJECT / FIX. Cite where you diverge.</p>
+                </div>
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <div class="text-lodgeit-light font-mono text-2xl font-black mb-2">04</div>
+                    <p class="text-slate-300 text-sm leading-relaxed">We review your verdict, mint it into the public registry, pay within 30 days.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The ten bounties -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Open bounties</p>
+            <h2 class="text-3xl font-bold text-white mb-2">The ten domains</h2>
+            <p class="text-slate-400 mb-10 max-w-3xl leading-relaxed">
+                Ranked by effort and prize. Bounty #1 is live and dispatched. Bounties #2&ndash;#10 open for applications from today.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <!-- Bounty 01 -->
+                <a href="/bounties/bounty-01-div7a-minimum-yearly-repayment/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #01</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$550</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Div 7A minimum yearly repayment</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Section 109E benchmark interest calculation. The MYR formula and its edge cases &mdash; timing, amalgamated loans, shortfall consequences.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>s 109E &middot; s 109N &middot; s 109D ITAA 1936</span>
+                            <span>&middot;</span>
+                            <span>~2 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 02 -->
+                <a href="/bounties/bounty-02-depreciation-effective-life/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #02</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$400</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Depreciation effective-life lookup</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            TR 2024/4 effective-life audit. Commissioner&rsquo;s determination vs self-assessment vs statutory caps.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>s 40-95 &middot; s 40-100 &middot; s 40-105 ITAA 1997</span>
+                            <span>&middot;</span>
+                            <span>~1.5 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 03 -->
+                <a href="/bounties/bounty-03-instant-asset-write-off/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #03</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$450</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Instant Asset Write-Off eligibility</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            $20k IAWO threshold FY2024&ndash;25 and the FY2025&ndash;26 transition. Aggregation, held-ready-for-use, per-asset test.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>s 328-180 ITAA 1997</span>
+                            <span>&middot;</span>
+                            <span>~2 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 04 -->
+                <a href="/bounties/bounty-04-small-business-general-pool/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #04</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$600</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Small business general pool</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Simplified depreciation pool mechanics. Opening balance, additions, 15%/30% rates, low-pool-value write-off, disposals.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>Subdiv 328-D ITAA 1997</span>
+                            <span>&middot;</span>
+                            <span>~2.5 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 05 -->
+                <a href="/bounties/bounty-05-fbt-car-statutory-vs-operating/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #05</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$800</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">FBT car &mdash; statutory formula vs operating cost</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Election mechanics between s&nbsp;9 statutory formula and s&nbsp;10 operating-cost method. Log book, business-use percentage, taxable-value calculation.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>s 8, 9, 10, 10A FBTAA 1986</span>
+                            <span>&middot;</span>
+                            <span>~3 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 06 -->
+                <a href="/bounties/bounty-06-fbt-car-parking/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #06</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$700</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">FBT car parking &mdash; commercial parking station threshold</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Post-TR&nbsp;2021/2 commercial parking station test. 1&nbsp;km rule, all-day parking, lowest fee methodology.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>s 39A FBTAA + TR 2021/2</span>
+                            <span>&middot;</span>
+                            <span>~2.5 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 07 -->
+                <a href="/bounties/bounty-07-hire-purchase-interest-apportionment/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #07</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$550</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Hire purchase &mdash; interest apportionment</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Division 240 notional-loan treatment. Actuarial vs Rule-of-78 comparison, term-to-maturity effect, tax vs accounting reconciliation.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>Div 240 ITAA 1997</span>
+                            <span>&middot;</span>
+                            <span>~2 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 08 -->
+                <a href="/bounties/bounty-08-cgt-sb-15-year-exemption/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #08</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$900</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">CGT small business 15-year exemption</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Subdivision 152-B. Basic conditions, 15-year ownership, retirement/incapacity nexus, entity-type variations.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>Subdiv 152-B ITAA 1997</span>
+                            <span>&middot;</span>
+                            <span>~3 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 09 -->
+                <a href="/bounties/bounty-09-cgt-active-asset-test/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #09</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$750</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">CGT small business active-asset test</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Half-of-ownership-period test, main-use exclusions (rent), TR&nbsp;2019/1 guidance on mixed use.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>s 152-35, 152-40 ITAA 1997</span>
+                            <span>&middot;</span>
+                            <span>~2.5 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bounty 10 -->
+                <a href="/bounties/bounty-10-psi-attribution/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-lodgeit-light font-mono text-xs font-bold">BOUNTY #10</span>
+                            <span class="text-white bg-lodgeit-blue px-3 py-1 rounded-full text-xs font-mono font-bold">$850</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">PSI attribution &mdash; 80/20 and results test</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+                            Personal services income attribution. Results test, unrelated clients test, 80/20 rule, employment test, business premises test.
+                        </p>
+                        <div class="flex items-center gap-3 text-xs font-mono text-slate-500">
+                            <span>Div 84&ndash;87 ITAA 1997</span>
+                            <span>&middot;</span>
+                            <span>~3 hrs</span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- Attribution & registry -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Attribution</p>
+            <h2 class="text-3xl font-bold text-white mb-6">Your name on the record</h2>
+            <p class="text-slate-400 leading-relaxed mb-4">
+                Every accepted verdict is minted into a public reviewer registry with your name, credential class, jurisdiction, and the verdict hash. The reviewer's reasoning becomes part of the emergent knowledge graph that underwrites the calculator you ratified.
+            </p>
+            <p class="text-slate-400 leading-relaxed mb-4">
+                This is not marketing filler. When a customer asks &ldquo;who says your Division 7A engine is correct?&rdquo; &mdash; the answer is your name, cryptographically bound to the version of the calculator you attested. That binding travels with the engine.
+            </p>
+            <p class="text-slate-400 leading-relaxed">
+                Default attribution: <span class="text-white font-semibold">named credit</span> (full name + credential). You can opt down to <span class="text-white font-semibold">initialled</span> (e.g. &ldquo;H.J.&rdquo;) or <span class="text-white font-semibold">anonymous</span> (verdict published without attribution) when you submit.
+            </p>
+        </section>
+
+        <!-- Terms -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Terms in brief</p>
+            <h2 class="text-3xl font-bold text-white mb-6">The paperwork, short version</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <h3 class="font-bold text-white mb-2">Payment</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Paid within 30 days of verdict acceptance, by AUD bank transfer. Australian resident reviewers only for the first wave.</p>
+                </div>
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <h3 class="font-bold text-white mb-2">IP</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">You retain moral rights and named credit. Your reasoning and citations become part of the open-source attestation record under an open licence.</p>
+                </div>
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <h3 class="font-bold text-white mb-2">Non-acceptance</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">If we cannot accept the verdict (e.g. incomplete, off-scope), we&rsquo;ll say why and give you the opportunity to revise. No revision, no payment.</p>
+                </div>
+                <div class="rounded-xl bg-obsidian border border-slate-800 p-5">
+                    <h3 class="font-bold text-white mb-2">Reservation</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Email to reserve a bounty before you start. First-in-first-served. We&rsquo;ll confirm within 24 hours.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Get in touch</p>
+            <h2 class="text-3xl font-bold text-white mb-6">Ready to pick one up?</h2>
+            <p class="text-slate-400 leading-relaxed mb-6">
+                Reserve a bounty, ask a question, or send us your CV / credentials summary. We reply within one business day.
+            </p>
+            <a href="mailto:bounties@lodgeit.org?subject=Bounty%20Programme%20-%20Reservation%20or%20Enquiry" class="inline-block px-8 py-4 bg-lodgeit-blue hover:bg-lodgeit-light text-white font-bold rounded-lg transition-all shadow-neon">
+                bounties@lodgeit.org
+            </a>
+            <p class="text-slate-500 text-sm mt-6 leading-relaxed">
+                Or open a GitHub issue on <a href="https://github.com/lodgeit-labs" target="_blank" class="text-lodgeit-light hover:text-white">any of our public repos</a> with the tag <code class="font-mono text-lodgeit-light">[bounty-enquiry]</code>.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
