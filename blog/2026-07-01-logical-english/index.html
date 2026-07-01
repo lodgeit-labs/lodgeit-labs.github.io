@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logical English &mdash; the certification substrate for statute-grade reasoning | LodgeiT.org</title>
+    <meta name="description" content="Why LodgeiT Labs runs its statute-grade reasoning on Logical English, not RAG-over-LLM. A Div 7A worked example, four failure modes RAG cannot fix, and the five-workstream architecture that turns statute into cryptographically-auditable calculators.">
+
+    <meta property="og:title" content="Logical English &mdash; the certification substrate for statute-grade reasoning">
+    <meta property="og:description" content="Why LodgeiT Labs certifies statutory logic in Logical English rather than trusting RAG-over-LLM, and how the human ratifier programme (the review bounties) closes the loop.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://lodgeit.org/blog/2026-07-01-logical-english/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .purple-gradient-text {
+            background: linear-gradient(to right, #ffffff, #C084FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit h2 {
+            color: #ffffff;
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 700;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            border-top: 1px solid rgba(30, 41, 59, 0.5);
+            padding-top: 2.5rem;
+        }
+        .prose-lodgeit h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        .prose-lodgeit h3 {
+            color: #ffffff;
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-lodgeit h4 {
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .prose-lodgeit p {
+            font-size: 1.0625rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+        .prose-lodgeit ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-lodgeit li {
+            margin-bottom: 0.5rem;
+            font-size: 1.0625rem;
+            line-height: 1.7;
+        }
+        .prose-lodgeit ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-lodgeit ol li {
+            margin-bottom: 0.5rem;
+            font-size: 1.0625rem;
+            line-height: 1.7;
+        }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 600; }
+        .prose-lodgeit em { color: #C084FC; font-style: normal; font-weight: 600; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: #C084FC;
+            background-color: rgba(192, 132, 252, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+        .prose-lodgeit pre {
+            background: #0b1120;
+            border: 1px solid rgba(192, 132, 252, 0.25);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .prose-lodgeit pre code {
+            color: #e2e8f0;
+            background: transparent;
+            padding: 0;
+            font-size: 0.9rem;
+        }
+        .prose-lodgeit blockquote {
+            border-left: 3px solid #C084FC;
+            padding-left: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            color: #94a3b8;
+        }
+        .prose-lodgeit table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+        .prose-lodgeit th, .prose-lodgeit td {
+            border: 1px solid rgba(30, 41, 59, 0.7);
+            padding: 0.7rem 0.9rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        .prose-lodgeit th {
+            background: rgba(11, 17, 32, 0.6);
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .prose-lodgeit td { color: #cbd5e1; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-purple-500 selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <a href="/blog/" class="text-slate-500 hover:text-white font-mono text-xs uppercase tracking-widest transition">&larr; Blog</a>
+        </div>
+
+        <!-- Hero -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+            <div class="flex items-center space-x-3 mb-8">
+                <span class="text-purple-400 bg-purple-400/10 border border-purple-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Logic Engine</span>
+                <span class="text-slate-500 font-mono text-xs">2026-07-01</span>
+                <span class="text-slate-500 font-mono text-xs">&middot; ~11 min read</span>
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-black leading-tight mb-6">
+                <span class="purple-gradient-text">Statute is code, we just haven&rsquo;t compiled it yet.</span>
+            </h1>
+
+            <p class="text-slate-300 text-xl leading-relaxed mb-8">
+                Logical English is how LodgeiT Labs turns Division 7A, FBT, CGT, and the rest of the statutory apparatus into cryptographically-auditable calculators &mdash; without asking an LLM to read the law and hope for the best.
+            </p>
+
+            <div class="prose-lodgeit">
+
+<h2>The Div 7A moment</h2>
+
+<p>
+A few days ago we sat down with a Division 7A worked example. $100,000 unsecured loan, seven-year term, current-year benchmark rate. A pre-lodgement repayment of $30,000. Standard mid-tier accountant question: what&rsquo;s the minimum yearly repayment for the current income year?
+</p>
+
+<p>
+The reason we picked it was because Division 7A is where the wheels come off almost every general-purpose reasoning system we can throw at statutory logic. The section reference chain is <code>s 109E</code> for the MYR formula, <code>s 109N</code> for the compliance conditions, <code>s 109D</code> for what counts as a loan in the first place, and then a fan-out into <code>s 109R</code> if the repayment is re-borrowed, <code>s 109T</code> if there&rsquo;s a look-through under interposed-entity rules, and Subdivision EA the moment a trust distribution enters the picture.
+</p>
+
+<p>
+Four things went wrong when we benchmarked general-purpose LLM pipelines against this scenario. They&rsquo;re worth naming, because they&rsquo;re not solvable by better prompts.
+</p>
+
+<h3>1. Boolean routing collapse on cascading toggles</h3>
+
+<p>
+When the 2026 Bendel decision moved from AAT to Full Federal Court to High Court, the operative question &mdash; <em>is an unpaid present entitlement a loan for s 109D</em> &mdash; kept getting the same answer with different citation authorities behind it. A vector retrieval system indexed on 2023 AAT text will return semantically-confident-but-stale citations today. A neurosymbolic system that carries an explicit witness chain (<code>[AAT_2023 SUPERSEDED, FFC_2025 AFFIRMED_BY, HCA18_2026 OPERATIVE]</code>) rolls the citation pointer forward without moving the truth value.
+</p>
+
+<h3>2. Look-through state mutation</h3>
+
+<p>
+Under s 109T, when a payment traverses an interposed entity, the identity of the deemed lender <em>changes</em>. The taxpayer&rsquo;s tax result depends on knowing that in the reconstructed transaction, the loan is now deemed to be from the ultimate holding entity, not the intermediary that actually wrote the cheque. An LLM cannot rebind a variable across a transaction network because its token stream is append-only. A logic engine does variable-rebinding by definition.
+</p>
+
+<h3>3. Catastrophic advisory inversion</h3>
+
+<p>
+This one was the scariest. A prompt asked about executing a re-borrow on a Division 7A loan. The pipeline returned an instruction to <em>&ldquo;execute the re-borrowing as documented&rdquo;</em> &mdash; which is precisely the anti-avoidance trap that s 109R exists to close. The correct answer is <em>&ldquo;this transaction, if executed, will be treated as if the original repayment never occurred, and the deemed dividend crystallises.&rdquo;</em> The pipeline gave the opposite answer with high confidence.
+</p>
+
+<p>
+Worse, when we probed with the phrase &ldquo;prohibited actions&rdquo;, the semantic-search retrieval also pulled the Commonwealth Criminal Code&rsquo;s Nazi-symbols statute into the context window &mdash; because the words matched. The context pollution is unbounded. Nothing in the retrieval architecture knows the difference between tax law and criminal law.
+</p>
+
+<h3>4. Denominator hallucination</h3>
+
+<p>
+Given a fact pattern involving multiple transactions and a partially-nullified asset transfer, the pipeline computed a denominator by summing every dollar figure in the context window rather than resolving which values had been nullified by s 109R. The result was $1,050,000 where the correct answer was $500,000. The mistake wasn&rsquo;t small. It wasn&rsquo;t a rounding error. It was a factor-of-two error caused by the system having no way to represent <em>which facts are alive in the current state and which have been retracted</em>.
+</p>
+
+<blockquote>
+None of these failures is fixable by a better prompt. They&rsquo;re architectural. Statutory reasoning has state, has scoped identity, has retractions, and has a citation surface that changes under you while the underlying proposition stays constant. An LLM has none of those primitives.
+</blockquote>
+
+<h2>What Logical English actually is</h2>
+
+<p>
+Logical English is a controlled natural-language layer over Prolog. A qualified reader &mdash; a CA who has done a rotation through a tax team, say &mdash; can read the rules in English and confirm they represent the statute. Under the hood, the rules compile to first-order logic that a deterministic engine executes.
+</p>
+
+<p>
+This is a fragment of a Division 7A rule, expressed in the shape we&rsquo;re authoring against:
+</p>
+
+<pre><code>the taxpayer must repay the minimum yearly repayment
+    for a Division 7A loan
+    if the loan is an amalgamated loan
+    and the loan has been made in a prior income year
+    and the loan is not fully repaid at the start of the current year
+    and the required amount is computed under section 109E of the ITAA 1936.
+
+the required amount is computed under section 109E of the ITAA 1936
+    if the amount = (opening balance * benchmark rate)
+                    / (1 - (1 + benchmark rate) ^ (- remaining term)).</code></pre>
+
+<p>
+That is executable. Not because a large language model has read it and formed an opinion. Because the underlying Prolog resolves the goal against the fact graph and either produces a witness &mdash; a proof tree showing which clauses fired and in what order &mdash; or it fails.
+</p>
+
+<p>
+When the reasoning is right, the proof tree is the audit artefact. When the reasoning is wrong, the failure is deterministic and reproducible. There is no <em>&ldquo;however, in practice...&rdquo;</em> escape hatch, no confidence score, no plausible-but-incorrect narrative overlaid on top. The output is a value or a rejection.
+</p>
+
+<h3>Why controlled natural language, not raw Prolog</h3>
+
+<p>
+Because the load-bearing check is human. A working tax accountant needs to be able to read a rule and say <em>&ldquo;yes, that matches how s 109E actually works.&rdquo;</em> Making them read Prolog would put a competent-domain-expert gate behind a syntax barrier that has nothing to do with the law. LE compiles to Prolog; the Prolog runs the engine; but the artefact of record &mdash; the thing the human ratifier reads and signs off on &mdash; is English constrained by grammar rather than freeform.
+</p>
+
+<h2>The architecture, in five parallel workstreams</h2>
+
+<p>
+Building a statute-grade Logical English corpus is not one project. It&rsquo;s five, running in parallel. If you sequence them, you get a corpus that either doesn&rsquo;t exist yet, or exists but has no way to be trusted.
+</p>
+
+<h3>A &mdash; Substrate</h3>
+
+<p>
+The plumbing. LE 2.0 runtime, the CI harness that runs <code>swipl le_command.pl --command=verify</code> on every commit, the test-file convention that pairs every <code>.le</code> with a <code>.le.tests</code>, and the Prolog server that exposes the corpus behind a metered API.
+</p>
+
+<h3>B &mdash; Curation</h3>
+
+<p>
+A standing discipline, not a sprint. As new statutory rulings and amendments land, decide what to lift into the LE corpus and what to leave as retrieval-only surface. Not every provision needs to be certified &mdash; only the ones that show up in Helm workflows often enough to matter. The <em>certification rate</em> is the load-bearing telemetry: what fraction of retrieved statute is also certified in LE?
+</p>
+
+<h3>C &mdash; Manual authoring</h3>
+
+<p>
+The quality floor. Hand-authored LE rules across the load-bearing families &mdash; Division 7A, depreciation TR 2024/4, FBT, CGT small-business concessions. Each rule paired with a test file containing at least three scenarios that exercise the load-bearing edges. This is where the taste of the domain shows through &mdash; you can tell a hand-authored rule from a machine-derived one within thirty seconds of reading.
+</p>
+
+<h3>D &mdash; Machine-assisted authoring</h3>
+
+<p>
+The scaling answer, and the risk vector. Once we have hand-authored rules across enough statute families to teach the pattern, a proposer pipeline (LLM plus statute retrieval) can draft candidate LE rules from primary source. Every candidate goes through a <em>disagreement detector</em>: an independent cross-family model reads the same statute cold and produces its own draft. If the two drafts converge on the operative predicate, the candidate is worth a human ratifier&rsquo;s time. If they diverge, the candidate halts.
+</p>
+
+<p>
+The disagreement detector is the immune system, not the brain. It doesn&rsquo;t decide what the law is. It detects when our model and another model diverge, and flags the divergence for a human. That distinction is load-bearing.
+</p>
+
+<h3>E &mdash; Test harness</h3>
+
+<p>
+Runs across A through D. Every LE rule has scenario tests. Every scenario test has an expected proof-tree witness. Every commit re-runs the full corpus. When we ship an update to the depreciation rules and a Division 7A test starts failing, we find out at commit time, not at close time.
+</p>
+
+<h2>The trust tiers</h2>
+
+<p>
+Not every LE rule earns the same trust. Four tiers, with different consequences downstream.
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Tier</th>
+            <th>Provenance</th>
+            <th>Downstream treatment</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Tier 1</strong></td>
+            <td>Hand-authored, ratified by named domain expert (CA/CTA-grade) and by us</td>
+            <td>Certified silently in Helm output; proof tree counts as adjudicated</td>
+        </tr>
+        <tr>
+            <td><strong>Tier 2</strong></td>
+            <td>Hand-verified mechanical lift from an existing LE corpus</td>
+            <td>Certified with tier-2 disclaimer in the synthesis narrative</td>
+        </tr>
+        <tr>
+            <td><strong>Tier 3</strong></td>
+            <td>Machine-proposed, single-ratifier, ≥10 back-test scenarios consensus</td>
+            <td>Displayed with tier-3 &ldquo;machine-derived; please review proof tree&rdquo; affordance in the operator-approval UI; source statute chunks attached; explicit accountant acceptance required</td>
+        </tr>
+        <tr>
+            <td><strong>Tier 4</strong></td>
+            <td>Machine-proposed, unratified, draft only</td>
+            <td>Never used at runtime; visible only in the corpus repo as drafts pending review</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
+The tier is not decoration. It travels with the rule into every downstream calculation and shows up in the operator&rsquo;s approval interface. When a partner at a mid-tier firm reviews a client&rsquo;s Division 7A analysis, the difference between <em>&ldquo;silently certified&rdquo;</em> and <em>&ldquo;machine-derived, please review&rdquo;</em> is the difference between signing and drilling deeper.
+</p>
+
+<h2>Where the review bounties fit</h2>
+
+<p>
+Tier 1 requires named domain-expert ratifiers. That is not a corpus problem; that is a <em>people</em> problem. Which is why the <a href="/bounties/">review bounties</a> exist.
+</p>
+
+<p>
+Every accepted bounty verdict is a Tier-1 anchor. A Chartered Accountant reads the Division 7A brief, works through the forensic questions, returns a structured ACCEPT / REJECT / FIX verdict, and gets named credit in the public reviewer registry. The verdict hash is bound to the specific calculator version the reviewer ratified. That binding travels with the engine into every downstream calculation the calculator drives.
+</p>
+
+<p>
+Ten bounties, ten anchors, ten domains. A working reviewer registry that gives us the Tier-1 substrate we need to trust the corpus. The bounties are not a marketing exercise. They are how we <em>build</em> the ratifier layer of the LE trust-grade architecture.
+</p>
+
+<h2>Where TaxGenii fits</h2>
+
+<p>
+The obvious question, if you&rsquo;ve been following: what about retrieval? What about TaxGenii, the ATO-legislation knowledge base?
+</p>
+
+<p>
+The split is clean.
+</p>
+
+<p>
+TaxGenii is the <em>discoverability</em> layer. Every statute, every ruling, every determination. Ask it a natural-language question, get relevant statutory chunks back with citations. Vector search over the corpus, augmented with graph queries over the citation network. Wide coverage. Probabilistic. Useful for scoping, education, drafting.
+</p>
+
+<p>
+Logical English is the <em>certification</em> layer. Not everything gets certified. Only what shows up often enough in Helm workflows to justify the ratifier cost. Narrow coverage. Deterministic. Used for the calculator engines and the final report.
+</p>
+
+<p>
+Both are needed. If Helm only had LE, it would fail closed on 90% of client questions because they touch statute we haven&rsquo;t certified yet. If Helm only had TaxGenii, it would fail open on the load-bearing 10% that drives the client&rsquo;s tax result. The interplay &mdash; retrieval discovers, LE certifies &mdash; is the shape of the reasoning layer.
+</p>
+
+<div class="grid md:grid-cols-2 gap-6 my-8">
+    <div class="rounded-2xl bg-obsidian border border-slate-800 p-6">
+        <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-3">Retrieval</p>
+        <h3 class="text-white text-lg font-bold mb-3">TaxGenii</h3>
+        <p class="text-slate-400 leading-relaxed text-sm">
+            Wide coverage. Probabilistic. Every statute, every ruling. Used for scoping and education.
+        </p>
+    </div>
+    <div class="rounded-2xl bg-obsidian border border-slate-800 p-6">
+        <p class="text-purple-400 font-mono text-xs uppercase tracking-widest mb-3">Certification</p>
+        <h3 class="text-white text-lg font-bold mb-3">Logical English</h3>
+        <p class="text-slate-400 leading-relaxed text-sm">
+            Narrow coverage. Deterministic. Only the provisions Helm hits often. Used for calculators.
+        </p>
+    </div>
+</div>
+
+<h2>Where L402 fits</h2>
+
+<p>
+Every LE query has a computational weight. Clauses touched, branching factor, resolution depth. When an agent asks the engine to resolve a Division 7A question against a specific fact graph, the answer is worth exactly what it cost to compute. Not a subscription. Not a monthly seat. The specific work of resolving the specific proposition.
+</p>
+
+<p>
+<a href="/blog/2026-07-01-why-l402-not-x402/">L402</a> is how we price and settle that. Sub-cent Lightning payments, macaroon-authenticated access, no minimum. The rule fires, the invoice settles, the caller gets the proof tree. When machines are talking to machines, this is the payment rail that matches the compute granularity.
+</p>
+
+<p>
+It is not incidental that the same cryptographic ethos runs through both. The LE proof tree carries its own proof of what was resolved. The L402 pre-image carries its own proof of what was settled. The audit chain from statutory anchor to calculated result to financial settlement traces through the same primitives. Break that unity at any layer, and you&rsquo;ve traded a proof for a promise.
+</p>
+
+<h2>The upstream, and the copyright</h2>
+
+<p>
+Logical English is an open-source project maintained by <a href="https://github.com/LogicalContracts/LogicalEnglish2" target="_blank">LogicalContracts</a>. LodgeiT Pty Ltd is listed among the initial copyright holders on the LE 2.0 codebase, alongside the academic and commercial contributors who built the language and its toolchain. We are neither the sole steward nor a passive consumer &mdash; we are a stakeholder with skin in the ecosystem and an obligation to contribute back.
+</p>
+
+<p>
+Our contributions to date have been focused on the Australian CGT cluster, the toolchain (a CLI-level improvement making the verify workflow agent-friendly), and the pattern library that shows how to structure LE rules against statute with proper witness-chain provenance. The strategic direction is:
+</p>
+
+<ul>
+    <li><strong>Contribute upstream</strong> what generalises &mdash; toolchain, pattern conventions, cluster examples.</li>
+    <li><strong>Keep in our own corpus</strong> what is jurisdiction-specific and load-bearing to our commercial engine &mdash; the specific AU rules that drive Helm workflows.</li>
+    <li><strong>Certify against Tier 1 ratifiers</strong> everything we depend on in production, whether upstream or ours.</li>
+</ul>
+
+<h2>What that looks like today</h2>
+
+<p>
+Where we stand as of publication:
+</p>
+
+<ul>
+    <li>The AU CGT cluster is present in the upstream LE corpus and validates cleanly under the current toolchain.</li>
+    <li>The Division 7A minimum-yearly-repayment engine has a working calculator with statute-anchored logic, currently in the first cycle of Tier-1 ratifier review.</li>
+    <li>Depreciation TR 2024/4 effective-life logic is being lifted into LE across the review-bounty programme.</li>
+    <li>FBT (car statutory-vs-operating, car parking), hire-purchase Division 240, and CGT small-business concessions are all in the near-term LE authoring queue, gated by ratifier acquisition through the bounty programme.</li>
+    <li>The disagreement detector for Workstream D is designed but not yet running &mdash; that switches on when the Tier-1 base is thick enough to give the detector meaningful ground truth.</li>
+</ul>
+
+            </div>
+
+            <!-- Try it now: LE GitHub link moved from ecosystem card -->
+            <section class="mt-16 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/30 p-8">
+                <p class="text-purple-400 font-mono text-xs uppercase tracking-widest mb-4">Try it now</p>
+                <h2 class="text-white text-3xl font-black mb-4">Logical English on GitHub</h2>
+                <p class="text-slate-300 text-lg leading-relaxed mb-4">
+                    The Logical English language and its toolchain are maintained openly. Read the source, run the verify command against the CGT cluster, or clone the pattern library and try authoring against a statute you know.
+                </p>
+                <p class="text-slate-400 leading-relaxed mb-6">
+                    LodgeiT Pty Ltd is an initial copyright holder on the LE 2.0 codebase; our contributions live alongside those of the academic and commercial contributors who built the language.
+                </p>
+                <div class="flex flex-wrap gap-3 items-center">
+                    <a href="https://github.com/LogicalContracts/LogicalEnglish2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-8 py-4 bg-purple-500 hover:bg-purple-400 text-white font-bold rounded-lg transition-all shadow-lg">
+                        <span>&#128220;</span>
+                        <span>Open LogicalEnglish2 on GitHub</span>
+                    </a>
+                    <a href="https://github.com/LogicalContracts/LogicalEnglish" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-4 border border-slate-700 hover:border-purple-500/50 text-slate-300 hover:text-white font-mono text-sm rounded-lg transition-all">
+                        <span>Legacy LE (1.x)</span>
+                    </a>
+                    <a href="/bounties/" class="inline-flex items-center gap-2 px-6 py-4 border border-slate-700 hover:border-purple-500/50 text-slate-300 hover:text-white font-mono text-sm rounded-lg transition-all">
+                        <span>Become a ratifier &rarr;</span>
+                    </a>
+                </div>
+                <p class="text-slate-500 text-sm mt-6 leading-relaxed">
+                    New to LE? Start with the CGT cluster in <code class="font-mono text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded">moreExamples/</code>. Each rule has a companion <code class="font-mono text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded">.le.tests</code> file that exercises the load-bearing edges. Running <code class="font-mono text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded">swipl le_command.pl --command=verify &lt;file&gt;.le</code> should print <code class="font-mono text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded">ALL GOOD :-)</code>.
+                </p>
+            </section>
+
+            <!-- Related -->
+            <section class="mt-16 border-t border-slate-800/50 pt-12">
+                <p class="text-slate-500 font-mono text-xs uppercase tracking-widest mb-6">Read next</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <a href="/bounties/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 p-6 transition-all">
+                        <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-2">Programme</p>
+                        <h3 class="text-white group-hover:text-blue-400 transition-colors font-bold text-lg mb-2">The review bounties</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Ten funded review bounties across Australian tax law. Named-credit attribution. This is how we build the Tier-1 ratifier substrate for the LE corpus.</p>
+                    </a>
+                    <a href="/blog/2026-07-01-why-l402-not-x402/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-yellow-500/50 p-6 transition-all">
+                        <p class="text-yellow-400 font-mono text-xs uppercase tracking-widest mb-2">Payments</p>
+                        <h3 class="text-white group-hover:text-yellow-400 transition-colors font-bold text-lg mb-2">Why L402, not x402</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">The settlement layer for the LE engine. Sub-cent metering per Prolog query, macaroon-authenticated access, no counterparty in the settlement leg.</p>
+                    </a>
+                    <a href="/blog/2026-07-01-what-we-are-building/" class="block group rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 p-6 transition-all md:col-span-2">
+                        <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-2">Overview</p>
+                        <h3 class="text-white group-hover:text-blue-400 transition-colors font-bold text-lg mb-2">What we are building</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">A full sweep for accounting and tax professionals &mdash; where LE, the classifier, the calculators, the SBRM manifold, and the settlement layer come together.</p>
+                    </a>
+                </div>
+            </section>
+
+        </article>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
