@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What we are building &mdash; a full sweep for accounting and tax professionals | LodgeiT.org</title>
+    <meta name="description" content="A guided tour of LodgeiT Labs' open-source stack &mdash; from controlled-natural-language statutory reasoning, through the semantic classifier that anchors every line item, to the calculator constellation, the SBRM manifold, and what happens when close-time becomes a cryptographic settlement event.">
+
+    <meta property="og:title" content="What we are building &mdash; a full sweep for accounting and tax professionals">
+    <meta property="og:description" content="A guided tour of the LodgeiT Labs open-source stack, written for accountants and tax professionals.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://lodgeit.org/blog/2026-07-01-what-we-are-building/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit h2 {
+            color: #ffffff;
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 700;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            border-top: 1px solid rgba(30, 41, 59, 0.5);
+            padding-top: 2.5rem;
+        }
+        .prose-lodgeit h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        .prose-lodgeit h3 {
+            color: #ffffff;
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-lodgeit p {
+            font-size: 1.0625rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+        .prose-lodgeit ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-lodgeit li {
+            margin-bottom: 0.5rem;
+            font-size: 1.0625rem;
+            line-height: 1.7;
+        }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 600; }
+        .prose-lodgeit em { color: #4D94FF; font-style: normal; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: #4D94FF;
+            background-color: rgba(77, 148, 255, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+        .prose-lodgeit blockquote {
+            border-left: 3px solid #0066FF;
+            padding-left: 1.25rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #94a3b8;
+        }
+
+        .pull-card {
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.08), rgba(77, 148, 255, 0.02));
+            border: 1px solid rgba(77, 148, 255, 0.25);
+            border-radius: 1rem;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+        }
+        .pull-card p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Article -->
+        <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+
+            <!-- Breadcrumb -->
+            <p class="mb-8">
+                <a href="/blog/" class="text-slate-500 hover:text-white font-mono text-xs uppercase tracking-widest transition">&larr; Blog</a>
+            </p>
+
+            <!-- Meta -->
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Overview</span>
+                <span class="text-slate-500 font-mono text-xs">2026-07-01</span>
+                <span class="text-slate-500 font-mono text-xs">&middot; 12 min read</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">What we are building</span>
+            </h1>
+            <p class="text-xl text-slate-400 leading-relaxed mb-12">
+                A guided tour, written for accounting and tax professionals, of the open-source stack behind LodgeiT Labs &mdash; and what changes in the review room when audit provenance stops being a deliverable and becomes the substrate itself.
+            </p>
+
+            <div class="prose-lodgeit">
+
+                <h2>The problem this is aimed at</h2>
+
+                <p>Most of what happens in a practice at close-time is not calculation. It is <strong>reconciliation of belief</strong>. A partner sits with a workpaper file and asks a preparer: <em>where did this come from, why did we take this position, and if the regulator asks in three years, will we still know?</em> The answers live in a mix of email chains, shared drives, mental models, and the preparer's memory. Under load, they degrade.</p>
+
+                <p>The tools that were meant to solve this &mdash; workpaper platforms, review checklists, practice management &mdash; each solve a slice. None of them make the underlying <strong>chain of reasoning</strong> a first-class object that can be inspected, replayed, and audited. When a review question comes in from the ATO, HMRC, or an insurer three years after the fact, the chain is reconstructed by hand, or it isn't reconstructed at all.</p>
+
+                <p>LodgeiT Labs is building the substrate that makes the chain first-class. The wedge is accounting and tax, because that is where mathematical closure exists &mdash; double-entry algebra, statutory law, and the disclosure taxonomy behind iXBRL are all domains where <em>proof is resolvable</em>. Everything else in the platform extends outward from that wedge.</p>
+
+                <p>This post walks the whole stack, from the statutory reasoning layer up to what a professional's day looks like once they adopt it. It is deliberately non-technical where it can be. Where it has to be technical, it names the thing and moves on.</p>
+
+                <h2>The three layers, and why they are separated</h2>
+
+                <p>Every component in the platform sits in one of three concentric layers, and the separation is load-bearing:</p>
+
+                <ul>
+                    <li><strong>The Deterministic Core.</strong> Double-entry algebra, the SBRM disclosure manifold, statutory constraints, provenance hashes. This layer is not allowed to be wrong without being <em>auditably</em> wrong &mdash; every failure surfaces as an exception you can point at.</li>
+                    <li><strong>The Probabilistic Ring.</strong> Machine-learning classifiers, natural-language reasoners, transaction categorisers, entity recognisers. This layer is <em>allowed to be uncertain</em>, and its outputs always carry a calibrated confidence and a witness &mdash; never authority.</li>
+                    <li><strong>The Semantic Membrane.</strong> The way the system speaks &mdash; to accountants, to regulators, to other software, to auditors reading the trace years later. Controlled natural language, disclosure renderings, review artefacts, correspondence surfaces.</li>
+                </ul>
+
+                <div class="pull-card">
+                    <p><strong>The design rule.</strong> The probabilistic ring <em>proposes</em>. The deterministic core <em>disposes</em>. The semantic membrane <em>explains</em>. Nothing crosses inward without a witness. Nothing crosses outward without a rendering.</p>
+                </div>
+
+                <p>This is what makes the platform genuinely different from a tool that bolts an LLM onto an existing GL. In our stack, the AI is never the source of truth &mdash; it is a proposer that has to survive a deterministic firewall before its output ever touches a general ledger. When it survives, the reasoning is legible. When it doesn't, the rejection is explicit and typed.</p>
+
+                <h2>Layer one &mdash; statutory reasoning in the language you already speak</h2>
+
+                <p>Statutes are prose. Software is code. The gap between them is where most tax-technology projects break down: they either force the accountant to trust an opaque calculator, or they force the developer to hand-encode statutes into procedural code that nobody but the developer can audit.</p>
+
+                <p>We use <strong>Logical English</strong> &mdash; a controlled natural language originally developed within the LogicalContracts research programme &mdash; as the middle ground. Statutes are expressed in sentences a tax professional can read, and those sentences compile directly into deterministic logic that a reasoning engine can execute. When Div 7A fires on a shareholder loan, or when a UK company qualifies as small under s382 Companies Act 2006, the rule that made it fire is a paragraph of English you can point at, not a black box.</p>
+
+                <p>Every assertion at this layer carries a <strong>trust tier</strong>: verified against primary statute, verified against precedent, community-ratified, or provisional. When two tiers disagree &mdash; a provisional rule contradicting a precedent-verified one, for example &mdash; a disagreement detector fires and the conflict becomes visible before it can propagate downstream.</p>
+
+                <p>What this means for a practitioner: the software's tax reasoning is not a trade secret. It is a document. You can review it the way you would review a technical memo, and you can update it the way you would update a checklist when the law changes.</p>
+
+                <h2>Layer two &mdash; the semantic backbone that anchors every line item</h2>
+
+                <p>Most classification tools ask a shallow question: <em>what account does this transaction post to?</em> That is a category error. The question underneath is <em>what does this line item mean?</em> &mdash; because the same real-world event can post to different accounts under different jurisdictions, different frameworks, and different firm-level charts.</p>
+
+                <p>Our semantic backbone is a canonical address space. Every line item, every trial-balance row, every calculator output, resolves to a semantic address before anything else in the system reasons about it. The classifier that produces those addresses runs continuously against production data and is retrained on a disciplined cadence; the current substrate has stabilised at accuracy plateaus where architectural improvements matter more than additional training volume.</p>
+
+                <p>The important discipline: the classifier is <em>always</em> a proposer. It never writes to a ledger. A semantic-address prediction is a proposal that has to survive downstream constraints before it becomes an approved posting. When the classifier is 98% confident, the deterministic core still checks it. When the classifier is 60% confident, the same check runs &mdash; the difference is only how visible the review artefact is to the operator.</p>
+
+                <p>What this means for a practitioner: automated coding stops being a matter of trust. You get to see <em>why</em> the system proposed a particular treatment, at the semantic layer, and you get to accept or reject with a witness that survives into the audit trail.</p>
+
+                <h2>Layer three &mdash; the calculator constellation</h2>
+
+                <p>Rather than building a single monolithic tax engine, we build a constellation of deterministic calculators, each responsible for a bounded statutory domain:</p>
+
+                <ul>
+                    <li>Depreciation (prime-cost, diminishing-value, low-value-pool, IAWO, general-pool restatement)</li>
+                    <li>Division 7A (loans, minimum yearly repayments, deemed dividend calculations, benchmark rates)</li>
+                    <li>Hire purchase (interest apportionment, principal reconciliation, GST timing)</li>
+                    <li>Fringe Benefits Tax (calculation, deemed depreciation of benefits, reportable fringe benefits)</li>
+                    <li>UK Corporation Tax (CT600 computation, iXBRL rendering, HMRC transport)</li>
+                    <li>Companies House filings (AA02 dormant, FRS 102 1A small/micro, iXBRL against the current FRC taxonomy)</li>
+                    <li>Transfer pricing (Subdiv 815-B, IDS, CbC, DTA, DPT, thin cap, TNMM, DEMPE, TR 2024/D1)</li>
+                    <li>VAT (MTD-compliant lodgement)</li>
+                </ul>
+
+                <p>Each calculator is a small, deterministic engine. It takes structured inputs, produces structured findings, and carries its own witness &mdash; the specific rule chain that led from input to output, expressed at the statutory-reasoning layer where a professional can inspect it.</p>
+
+                <p>Statutory rates and thresholds are <strong>not hard-coded</strong>. They live in period-scoped rate tables that are updated as legislation moves, and the calculator asks the table at run-time. This is a small thing that matters enormously in practice &mdash; when the ATO revises a rate, or the Chancellor announces a threshold change, the calculator does not need to be rebuilt. The rate table does.</p>
+
+                <h2>Layer four &mdash; SBRM as financial-truth manifold</h2>
+
+                <p>Charles Hoffman's Standard Business Reporting Model is not a reporting format. It is a <strong>closed algebra of financial assertions</strong> &mdash; a mathematical object over which double-entry is a homomorphism, over which UK and AU tax law can be projected as constraint sets, and over which auditors can walk provenance chains without hallucination.</p>
+
+                <p>Every trial balance, every journal, every disclosure, every workpaper in our stack is an element of this manifold. The consequence is quiet but powerful: the same underlying facts can be projected into any framework &mdash; FRS 105, FRS 102 1A, IFRS, an ATO-recognisable general-purpose financial report &mdash; without re-keying, and with the transformations themselves recorded as first-class witnesses.</p>
+
+                <p>The Seattle Method &mdash; Hoffman's codification of disclosure mechanics, reporting checklists, and the reporting-style discipline that turns algebra into a legally defensible artefact &mdash; is the layer above SBRM that most competing platforms don't build. It is what closes the loop between <em>the numbers are right</em> and <em>the report is defensible</em>.</p>
+
+                <h2>Layer five &mdash; agentic controls, with real firewalls</h2>
+
+                <p>Every serious practitioner has seen the same demo now: an AI assistant that suggests a journal, an accountant clicks approve, and the journal posts. It looks impressive. It is architecturally a disaster.</p>
+
+                <p>The failure mode is not that the AI proposed a wrong journal &mdash; it will, sometimes, and that is fine if the perimeter catches it. The failure mode is that <em>there is no perimeter</em>. The approval click is a rubber stamp because the operator can't see what actually changes on the balance sheet and P&amp;L before they approve.</p>
+
+                <p>Our agentic layer has two hard firewalls, and no agent bypass exists:</p>
+
+                <ul>
+                    <li><strong>Semantic firewall.</strong> Every calculator-originated journal is checked at emission against a seven-way polarity taxonomy &mdash; current asset, non-current asset, current liability, non-current liability, equity, income, expense. Topologically invalid postings are rejected before they reach the GL staging layer. Rejections are not silent booleans; they are typed artefacts with witnesses.</li>
+                    <li><strong>Structural firewall at the GL boundary.</strong> Every journal, whether calculator-originated or human-authored, passes a structural check: debits balance credits, polarity tags are present, accounts exist, periods are open, source attribution is complete. Manual journals authored at the GL interface still traverse this firewall.</li>
+                </ul>
+
+                <p>Above the firewalls sits an <strong>async staging boundary</strong>. Calculator-originated journals never post synchronously. They become <strong>review artefacts</strong>, each carrying a dry-run diff that shows the operator what changes in the balance sheet, P&amp;L, cash flow, and equity statements <em>before</em> approval. The load-bearing UX element is the diff. Black-box AI journals are the failure mode this design forecloses.</p>
+
+                <div class="pull-card">
+                    <p>The professional posture we've locked in is simple: <em>AI can suggest, draft, and prepare. Humans approve important workflow transitions.</em> That posture is not policy overlay &mdash; it is architecturally enforced, and there is no build in which it can be turned off.</p>
+                </div>
+
+                <h2>What close-time becomes</h2>
+
+                <p>Here is where the whole design converges on something new.</p>
+
+                <p>A period close, in most practices today, is a workflow. A checklist is worked through, a reviewer signs off, a file is finalised, and the underlying reasoning &mdash; why particular treatments were adopted, which rules fired, what evidence was consulted &mdash; is captured in whatever ad-hoc notes the preparer had time to leave.</p>
+
+                <p>In our substrate, a period close is a <strong>settlement event</strong>. When the close signs, every journal in the period becomes immutable and hash-bound. Every journal points at its source: for calculator-originated postings, the calculator and the specific finding; for manual postings, the operator identifier and the approval signature. Every finding points at its witness. Every witness points at the rule chain that produced it. Every rule chain terminates in either statute &mdash; verified at the trust tier its consumer requires &mdash; or double-entry algebra.</p>
+
+                <p>The audit trail is not <em>generated</em> at close-time. It is the substrate the close ran on.</p>
+
+                <p>The consequences ripple outward:</p>
+
+                <ul>
+                    <li>Partner review time collapses. Not because the AI is doing more, but because the trace is legible. Review shifts from <em>let me check the numbers</em> to <em>let me check the reasoning</em>.</li>
+                    <li>Regulator submissions become deterministic. iXBRL is generated from the manifold, not from a template mapped over a spreadsheet. First-submission acceptance stops being aspirational.</li>
+                    <li>Insurance carriers can price professional-indemnity risk on visible evidence. That is a business consequence with significant downstream value.</li>
+                    <li>Cross-jurisdiction workpapers become composable. A UK close and an Australian close for related entities share provenance chains cleanly.</li>
+                    <li>Three years later, when a regulator asks, the answer takes minutes, not weeks. The chain is still there, still hashed, still cryptographically bound to the position the firm took.</li>
+                </ul>
+
+                <h2>The adoption arc &mdash; what your practice looks like month by month</h2>
+
+                <p>How does a firm actually onboard? The path is intentionally gradual, because the substrate has to earn trust incrementally. The following is what the arc looks like from a partner's chair.</p>
+
+                <h3>Day zero &mdash; first contact</h3>
+                <p>The interface you and your team see is the LodgeiT commercial product surface you already know. Jobs. Work objects. Rules. Issues. Approvals. Familiar vocabulary. The substrate underneath is invisible to the practitioner.</p>
+
+                <h3>Week one to four &mdash; ambient ingestion</h3>
+                <p>The system begins consuming artefacts &mdash; bank statements, invoices, prior workpapers, trial balances &mdash; and surfaces findings as <em>proposals</em> against your existing work items. Each proposal carries a natural-language justification you can read. You accept, reject, or request changes. Every interaction trains the system's model of how your firm wants to work.</p>
+
+                <h3>Month two &mdash; the calculator constellation engages</h3>
+                <p>A Div 7A scenario surfaces, or a depreciation restatement, or a Companies House filing comes due. The relevant calculator fires. You see a staged journal batch with a dry-run diff of what changes in the balance sheet and P&amp;L. You approve, reject, or request changes. The critical moment: <em>you see what changes before you approve</em>. Black-box AI journals disappear from your workflow because they are architecturally impossible.</p>
+
+                <h3>Month two to three &mdash; first close</h3>
+                <p>You run a period close inside the substrate. You watch the settlement event fire. Every journal has its provenance chain. The audit report generates itself from the trace, not from a template. The realisation, at this point, is that <em>the audit is the substrate</em>, not a deliverable produced afterwards.</p>
+
+                <h3>Month three &mdash; first regulator submission</h3>
+                <p>You lodge to Companies House, HMRC, or the ATO. The iXBRL is generated deterministically from the manifold. It passes on first submission, because the provenance chain is deterministic and the disclosure mechanics were checked at close-time rather than after the fact.</p>
+
+                <h3>Month four and beyond &mdash; the discovery</h3>
+                <p>You notice review time has collapsed. Not because AI is doing more, but because the trace is legible. Partner review is now <em>check the reasoning</em>, not <em>check the numbers</em>. You start referring the substrate to your clients as a compliance moat &mdash; the phrase that comes up in your business-development conversations changes.</p>
+
+                <h3>Month six and beyond &mdash; the extension</h3>
+                <p>Adjacent domains start to become visible. The same substrate that carried tax reasoning can carry ESG reporting, transfer pricing, restructuring, sector-specific disclosure. You stop thinking about the platform as an accounting tool and start thinking about it as your firm's <em>reasoning substrate</em>. That mental shift is the adoption inflection point.</p>
+
+                <h2>What we are &mdash; and what we are not</h2>
+
+                <p>We are open-source infrastructure. The core reasoning engine, the calculator constellation, the SBRM manifold, and the statutory-reasoning layer are all developed in the open, under permissive licences, in the <a href="https://github.com/lodgeit-labs" target="_blank" rel="noopener noreferrer">lodgeit-labs GitHub organisation</a>. Firms and individuals are welcome to inspect the code, run it, extend it, and build on top of it.</p>
+
+                <p>We are <strong>not</strong> replacing your practice-management, your client-facing portal, your ATO/HMRC-agent credentials, or your professional judgement. Those remain with the firm and the individual. Where the LodgeiT commercial platform provides the practitioner surface, this substrate sits underneath it as the reasoning layer.</p>
+
+                <p>We are <strong>not</strong> a general-purpose AI assistant. The system does one thing very well &mdash; produce provenance-chained, statutorily-anchored financial reasoning that survives audit &mdash; and its scope is deliberately kept bounded to that.</p>
+
+                <p>We are <strong>not</strong> asking you to trust a black box. Everything the system does is inspectable. Every rule that fires is a paragraph you can read. Every classifier decision carries a witness. Every calculator finding points at its statutory basis. If the substrate is ever wrong, it is <em>auditably</em> wrong &mdash; and that is the design promise the whole architecture is oriented around.</p>
+
+                <h2>Where the wedge extends next</h2>
+
+                <p>Accounting and tax are the wedge because that is where proof is resolvable today. The disclosure manifold, the trust-tiered statutory reasoning, and the async operator-approval boundary are all general architectural moves &mdash; they extend cleanly into any domain where deterministic constraints and probabilistic reasoning need to be composed under audit.</p>
+
+                <p>Sustainability reporting, transfer pricing under increasing regulatory pressure, insurance underwriting, professional-indemnity risk pricing, and cross-border regulatory harmonisation are all downstream of the same substrate. We are building the accounting and tax hyperplanes first because that is where the algebra closes cleanly. Everything else follows from what gets proven here.</p>
+
+                <h2>How to engage</h2>
+
+                <p>If you are a practitioner and you'd like to see the substrate in operation, the primary path is through the LodgeiT commercial platform, where the reasoning layer described in this post is progressively becoming available beneath the interface you already use. The <a href="https://lodgeit.net.au" target="_blank" rel="noopener noreferrer">commercial site</a> is the front door.</p>
+
+                <p>If you are a developer or a firm-level architect, the <a href="https://github.com/lodgeit-labs" target="_blank" rel="noopener noreferrer">GitHub organisation</a> is the technical entry point. The calculators, the reasoning engine, the SBRM tooling, and the disclosure bridges are all there, along with the specifications that govern how they interoperate.</p>
+
+                <p>If you are a professional body, a regulator, or an insurer interested in the audit-substrate implications of what we are building, get in touch through the commercial channel and we'll route the conversation appropriately.</p>
+
+                <p>We are, architecturally, ready to ship. What comes next is a matter of finding the practitioners who want to build the next few years of the profession on a substrate that doesn't lie.</p>
+
+                <hr class="border-slate-800 my-12" />
+
+                <p class="text-slate-500 text-sm">
+                    Written for accounting and tax professionals. Comments and corrections are welcome via the <a href="https://github.com/lodgeit-labs" target="_blank" rel="noopener noreferrer">GitHub organisation</a>. Follow the <a href="/blog/">blog</a> for further notes from the substrate.
+                </p>
+
+            </div>
+
+        </article>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-obsidian py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-6 w-auto opacity-75">
+                <span class="text-slate-500 font-mono text-xs font-bold mt-0.5">Labs</span>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="https://github.com/lodgeit-labs" class="text-slate-500 hover:text-white transition">GitHub</a>
+                <a href="https://lodgeit.net.au" class="text-slate-500 hover:text-white transition">LodgeiT Commercial</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
