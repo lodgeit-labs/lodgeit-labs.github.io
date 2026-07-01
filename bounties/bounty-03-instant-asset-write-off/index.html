@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Asset Write-Off eligibility | LodgeiT Bounties</title>
+    <meta name="description" content="$20k IAWO threshold FY2024–25 and the FY2025–26 transition audit.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit h4 { font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit blockquote { border-left: 3px solid #4D94FF; padding-left: 1rem; margin: 1.5rem 0; color: #94a3b8; font-style: italic; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; Bounty #03
+            </p>
+        </div>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-lodgeit-light font-mono text-xs uppercase tracking-widest">Bounty #03 &middot; Calculator live</span>
+                <span class="text-white bg-lodgeit-blue px-4 py-2 rounded-full text-sm font-mono font-bold">$450</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Instant Asset Write-Off eligibility</span>
+            </h1>
+            <p class="text-slate-300 text-lg leading-relaxed mb-6">
+                Ratify the IAWO eligibility gate. Aggregated turnover, per-asset $20k test (FY24–25), held-ready-for-use requirement, and the transition to the FY25–26 rules.
+            </p>
+            <div class="flex flex-wrap gap-3 text-xs font-mono">
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">s 328-180 ITAA 1997</span>
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">~2 hours</span>
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">Depreciation_Transforms (live)</span>
+            </div>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 prose-lodgeit">
+
+            
+            <h3>The statutory question</h3>
+            <p>Ratify the IAWO eligibility gate. Aggregated turnover, per-asset $20k test (FY24–25), held-ready-for-use requirement, and the transition to the FY25–26 rules.</p>
+
+            <h3>Why this matters</h3>
+            <p>
+                Our calculator emits a deterministic answer for any lawful input. The question the bounty answers is:
+                <strong>does the calculator's answer match what a competent practitioner would produce from first principles reading the statute?</strong>
+                If yes, the calculator's output is a witness. If no, the reviewer's correction becomes the fix.
+            </p>
+            <p>
+                Either way, the reviewer's name is bound to the version of the engine they ratified. That binding &mdash;
+                cryptographic hash of the reviewer's verdict against the calculator's version &mdash; travels with the engine downstream.
+            </p>
+
+            <h3>What you are being asked to do</h3>
+            <ol>
+                <li>Read the one-page brief and the worked example.</li>
+                <li>Review the six (or seven) forensic questions. These are graded easy &rarr; hard; do not skip the easy ones &mdash; they anchor your reasoning trail.</li>
+                <li>Fill out the reviewer-verdict template. It is a structured YAML-frontmatter document with three top-level verdicts &mdash; <span class="text-white font-semibold">ACCEPT</span>, <span class="text-white font-semibold">REJECT</span>, or <span class="text-white font-semibold">FIX</span> &mdash; and space for per-question citation trails.</li>
+                <li>Return your verdict by email or as a pull request against the bounty repo. We&rsquo;ll review within one business day and confirm acceptance.</li>
+            </ol>
+
+            <h3>What is <em>not</em> in scope</h3>
+            <p>
+                We are not asking you to review our source code, run our engine, audit our maths, review our software architecture, or understand our cryptographic provenance chain. Those are separate concerns, handled separately. The bounty is a statute-to-predicate ratification exercise, nothing more, nothing less.
+            </p>
+
+            <h3>Statutory anchors (pre-loaded)</h3>
+            <p>
+                The TaxGenii appendix (file 05 in the artefact bundle) contains the primary statutory sections and key rulings pre-cited &mdash; you do not need to hunt sources. If the appendix is thin in an area you consider critical, that is itself useful information &mdash; flag it in your verdict under the &ldquo;coverage gap&rdquo; section and we&rsquo;ll feed the finding back to our knowledge-base team.
+            </p>
+
+            <h3>Attribution &mdash; how your work gets credited</h3>
+            <p>
+                Your accepted verdict is minted into the public <a href="/bounties/#attribution" class="text-lodgeit-light hover:text-white underline">reviewer registry</a> with:
+            </p>
+            <ul>
+                <li>Your name and credential class (CA / CTA / CPA / FIPA / TPB &ndash; registered)</li>
+                <li>The verdict hash (SHA-256 of your submitted document)</li>
+                <li>The calculator version you ratified</li>
+                <li>The publication date</li>
+            </ul>
+            <p>
+                Default is <strong>named credit</strong>. You may opt down to initialled (&ldquo;J.D.&rdquo;) or anonymous when you submit. Opt-down does not reduce the prize.
+            </p>
+
+            <h3>Edge cases surfaced in the forensic questions</h3>
+            <p>
+                Each brief carries one deliberately load-bearing question &mdash; a scenario where a plausible-looking answer is subtly wrong &mdash; and one deliberately open-ended question that invites you to surface something we haven&rsquo;t yet caught. The load-bearing question separates careful readers from skim-readers; the open-ended question is where the best verdicts extract real value beyond the prize.
+            </p>
+    
+
+        </article>
+
+        <!-- Artefacts -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Download the brief pack</p>
+            <h2 class="text-3xl font-bold text-white mb-4">Artefact bundle</h2>
+            <p class="text-slate-400 leading-relaxed mb-6">
+                The full brief, worked example, forensic questions, verdict template, TaxGenii statutory appendix, and terms &mdash; all as markdown files you can open, print, or work through offline.
+            </p>
+            <div class="grid gap-3">
+                <a href="artefacts/01-brief.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">01-brief.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Brief — scope, statutory anchors, out-of-scope</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/02-worked-example.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">02-worked-example.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Worked example — SBE trading co, three assets straddling the threshold</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/03-forensic-questions.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">03-forensic-questions.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Six forensic questions, easy → hard</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/04-reviewer-verdict-template.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">04-reviewer-verdict-template.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Reviewer verdict template (YAML frontmatter)</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/05-taxgenii-appendix.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">05-taxgenii-appendix.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">TaxGenii statutory appendix — pre-cited references</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/06-terms.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">06-terms.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Terms — IP, attribution, payment, timeline</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Apply -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Reserve this bounty</p>
+            <h2 class="text-3xl font-bold text-white mb-6">Ready to take it on?</h2>
+            <p class="text-slate-400 leading-relaxed mb-6">
+                Email us with a short note &mdash; your name, credential, and any comment on scope. First-in-first-served. We&rsquo;ll confirm reservation within one business day.
+            </p>
+            <a href="mailto:bounties@lodgeit.org?subject=Bounty%20%2303%20-%20IAWO%20eligibility" class="inline-block px-8 py-4 bg-lodgeit-blue hover:bg-lodgeit-light text-white font-bold rounded-lg transition-all shadow-neon">
+                Reserve Bounty #03
+            </a>
+        </section>
+
+        <!-- Nav to next / index -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <div class="flex justify-between items-center">
+                <a href="/bounties/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">
+                    &larr; All bounties
+                </a>
+                <a href="/bounties/bounty-04-small-business-general-pool/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Next: Bounty #04 &rarr;</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
