@@ -159,7 +159,7 @@ SKELETON = """<!DOCTYPE html>
             <p class="text-slate-400 leading-relaxed mb-6">
                 Email us with a short note &mdash; your name, credential, and any comment on scope. First-in-first-served. We&rsquo;ll confirm reservation within one business day.
             </p>
-            <a href="mailto:bounties@lodgeit.org?subject=Bounty%20%23{num_padded}%20-%20{title_url}" class="inline-block px-8 py-4 bg-lodgeit-blue hover:bg-lodgeit-light text-white font-bold rounded-lg transition-all shadow-neon">
+            <a href="mailto:support@lodgeit.net.au?subject=Bounty%20%23{num_padded}%20-%20{title_url}" class="inline-block px-8 py-4 bg-lodgeit-blue hover:bg-lodgeit-light text-white font-bold rounded-lg transition-all shadow-neon">
                 Reserve Bounty #{num_padded}
             </a>
         </section>
@@ -486,7 +486,7 @@ def render_next_link(idx):
     if idx + 1 < len(BOUNTIES):
         b_next = BOUNTIES[idx + 1]
         return f'<a href="/bounties/bounty-{b_next["num"]:02d}-{b_next["slug"]}/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Next: Bounty #{b_next["num"]:02d} &rarr;</a>'
-    return '<a href="mailto:bounties@lodgeit.org" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>'
+    return '<a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>'
 
 
 def main():
