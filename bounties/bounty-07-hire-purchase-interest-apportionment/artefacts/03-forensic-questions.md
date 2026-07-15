@@ -14,7 +14,7 @@ Under Division 240, is the notional interest deductible under s 8-1 to the hirer
 
 Does Division 240 mandate the actuarial method, or does it permit Rule-of-78? What is the source authority?
 
-_(The reviewer should trace this to s 240-40 and any relevant ATO Interpretive Decisions.)_
+_(The reviewer should trace this to s 240-60 — the notional-interest calculation prescription — and any relevant ATO Interpretive Decisions. Note: s 240-40 governs the financier-side non-assessability of arrangement payments and is not the calculation-method section.)_
 
 ## Q4 (medium) — Balloon payment
 
