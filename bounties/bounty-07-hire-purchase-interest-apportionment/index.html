@@ -138,8 +138,8 @@
             <ol>
                 <li>Read the one-page brief and the worked example.</li>
                 <li>Review the six (or seven) forensic questions. These are graded easy &rarr; hard; do not skip the easy ones &mdash; they anchor your reasoning trail.</li>
-                <li>Fill out the reviewer-verdict template. It is a structured YAML-frontmatter document with three top-level verdicts &mdash; <span class="text-white font-semibold">ACCEPT</span>, <span class="text-white font-semibold">REJECT</span>, or <span class="text-white font-semibold">FIX</span> &mdash; and space for per-question citation trails.</li>
-                <li>Return your verdict by email or as a pull request against the bounty repo. We&rsquo;ll review within one business day and confirm acceptance.</li>
+                <li>Fill out the reviewer-verdict template. Either submit via the <a href="review/" class="text-lodgeit-light hover:text-white underline">web form</a> (recommended &mdash; emits a downloadable Markdown file matching the canonical schema) or hand-author the <a href="artefacts/04-reviewer-verdict-template.md" class="text-lodgeit-light hover:text-white underline">raw Markdown template</a>. Three top-level verdicts &mdash; <span class="text-white font-semibold">ACCEPT</span>, <span class="text-white font-semibold">REJECT</span>, or <span class="text-white font-semibold">FIX</span> &mdash; with space for per-question citation trails.</li>
+                <li>Email the completed verdict file to <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a>. We&rsquo;ll review within one business day and confirm acceptance.</li>
             </ol>
 
             <h3>What is <em>not</em> in scope</h3>
@@ -213,9 +213,18 @@
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
                             <div class="font-mono text-xs text-lodgeit-light mb-1">04-reviewer-verdict-template.md</div>
-                            <div class="text-white group-hover:text-blue-400 transition">Reviewer verdict template (YAML frontmatter)</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Reviewer verdict template (YAML frontmatter, fallback for hand-authoring)</div>
                         </div>
                         <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="review/" class="block group rounded-xl bg-lodgeit-blue/5 border border-lodgeit-blue/40 hover:border-lodgeit-blue card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">review/ &nbsp; (recommended)</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Submit your verdict via the web form &mdash; emits a downloadable .md file matching the canonical schema</div>
+                        </div>
+                        <div class="text-lodgeit-light group-hover:text-white transition text-2xl ml-4">&rarr;</div>
                     </div>
                 </a>
                 <a href="artefacts/05-taxgenii-appendix.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
