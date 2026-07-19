@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit reviewer verdict — Bounty #07 HP interest apportionment | LodgeiT Bounties</title>
+    <meta name="description" content="Structured web-form capture for the reviewer verdict on bounty-07 (hire purchase — interest apportionment). Emits a downloadable Markdown verdict file; email the file to support@lodgeit.net.au.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        /* Form inputs — inherit the obsidian/slate palette */
+        .lf-label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 0.35rem;
+        }
+        .lf-required::after {
+            content: ' *';
+            color: #4D94FF;
+        }
+        .lf-help {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.35rem;
+            line-height: 1.5;
+        }
+        .lf-input,
+        .lf-select,
+        .lf-textarea {
+            width: 100%;
+            background: #0b1120;
+            border: 1px solid #1e293b;
+            border-radius: 0.4rem;
+            padding: 0.65rem 0.85rem;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .lf-input:focus,
+        .lf-select:focus,
+        .lf-textarea:focus {
+            outline: none;
+            border-color: #4D94FF;
+            box-shadow: 0 0 0 3px rgba(77, 148, 255, 0.15);
+        }
+        .lf-textarea {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 6rem;
+        }
+        .lf-section {
+            border: 1px solid #1e293b;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(15, 23, 42, 0.4);
+        }
+        .lf-section-title {
+            font-weight: 900;
+            font-size: 1.15rem;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+        .lf-section-hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+        .lf-q-block {
+            background: #0b1120;
+            border: 1px solid #1e293b;
+            border-radius: 0.5rem;
+            padding: 1.1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .lf-q-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+        }
+        .lf-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .lf-grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+        .lf-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .lf-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        }
+        .lf-cta-primary {
+            background: #0066FF;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.95rem 2rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .lf-cta-primary:hover {
+            background: #004CCC;
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.4);
+        }
+        .lf-cta-primary:disabled {
+            background: #334155;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .lf-cta-secondary {
+            background: transparent;
+            color: #4D94FF;
+            font-weight: 500;
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.4rem;
+            border: 1px solid #1e293b;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .lf-cta-secondary:hover {
+            background: rgba(77, 148, 255, 0.08);
+            border-color: #4D94FF;
+        }
+        .lf-callout {
+            background: rgba(77, 148, 255, 0.05);
+            border-left: 3px solid #4D94FF;
+            padding: 1rem 1.25rem;
+            border-radius: 0.4rem;
+            margin-bottom: 1.5rem;
+        }
+        .lf-callout-warn {
+            background: rgba(251, 191, 36, 0.05);
+            border-left: 3px solid #fbbf24;
+        }
+        .lf-checkbox {
+            width: 1.15rem;
+            height: 1.15rem;
+            accent-color: #0066FF;
+            margin-right: 0.6rem;
+            vertical-align: middle;
+        }
+        .lf-citation-row {
+            display: grid;
+            grid-template-columns: 3rem 1fr 8rem 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        @media (max-width: 768px) {
+            .lf-citation-row {
+                grid-template-columns: 1fr;
+                border: 1px solid #1e293b;
+                padding: 0.75rem;
+                border-radius: 0.4rem;
+            }
+        }
+        .lf-remove {
+            background: transparent;
+            color: #64748b;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.2s;
+        }
+        .lf-remove:hover { color: #ef4444; }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp;
+                <a href="../" class="hover:text-lodgeit-light transition">Bounty #07</a>
+                &nbsp;/&nbsp; Submit verdict
+            </p>
+        </div>
+
+        <!-- Intro -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 class="text-3xl sm:text-4xl font-black mb-3 gradient-text">Submit reviewer verdict</h1>
+            <p class="text-lg text-slate-400 mb-6">
+                Bounty #07 — Hire purchase, interest apportionment (Division 240 ITAA 1997).
+            </p>
+
+            <div class="lf-callout">
+                <p class="text-slate-200 text-sm leading-relaxed mb-2">
+                    This form emits a downloadable Markdown verdict file matching the canonical schema at
+                    <a href="../artefacts/04-reviewer-verdict-template.md" class="text-lodgeit-light font-mono hover:underline">04-reviewer-verdict-template.md</a>.
+                </p>
+                <p class="text-slate-200 text-sm leading-relaxed">
+                    When you finish, click <span class="font-mono text-lodgeit-light">Download verdict (.md)</span> below, then email the downloaded file as an attachment to
+                    <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light font-mono hover:underline">support@lodgeit.net.au</a>
+                    with subject line <span class="font-mono text-white">Bounty #07 verdict — &lt;your name&gt;</span>.
+                </p>
+            </div>
+
+            <div class="lf-callout lf-callout-warn">
+                <p class="text-slate-200 text-sm leading-relaxed">
+                    <strong class="text-white">Prefer to hand-author?</strong>
+                    You can still download the raw Markdown template
+                    <a href="../artefacts/04-reviewer-verdict-template.md" class="text-lodgeit-light font-mono hover:underline">here</a>
+                    and email a completed copy directly to
+                    <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light font-mono hover:underline">support@lodgeit.net.au</a>.
+                    Both paths land at the same canonical schema.
+                </p>
+            </div>
+        </section>
+
+        <!-- Form -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+            <form id="verdict-form" onsubmit="event.preventDefault(); return false;">
+
+                <!-- Section: Reviewer identity -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">1. Reviewer identity</h2>
+                    <p class="lf-section-hint">
+                        Your credential class and attribution posture govern how your verdict is minted to the public reviewer registry.
+                    </p>
+                    <div class="lf-grid-2">
+                        <div>
+                            <label class="lf-label lf-required" for="reviewer_name">Full name</label>
+                            <input type="text" id="reviewer_name" class="lf-input" placeholder="e.g. Leanne Williamson" />
+                        </div>
+                        <div>
+                            <label class="lf-label lf-required" for="credential_class">Credential class</label>
+                            <select id="credential_class" class="lf-select">
+                                <option value="">— select —</option>
+                                <option value="CA">CA (Chartered Accountant)</option>
+                                <option value="CTA">CTA (Chartered Tax Adviser)</option>
+                                <option value="CPA">CPA</option>
+                                <option value="FIPA">FIPA</option>
+                                <option value="MIPA">MIPA</option>
+                                <option value="TPB">TPB (Tax Practitioners Board)</option>
+                                <option value="Other">Other (specify in notes)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lf-label lf-required" for="registration_status">Registration status</label>
+                            <select id="registration_status" class="lf-select">
+                                <option value="">— select —</option>
+                                <option value="active">active</option>
+                                <option value="lapsed">lapsed</option>
+                                <option value="retired">retired</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lf-label" for="jurisdiction">Jurisdiction</label>
+                            <input type="text" id="jurisdiction" class="lf-input" value="Australia" />
+                        </div>
+                        <div>
+                            <label class="lf-label lf-required" for="attribution_posture">Attribution posture</label>
+                            <select id="attribution_posture" class="lf-select">
+                                <option value="named" selected>named (full name in public registry)</option>
+                                <option value="initialled">initialled (initials only)</option>
+                                <option value="anonymous">anonymous (no attribution)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lf-label" for="reviewer_id">Registration/member number</label>
+                            <input type="text" id="reviewer_id" class="lf-input" placeholder="e.g. TPB 12345678" />
+                            <p class="lf-help">Optional. Populates the credential attestation line.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Review session metadata -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">2. Review session metadata</h2>
+                    <p class="lf-section-hint">
+                        Which calculator version you reviewed and when.
+                    </p>
+                    <div class="lf-grid-2">
+                        <div>
+                            <label class="lf-label lf-required" for="reviewed_calculator_version">Calculator version reviewed</label>
+                            <input type="text" id="reviewed_calculator_version" class="lf-input" value="v0.1-spec" />
+                            <p class="lf-help">Copy from the bounty brief; usually <code class="text-slate-300">v0.1-spec</code>.</p>
+                        </div>
+                        <div>
+                            <label class="lf-label lf-required" for="submission_date">Submission date</label>
+                            <input type="date" id="submission_date" class="lf-input" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Top-level verdict -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">3. Top-level verdict</h2>
+                    <p class="lf-section-hint">
+                        Choose one of ACCEPT / REJECT / FIX, then explain in your own words. <strong class="text-white">ACCEPT</strong> = statute-to-predicate translation is correct on the brief facts. <strong class="text-white">REJECT</strong> = translation is materially wrong. <strong class="text-white">FIX</strong> = mostly correct but has a specific defect that can be fixed with a targeted change.
+                    </p>
+                    <div class="lf-grid-2 mb-4">
+                        <div>
+                            <label class="lf-label lf-required" for="top_level_verdict">Verdict</label>
+                            <select id="top_level_verdict" class="lf-select">
+                                <option value="">— select —</option>
+                                <option value="ACCEPT">ACCEPT</option>
+                                <option value="REJECT">REJECT</option>
+                                <option value="FIX">FIX</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="lf-label lf-required" for="top_level_prose">Your top-level verdict — reasoning</label>
+                        <textarea id="top_level_prose" class="lf-textarea" rows="6" placeholder="Explain your top-level verdict. Cite the load-bearing statutory authority you rely on. If FIX, name the fix. Plain professional prose — no need to hedge."></textarea>
+                    </div>
+                </div>
+
+                <!-- Section: Per-question verdicts -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">4. Per-question verdicts</h2>
+                    <p class="lf-section-hint">
+                        Six forensic questions from
+                        <a href="../artefacts/03-forensic-questions.md" class="text-lodgeit-light font-mono hover:underline">03-forensic-questions.md</a>.
+                        For each: ACCEPT / REJECT / FIX + citation authority + reasoning + optional edge-case notes.
+                    </p>
+                    <div id="questions-container"></div>
+                </div>
+
+                <!-- Section: Citation audit -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">5. Citation audit</h2>
+                    <p class="lf-section-hint">
+                        List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on.
+                        Mark each: <span class="font-mono text-green-400">✓ correct</span> / <span class="font-mono text-red-400">✗ wrong</span> / <span class="font-mono text-yellow-400">⚠ misapplied</span>.
+                    </p>
+                    <div id="citations-container">
+                        <div class="lf-citation-row">
+                            <span class="font-mono text-xs text-slate-500">#</span>
+                            <span class="lf-label" style="margin-bottom:0;">Authority as cited</span>
+                            <span class="lf-label" style="margin-bottom:0;">Assessment</span>
+                            <span class="lf-label" style="margin-bottom:0;">Notes</span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <button type="button" class="lf-cta-secondary mt-2" onclick="addCitationRow()">+ Add citation row</button>
+                </div>
+
+                <!-- Section: Edge cases -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">6. Edge cases surfaced</h2>
+                    <p class="lf-section-hint">
+                        Anything the brief did not cover that you think should be tested by a future revision.
+                        Free-form; one edge case per line.
+                    </p>
+                    <textarea id="edge_cases" class="lf-textarea" rows="5" placeholder="1. …&#10;2. …&#10;3. …"></textarea>
+                </div>
+
+                <!-- Section: TaxGenii appendix feedback -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">7. TaxGenii appendix coverage feedback</h2>
+                    <p class="lf-section-hint">
+                        Was the pre-loaded statutory appendix (<a href="../artefacts/05-taxgenii-appendix.md" class="text-lodgeit-light font-mono hover:underline">05-taxgenii-appendix.md</a>) adequate? What was missing?
+                    </p>
+                    <textarea id="taxgenii_feedback" class="lf-textarea" rows="4" placeholder="Free-form. If the appendix was adequate as-is, just say 'adequate'."></textarea>
+                </div>
+
+                <!-- Section: Attestation -->
+                <div class="lf-section">
+                    <h2 class="lf-section-title">8. Attestation</h2>
+                    <p class="lf-section-hint">
+                        Your verdict will be SHA-256-hashed and minted to the public reviewer registry with the attribution posture you selected in Section 1.
+                    </p>
+                    <div class="mb-4">
+                        <label class="text-slate-300 text-sm cursor-pointer flex items-start">
+                            <input type="checkbox" id="attestation_check" class="lf-checkbox mt-1" />
+                            <span>
+                                I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated above.
+                            </span>
+                        </label>
+                    </div>
+                    <div class="lf-grid-3">
+                        <div>
+                            <label class="lf-label lf-required" for="signature">Signed (typed name)</label>
+                            <input type="text" id="signature" class="lf-input" placeholder="Type your name" />
+                        </div>
+                        <div>
+                            <label class="lf-label" for="attest_credential">Credential (as attested)</label>
+                            <input type="text" id="attest_credential" class="lf-input" placeholder="e.g. TPB 12345678" />
+                            <p class="lf-help">Defaults to Section 1 registration number if left blank.</p>
+                        </div>
+                        <div>
+                            <label class="lf-label lf-required" for="attest_date">Date of attestation</label>
+                            <input type="date" id="attest_date" class="lf-input" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 items-center justify-between border-t border-slate-800 pt-6">
+                    <div class="text-sm text-slate-500 font-mono">
+                        Filename: <span id="filename-preview" class="text-slate-300">bounty-07-hire-purchase-&lt;name&gt;-verdict.md</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button" class="lf-cta-secondary" onclick="previewMarkdown()">Preview .md</button>
+                        <button type="button" id="download-btn" class="lf-cta-primary" onclick="downloadVerdict()">Download verdict (.md)</button>
+                    </div>
+                </div>
+
+                <div id="preview-container" class="lf-section mt-6" style="display:none;">
+                    <h2 class="lf-section-title">Preview — Markdown that will be downloaded</h2>
+                    <pre id="preview-content" style="white-space: pre-wrap; word-break: break-word; font-size: 0.8rem; max-height: 40rem;"></pre>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 mt-16 py-8 text-center">
+        <p class="font-mono text-xs text-slate-500">
+            LodgeiT Labs · Open-source operating system for financial truth · <a href="https://github.com/lodgeit-labs" class="hover:text-lodgeit-light transition">github.com/lodgeit-labs</a>
+        </p>
+    </footer>
+
+    <!-- Form logic -->
+    <script>
+    const BOUNTY_ID = 'bounty-07-hire-purchase-interest-apportionment';
+    const BOUNTY_TITLE = 'Hire purchase — interest apportionment';
+    const STATUTORY_ANCHORS = 'Div 240 ITAA 1997; s 240-25, s 240-60';
+    const QUESTION_COUNT = 6;
+
+    // --- Init: build the 6 per-question sub-forms ---
+    (function initQuestions() {
+        const container = document.getElementById('questions-container');
+        for (let i = 1; i <= QUESTION_COUNT; i++) {
+            const block = document.createElement('div');
+            block.className = 'lf-q-block';
+            block.innerHTML = `
+                <div class="lf-q-title">Question ${i}</div>
+                <div class="lf-grid-2 mb-3">
+                    <div>
+                        <label class="lf-label" for="q${i}_verdict">Verdict</label>
+                        <select id="q${i}_verdict" class="lf-select">
+                            <option value="">— select —</option>
+                            <option value="ACCEPT">ACCEPT</option>
+                            <option value="REJECT">REJECT</option>
+                            <option value="FIX">FIX</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="lf-label" for="q${i}_citation">Citation authority</label>
+                        <input type="text" id="q${i}_citation" class="lf-input" placeholder="e.g. s 240-60(2) ITAA 1997" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="lf-label" for="q${i}_reasoning">Reasoning</label>
+                    <textarea id="q${i}_reasoning" class="lf-textarea" rows="4" placeholder="Free-text reasoning. Cite where you diverge from the brief."></textarea>
+                </div>
+                <div>
+                    <label class="lf-label" for="q${i}_edge_case">Edge-case notes (optional)</label>
+                    <textarea id="q${i}_edge_case" class="lf-textarea" rows="2" placeholder="Anything surfaced by this question worth banking."></textarea>
+                </div>
+            `;
+            container.appendChild(block);
+        }
+    })();
+
+    // --- Init: seed 3 empty citation rows ---
+    (function initCitations() {
+        for (let i = 0; i < 3; i++) addCitationRow();
+    })();
+
+    function addCitationRow() {
+        const container = document.getElementById('citations-container');
+        const rowCount = container.querySelectorAll('.lf-citation-row[data-row]').length;
+        const rowIndex = rowCount + 1;
+        const row = document.createElement('div');
+        row.className = 'lf-citation-row';
+        row.setAttribute('data-row', rowIndex);
+        row.innerHTML = `
+            <span class="font-mono text-xs text-slate-500">${rowIndex}</span>
+            <input type="text" class="lf-input" data-field="authority" placeholder="e.g. s 240-25 ITAA 1997" />
+            <select class="lf-select" data-field="assessment">
+                <option value="">— select —</option>
+                <option value="✓">✓ correct</option>
+                <option value="✗">✗ wrong</option>
+                <option value="⚠">⚠ misapplied</option>
+            </select>
+            <input type="text" class="lf-input" data-field="notes" placeholder="Optional notes" />
+            <button type="button" class="lf-remove" title="Remove row" onclick="this.parentElement.remove(); renumberCitations()">×</button>
+        `;
+        container.appendChild(row);
+    }
+
+    function renumberCitations() {
+        const rows = document.querySelectorAll('#citations-container .lf-citation-row[data-row]');
+        rows.forEach((row, i) => {
+            row.setAttribute('data-row', i + 1);
+            const span = row.querySelector('span');
+            if (span) span.textContent = i + 1;
+        });
+    }
+
+    // --- Filename slug from reviewer name ---
+    function slugify(str) {
+        return (str || 'anonymous')
+            .toLowerCase()
+            .normalize('NFKD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .slice(0, 40) || 'anonymous';
+    }
+
+    // --- Live filename preview ---
+    document.getElementById('reviewer_name').addEventListener('input', updateFilenamePreview);
+    function updateFilenamePreview() {
+        const slug = slugify(document.getElementById('reviewer_name').value);
+        document.getElementById('filename-preview').textContent = `bounty-07-hire-purchase-${slug}-verdict.md`;
+    }
+
+    // --- YAML string escaping ---
+    // We keep it simple: quote if the value contains anything that YAML would parse
+    // specially (colons, hashes, leading/trailing whitespace, etc.), and always
+    // quote strings that could otherwise be parsed as booleans or numbers.
+    function yamlScalar(v) {
+        if (v === null || v === undefined) return '""';
+        const s = String(v);
+        if (s === '') return '""';
+        // Always quote to be safe; escape backslashes and double quotes.
+        return '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+    }
+
+    // --- Multi-line YAML block scalar (|) for reasoning fields ---
+    function yamlBlock(v, indent) {
+        const s = (v || '').trimEnd();
+        if (!s) return '""';
+        const pad = ' '.repeat(indent);
+        const lines = s.split('\n').map(l => pad + l);
+        return '|\n' + lines.join('\n');
+    }
+
+    // --- Build the .md content ---
+    function buildMarkdown() {
+        const g = (id) => (document.getElementById(id) || {}).value || '';
+
+        // Front-matter
+        const frontmatter = [
+            '---',
+            `brief_id: ${BOUNTY_ID}`,
+            `bounty_title: ${yamlScalar(BOUNTY_TITLE)}`,
+            `statutory_anchors: ${yamlScalar(STATUTORY_ANCHORS)}`,
+            'reviewer:',
+            `  name: ${yamlScalar(g('reviewer_name'))}`,
+            `  credential_class: ${yamlScalar(g('credential_class'))}`,
+            `  registration_status: ${yamlScalar(g('registration_status'))}`,
+            `  jurisdiction: ${yamlScalar(g('jurisdiction'))}`,
+            `  attribution_posture: ${yamlScalar(g('attribution_posture'))}`,
+        ];
+        if (g('reviewer_id')) {
+            frontmatter.push(`  reviewer_id: ${yamlScalar(g('reviewer_id'))}`);
+        }
+        frontmatter.push(
+            `reviewed_calculator_version: ${yamlScalar(g('reviewed_calculator_version'))}`,
+            `submission_date: ${yamlScalar(g('submission_date'))}`,
+            `top_level_verdict: ${yamlScalar(g('top_level_verdict'))}`,
+            'verdict_hash: ""',
+            '---',
+            ''
+        );
+
+        // Body
+        const body = [];
+        body.push(`# Reviewer Verdict — ${BOUNTY_TITLE}`);
+        body.push('');
+        body.push(`**Bounty:** ${BOUNTY_ID}`);
+        body.push('');
+
+        // §1
+        body.push('## 1. Top-level verdict');
+        body.push('');
+        body.push(`**Your top-level verdict:** ${g('top_level_verdict') || '_(not selected)_'}`);
+        body.push('');
+        if (g('top_level_prose').trim()) {
+            body.push(g('top_level_prose').trim());
+            body.push('');
+        }
+
+        // §2 per-question verdicts (canonical YAML block, matching template)
+        body.push('## 2. Per-question verdicts');
+        body.push('');
+        body.push('```yaml');
+        body.push('per_question_verdicts:');
+        for (let i = 1; i <= QUESTION_COUNT; i++) {
+            const verdict = g(`q${i}_verdict`);
+            const citation = g(`q${i}_citation`);
+            const reasoning = g(`q${i}_reasoning`);
+            const edgeCase = g(`q${i}_edge_case`);
+            body.push(`  - question_number: ${i}`);
+            body.push(`    verdict: ${yamlScalar(verdict)}`);
+            body.push(`    citation_authority: ${yamlScalar(citation)}`);
+            body.push(`    reasoning: ${yamlBlock(reasoning, 6)}`);
+            body.push(`    edge_case_notes: ${yamlBlock(edgeCase, 6)}`);
+        }
+        body.push('```');
+        body.push('');
+
+        // §3 citation audit
+        body.push('## 3. Citation audit');
+        body.push('');
+        body.push('| # | Authority as cited | Your assessment | Notes |');
+        body.push('|---|---|---|---|');
+        const rows = document.querySelectorAll('#citations-container .lf-citation-row[data-row]');
+        let citRowNum = 0;
+        rows.forEach((row) => {
+            const authority = (row.querySelector('[data-field="authority"]') || {}).value || '';
+            const assessment = (row.querySelector('[data-field="assessment"]') || {}).value || '';
+            const notes = (row.querySelector('[data-field="notes"]') || {}).value || '';
+            if (authority || assessment || notes) {
+                citRowNum++;
+                // Escape pipe characters in markdown table cells
+                const esc = (s) => s.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+                body.push(`| ${citRowNum} | ${esc(authority)} | ${esc(assessment)} | ${esc(notes)} |`);
+            }
+        });
+        if (citRowNum === 0) {
+            body.push('| 1 |  |  |  |');
+        }
+        body.push('');
+
+        // §4 edge cases
+        body.push('## 4. Edge cases surfaced');
+        body.push('');
+        const edgeCases = g('edge_cases').trim();
+        if (edgeCases) {
+            body.push(edgeCases);
+        } else {
+            body.push('_(none surfaced)_');
+        }
+        body.push('');
+
+        // §5 TaxGenii appendix
+        body.push('## 5. TaxGenii appendix coverage feedback');
+        body.push('');
+        const taxgenii = g('taxgenii_feedback').trim();
+        body.push(taxgenii || '_(not provided)_');
+        body.push('');
+
+        // §6 attestation
+        body.push('## 6. Attestation');
+        body.push('');
+        body.push('I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.');
+        body.push('');
+        const credential = g('attest_credential').trim() || g('reviewer_id').trim();
+        body.push(`**Signed:** ${g('signature') || '_(unsigned)_'}`);
+        body.push(`**Name:** ${g('reviewer_name') || '_(not provided)_'}`);
+        body.push(`**Credential:** ${credential || '_(not provided)_'}`);
+        body.push(`**Date:** ${g('attest_date') || '_(not provided)_'}`);
+        body.push('');
+
+        return frontmatter.join('\n') + body.join('\n');
+    }
+
+    // --- Preview ---
+    function previewMarkdown() {
+        const md = buildMarkdown();
+        const container = document.getElementById('preview-container');
+        const content = document.getElementById('preview-content');
+        content.textContent = md;
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // --- Download ---
+    function downloadVerdict() {
+        // Soft validation: warn but do not block on missing required fields.
+        const requiredFields = [
+            { id: 'reviewer_name', label: 'Full name (§1)' },
+            { id: 'credential_class', label: 'Credential class (§1)' },
+            { id: 'top_level_verdict', label: 'Top-level verdict (§3)' },
+            { id: 'signature', label: 'Signature (§8)' },
+            { id: 'attest_date', label: 'Date of attestation (§8)' },
+        ];
+        const missing = requiredFields.filter(f => !document.getElementById(f.id).value);
+        if (missing.length > 0) {
+            const proceed = confirm(
+                'The following recommended fields are empty:\n\n' +
+                missing.map(f => '  • ' + f.label).join('\n') +
+                '\n\nDownload anyway? (You can complete and re-download at any time.)'
+            );
+            if (!proceed) return;
+        }
+
+        if (!document.getElementById('attestation_check').checked) {
+            const proceed = confirm(
+                'You have not ticked the attestation checkbox in §8.\n\nDownload anyway?'
+            );
+            if (!proceed) return;
+        }
+
+        const md = buildMarkdown();
+        const slug = slugify(document.getElementById('reviewer_name').value);
+        const filename = `bounty-07-hire-purchase-${slug}-verdict.md`;
+
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    </script>
+</body>
+</html>
