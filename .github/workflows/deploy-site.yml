@@ -1,4 +1,26 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
+# Raw static-site deploy to GitHub Pages (Jekyll DISABLED).
+#
+# History: this workflow originally invoked actions/jekyll-build-pages@v1, which
+# consumed frontmatter-carrying .md files under bounties/*/artefacts/ and emitted
+# .html variants — silently breaking every direct link to the canonical .md
+# reviewer-verdict-template files after every PR merge (L#74 pattern; n=3 on the
+# 2026-07-09 → 2026-07-19 arc). The `.nojekyll` sentinel at repo root did not
+# gate jekyll-build-pages@v1 because that action explicitly runs Jekyll
+# regardless of the sentinel.
+#
+# Structural fix (this file): remove the Jekyll build step; upload the repo
+# tree as-is via actions/upload-pages-artifact@v3. No file transformation
+# happens between checkout and artifact — `.md` stays `.md`, `.html` stays
+# `.html`. The repo has no Jekyll dependencies (no _config.yml, no Gemfile,
+# no _layouts, no liquid tags) so this is a no-op for existing content.
+#
+# Andrew-side companion: repo Settings → Pages → Build and deployment →
+# Source: GitHub Actions (currently: Deploy from a branch). Only Andrew can
+# flip this; the workflow file is authored so it becomes active immediately
+# after the flip.
+#
+# Refs: memory/lessons.md Lesson #74; memory/2026-07-19.md mc02.
+
 name: Deploy Site
 
 on:
@@ -15,28 +37,28 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Allow only one concurrent deployment, skipping runs queued between the run
+# in-progress and latest queued. However, do NOT cancel in-progress runs as
+# we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Build job
+  # Build job — raw upload; NO Jekyll processing.
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-      - name: Upload artifact
+
+      - name: Upload artifact (raw repo tree; no Jekyll)
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./
 
   # Deployment job
   deploy:
