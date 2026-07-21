@@ -34,8 +34,8 @@
 
 **Method B — Operating cost (s 10):**
 - Total actual operating costs: $4,200 + $1,150 + $920 + $1,650 = $7,920
-- Deemed depreciation (s 11(1)(a)): $65,000 × 25% × (335/365) = $14,914.38
-- Deemed interest (s 11(1)(b)): $65,000 × 8.77% × (335/365) = $5,229.06 (using FY2025 statutory benchmark 8.77%)
+- Deemed depreciation (s 11(1A)): $65,000 × 25% × (335/365) = $14,914.38
+- Deemed interest (s 11(1B)): $65,000 × 8.77% × (335/365) = $5,229.06 (using FY2025 statutory benchmark 8.77%)
 - Total operating costs: $7,920 + $14,914.38 + $5,229.06 = $28,063.44
 - Private use %: 100% − 68% = 32%
 - Taxable value (pre-contribution): $28,063.44 × 32% × (335/365) = $8,241.16

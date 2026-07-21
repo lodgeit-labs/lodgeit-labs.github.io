@@ -20,7 +20,7 @@ What does "base value" mean under s 9(2)? Include or exclude: on-road costs, dea
 
 The engine used a 25% deemed depreciation rate and an 8.77% deemed interest rate. Are those the correct rates for FY2025 FBT year? What is the statutory source of each rate? Have either changed in the last three FBT years?
 
-_(This is where practitioners either know the numbers cold or need TR 2024/D3 or the ATO's FBT rates page. Reviewers should confirm from primary source.)_
+_(This is where practitioners either know the numbers cold or need the operative FBTAA sections (s 11(1A) for deemed depreciation, s 11(1B) for deemed interest, s 136(1) definition of "statutory interest rate" / "benchmark interest rate") plus the ATO's FBT rates page. Reviewers should confirm from primary source.)_
 
 ## Q5 (medium) — Contribution mechanics
 
