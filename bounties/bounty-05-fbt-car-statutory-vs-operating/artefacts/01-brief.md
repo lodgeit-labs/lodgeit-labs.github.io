@@ -2,7 +2,7 @@
 
 **Bounty ID:** bounty-05-fbt-car-statutory-vs-operating
 **Domain:** Fringe Benefits Tax — car fringe benefit method election
-**Statutory anchors:** s 7, 8, 9, 10, 10A, 22A FBTAA 1986
+**Statutory anchors:** s 7, 8, 9, 10, 10A, 11 FBTAA 1986
 **Calculator target:** `lodgeit-labs/LodgeiT_FBT` at version v0.2.0
 **Expected effort:** ~3 hours
 **Prize:** AUD $800

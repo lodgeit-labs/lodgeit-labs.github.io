@@ -1,7 +1,7 @@
 ---
 brief_id: bounty-05-fbt-car-statutory-vs-operating
 bounty_title: "FBT car — statutory formula vs operating cost"
-statutory_anchors: "s 7, 8, 9, 10, 10A, 22A FBTAA 1986"
+statutory_anchors: "s 7, 8, 9, 10, 10A, 11 FBTAA 1986"
 reviewer:
   name: ""
   credential_class: ""        # CA / CTA / CPA / FIPA / MIPA / TPB

@@ -1,7 +1,7 @@
 # TaxGenii Statutory Appendix — FBT car — statutory formula vs operating cost
 
 **Bounty:** bounty-05-fbt-car-statutory-vs-operating
-**Statutory anchors:** s 7, 8, 9, 10, 10A, 22A FBTAA 1986
+**Statutory anchors:** s 7, 8, 9, 10, 10A, 11 FBTAA 1986
 
 ---
 
@@ -29,7 +29,7 @@ Key links:
 
 ## Anchors specific to this bounty
 
-**s 7, 8, 9, 10, 10A, 22A FBTAA 1986**
+**s 7, 8, 9, 10, 10A, 11 FBTAA 1986**
 
 The reviewer should:
 1. Read the operative sections in full from primary source.
