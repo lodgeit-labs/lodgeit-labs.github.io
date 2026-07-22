@@ -40,13 +40,21 @@ The reviewer should:
 
 ## Relevant ATO rulings and determinations
 
-_[Bounty-specific ATO ruling list — reviewer to consult the ATO Legal Database for current versions.]_
+- **TR 2022/3** — *Income tax: personal services income and personal services businesses.* The Commissioner's principal ruling on PSI + PSB tests. Load-bearing paragraphs: paras 67–148 (application of the four PSB tests), paras 38–45 (income that is *not* PSI), paras 152–159 (PBSD determinations), paras 160–162 (attribution mechanics).
+- **TR 2003/6** — *Income tax: attribution of personal services income.* Operative ruling for Div 86 attribution mechanics. Consult where the calculator moves from *"is it PSI?"* to *"how is it attributed to the individual?"*.
+- **TR 2003/10** — *Income tax: deductions that relate to personal services income.* Load-bearing where the calculator must limit deductions under the PSI rules.
+- **TR 2023/4** — *Income tax and superannuation guarantee: who is an employee?* Relevant for the s 87-25 employment test and for whether an engaged "entity" is an employee or contractor for the 20%-of-principal-work threshold.
+- **PCG 2025/5** — *Personal services businesses and Part IVA of the Income Tax Assessment Act 1936* (Commissioner of Taxation, 28 November 2025; previously released in draft as PCG 2024/D2). The ATO's current compliance-approach guideline for PSB arrangements where Part IVA may still apply *even where a PSB test is satisfied*. Load-bearing for Q7 (open finder). Foot-note 36 also fixes the operative definition of *"principal work"* used in the s 87-25 employment test: work carried out by an individual or PSE that is central to meeting the obligations under the contract with the service acquirer; *not* clerical or administrative work (such as bookkeeping or answering phones) unless the principal work is itself administrative in nature (cross-references TR 2022/3 para 26).
+- **ATO ID 2006/248** — Definition of *"tools of trade"* for the s 87-18 results test sub-limb (b); confirms that a laptop or software may qualify as a tool of trade for the purposes of that limb.
 
 ---
 
 ## Relevant case law
 
-_[Bounty-specific case-law list — reviewer to consult Austlii or ATO Legal Database.]_
+- **Commissioner of Taxation v Fortunatow** [2020] FCAFC 139; 278 FCR 409 — Full Federal Court on s 87-20(1)(b) *"as a direct result"* causation. The Court held the sub-test requires a *direct causal connection* between the public offer and the specific contract counted toward the 80/20 threshold; a LinkedIn profile (or any other public offer) that exists in parallel with a contract obtained by word-of-mouth or through an intermediary does not satisfy the sub-test.
+- **Douglass v Commissioner of Taxation** [2019] FCA 1246 — On the s 87-18(1)(a) *"producing a result"* limb of the results test: usual work practice does not itself constitute a *"result"*; the contract must require the taxpayer to produce a specific outcome as the condition of payment.
+- **Commissioner of Taxation v Mochkin** [2003] FCAFC 15; **Commissioner of Taxation v Hart** [2004] HCA 26; **Commissioner of Taxation (Cth) v Gulland** [1985] HCA 83; **Tupicoff v Commissioner of Taxation** [1984] FCA 382 — Foundational Part IVA + income-alienation authorities cited by the Commissioner in PCG 2025/5 for higher-risk PSB arrangements.
+- **Bellgrove v Eldridge** (1954) 90 CLR 613 — Rectification-damages doctrine relevant to the s 87-18(1)(c) *"liable for the cost of rectifying defective work"* limb of the results test.
 
 ---
 
