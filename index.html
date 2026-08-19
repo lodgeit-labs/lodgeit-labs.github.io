@@ -72,6 +72,7 @@
                 <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
             </div>
             <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
                 <a href="#discipline" class="hover:text-white transition">Discipline</a>
                 <a href="#ecosystem" class="hover:text-white transition">Ecosystem</a>
                 <a href="/blog/" class="hover:text-white transition">Blog</a>
@@ -113,6 +114,29 @@
             </div>
         </section>
 
+        <!-- Scene Protocol teaser -->
+        <section id="scene-protocol" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/50">
+            <a href="/scene-protocol/" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-lodgeit-light/50 card-hover overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-lodgeit-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute top-0 right-0 p-6 opacity-10 text-7xl group-hover:opacity-20 transition-opacity">🎭</div>
+                <div class="p-8 md:p-10 relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl md:text-3xl font-bold text-white group-hover:text-lodgeit-light transition-colors">The Scene Protocol</h2>
+                        <span class="text-lodgeit-light bg-lodgeit-blue/10 border border-lodgeit-light/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Specification &middot; In Progress</span>
+                    </div>
+                    <p class="text-slate-300 text-xl italic leading-relaxed mb-5">
+                        Ledgers are caches. Activity is the truth.
+                    </p>
+                    <p class="text-slate-400 text-lg leading-relaxed max-w-4xl">
+                        Every trade is one shared story &mdash; commitment, fulfilment, claim, settlement, receipt &mdash; and each party's accounting system holds only a cached projection of it. The Scene Protocol supplies the trust layer that turns projection into replay: one shared record of the scene, and any ledger derivable from it as a pure, verifiable function.
+                    </p>
+                    <p class="text-lodgeit-light/80 group-hover:text-lodgeit-light font-mono text-sm mt-6 transition-colors">
+                        Read the protocol &rarr;
+                    </p>
+                </div>
+            </a>
+        </section>
+
         <!-- The Discipline (keystone) -->
         <section id="discipline" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/50">
             <div class="mb-10">
@@ -138,7 +162,7 @@
             </a>
         </section>
 
-        <!-- The Ecosystem (engines + infrastructure + research) -->
+        <!-- The Ecosystem (grouped by role: reasoning substrate / agent surface / integration kits) -->
         <section id="ecosystem" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/50">
             <div class="mb-10">
                 <h2 class="text-3xl font-bold text-white mb-4">The Ecosystem</h2>
@@ -147,55 +171,192 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Group: The reasoning substrate -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-300 uppercase tracking-wider font-mono mb-4">The reasoning substrate</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
 
-                <!-- Card 1: ClawDog -->
-                <a href="https://www.lodgeit.org/clawdog" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🐕</div>
-                    <div class="p-8 relative">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">ClawDog</h3>
-                            <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Engine</span>
-                        </div>
-                        <p class="text-slate-400 leading-relaxed">
-                            A neurosemantic accounting engine. ClawDog marries the chaos-tolerance of LLMs with the strict, mathematical determinism of SWI-Prolog to generate zero-hallucination SBRM financial reports.
-                        </p>
-                    </div>
-                </a>
-
-                <!-- Card 2: Logical English -->
-                <a href="/blog/2026-07-01-logical-english/" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-purple-500/50 card-hover overflow-hidden">
+                <!-- Logical English -->
+                <a href="https://github.com/lodgeit-labs/LogicalEnglish" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-purple-500/50 card-hover overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">📜</div>
                     <div class="p-8 relative">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">Logical English</h3>
-                            <span class="text-purple-400 bg-purple-400/10 border border-purple-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Logic Engine</span>
+                            <span class="text-purple-400 bg-purple-400/10 border border-purple-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Rules</span>
                         </div>
                         <p class="text-slate-400 leading-relaxed">
-                            Executable legal and domain rules authored in controlled natural language, compiling to deterministic constraint logic.
+                            Executable statute: legal and domain rules written in controlled natural language that compile to deterministic constraint logic. One text a lawyer can read and a machine can run.
                         </p>
                         <p class="text-purple-400/80 group-hover:text-purple-400 font-mono text-xs mt-4 transition-colors">
-                            Read: Statute is code &rarr;
+                            Staging fork: <a href="https://github.com/lodgeit-labs/LogicalEnglish-LodgeiT" target="_blank" rel="noopener noreferrer" class="underline hover:text-purple-300">LogicalEnglish-LodgeiT</a>
                         </p>
                     </div>
                 </a>
 
-                <!-- Card 3: L402 Infrastructure -->
-                <a href="/blog/2026-07-01-why-l402-not-x402/" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-yellow-500/50 card-hover overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">⚡</div>
+                <!-- FOL_solvers -->
+                <a href="https://github.com/lodgeit-labs/FOL_solvers" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-indigo-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🔬</div>
                     <div class="p-8 relative">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors">L402 Infrastructure</h3>
-                            <span class="text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Payments</span>
+                            <h3 class="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">FOL_solvers</h3>
+                            <span class="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Research</span>
                         </div>
                         <p class="text-slate-400 leading-relaxed">
-                            Machine-to-machine monetisation protocol. Sovereign metering and Lightning Network access controls for APIs.
+                            Research substrate: logic programming and knowledge-representation experiments underpinning the deterministic layer.
                         </p>
-                        <p class="text-yellow-400/80 group-hover:text-yellow-400 font-mono text-xs mt-4 transition-colors">
-                            Read: Why L402, not x402&nbsp;&rarr;
+                    </div>
+                </a>
+
+                <!-- brain-pattern -->
+                <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-emerald-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🧠</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">brain-pattern</h3>
+                            <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Methodology</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            The public methodology: how an AI agent's memory is kept honest with cryptographic integrity, append-only ledgers, coherence audits and receipts. The discipline behind everything else on this page.
+                        </p>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Group: The agent surface -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-300 uppercase tracking-wider font-mono mb-4">The agent surface</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+
+                <!-- clawdog -->
+                <a href="https://github.com/lodgeit-labs/clawdog" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🐕</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">clawdog</h3>
+                            <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Engine</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            The neurosemantic accounting engine: LLM flexibility in front, SWI-Prolog rigor behind, zero-hallucination outputs where it counts.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- clawdog-mcp-server -->
+                <a href="https://github.com/lodgeit-labs/clawdog-mcp-server" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-cyan-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🔌</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">clawdog-mcp-server</h3>
+                            <span class="text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">MCP</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            MCP access to LodgeiT tools: point any MCP-capable agent at the calculator constellation.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- clawdog-kit -->
+                <a href="https://github.com/lodgeit-labs/clawdog-kit" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-sky-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🧰</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-sky-400 transition-colors">clawdog-kit</h3>
+                            <span class="text-sky-400 bg-sky-400/10 border border-sky-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Kit</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Agent-driven AU tax and accounting calculator kit with CSV templates: the fastest way to run the calculators yourself.
+                        </p>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Group: Integration kits -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-300 uppercase tracking-wider font-mono mb-4">Integration kits</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- clawdog-calculator-api -->
+                <a href="https://github.com/lodgeit-labs/clawdog-calculator-api" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-teal-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🛠️</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">clawdog-calculator-api</h3>
+                            <span class="text-teal-400 bg-teal-400/10 border border-teal-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">REST API</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            The Calculator-Constellation REST API.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- clawdog-calculator-api-integration-kit -->
+                <a href="https://github.com/lodgeit-labs/clawdog-calculator-api-integration-kit" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-teal-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🔗</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">clawdog-calculator-api-integration-kit</h3>
+                            <span class="text-teal-400 bg-teal-400/10 border border-teal-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Client</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Client-side integration kit for the REST API.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- clawdog-widget-renderer -->
+                <a href="https://github.com/lodgeit-labs/clawdog-widget-renderer" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-rose-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🎨</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-rose-400 transition-colors">clawdog-widget-renderer</h3>
+                            <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Widgets</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Schema-driven HTML widget renderer for calculator surfaces.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- fano-classifier-integration-kit -->
+                <a href="https://github.com/lodgeit-labs/fano-classifier-integration-kit" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-amber-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🧭</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">fano-classifier-integration-kit</h3>
+                            <span class="text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Classifier</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Integration kit for the Fano classifier (account classification with a deterministic firewall).
+                        </p>
+                    </div>
+                </a>
+
+                <!-- report-generator-frs-105 -->
+                <a href="https://github.com/lodgeit-labs/report-generator-frs-105" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-orange-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🇬🇧</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">report-generator-frs-105</h3>
+                            <span class="text-orange-400 bg-orange-400/10 border border-orange-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">UK FRS 105</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            FRS 105 report generation kit (UK micro-entity accounts).
                         </p>
                     </div>
                 </a>

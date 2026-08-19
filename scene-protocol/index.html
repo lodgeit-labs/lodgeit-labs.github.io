@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Scene Protocol | LodgeiT.org</title>
+    <meta name="description" content="Ledgers are caches. Activity is the truth. A hypothesis with a falsifier for shared, replayable, evidence-first accounting.">
+    <meta property="og:title" content="The Scene Protocol | LodgeiT.org">
+    <meta property="og:description" content="Ledgers are caches. Activity is the truth. A hypothesis with a falsifier for shared, replayable, evidence-first accounting.">
+    <meta property="og:type" content="article">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: {
+                            blue: '#0066FF',
+                            light: '#4D94FF',
+                            dark: '#004CCC',
+                        },
+                        obsidian: '#0a0f1a',
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#0b1120',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .prose-scene h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+        }
+        .prose-scene h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-scene p {
+            color: #cbd5e1;
+            font-size: 1.0625rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+        .prose-scene ul {
+            list-style-type: disc;
+            list-style-position: outside;
+            padding-left: 1.5rem;
+            margin-bottom: 1.25rem;
+            color: #cbd5e1;
+        }
+        .prose-scene ul li {
+            margin-bottom: 0.5rem;
+            line-height: 1.75;
+        }
+        .prose-scene strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .prose-scene em {
+            color: #e2e8f0;
+            font-style: italic;
+        }
+        .prose-scene code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgba(77, 148, 255, 0.08);
+            color: #4D94FF;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+        }
+        .prose-scene a {
+            color: #4D94FF;
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(77, 148, 255, 0.4);
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .prose-scene a:hover {
+            color: #ffffff;
+            border-bottom-color: #ffffff;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="text-white transition">Scene Protocol</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero -->
+        <section class="relative pt-24 pb-12 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-lodgeit-blue/5 to-transparent z-0"></div>
+
+            <div class="max-w-4xl mx-auto px-6 relative z-10">
+                <div class="inline-flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-full px-4 py-1.5 mb-8">
+                    <span class="flex w-2 h-2 rounded-full bg-lodgeit-light animate-pulse"></span>
+                    <span class="text-xs font-mono text-slate-300 uppercase tracking-wider">Specification &middot; In Progress</span>
+                </div>
+
+                <h1 class="text-5xl md:text-6xl font-black tracking-tight text-white mb-6 gradient-text">
+                    The Scene Protocol
+                </h1>
+                <p class="text-2xl text-slate-400 italic leading-relaxed">
+                    Ledgers are caches. Activity is the truth.
+                </p>
+            </div>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-6 pb-24 prose-scene">
+
+            <hr class="border-slate-800 my-8">
+
+            <h2>The premise</h2>
+
+            <p>Every trade is one shared story: a commitment is made, work is done or goods change hands, a claim is issued, money settles, a receipt closes the loop. <strong>Commitment &rarr; fulfilment &rarr; claim &rarr; settlement &rarr; receipt.</strong> That lifecycle &mdash; the <em>scene</em> &mdash; is the primary economic object. It happened once, between two parties, in the world.</p>
+
+            <p>What each party's accounting system holds is not the scene. It is a <strong>projection</strong> of the scene onto that party's chart of accounts and policy choices. Your ledger and your counterparty's ledger are two cached views of the same shared events &mdash; and like all caches, they drift, and the drift has a name: reconciliation.</p>
+
+            <p>Accrual accounting, seen this way, is interval arithmetic over the lifecycle. A receivable is the open interval between claim and settlement. Deferred revenue is settlement arriving before fulfilment. The balance sheet is the set of intervals still open at a point in time; the general ledger is the integral of the event stream. None of this is new mathematics &mdash; it is what bookkeeping has always computed, one keystroke at a time, from evidence each party gathered separately.</p>
+
+            <h2>The oldest idea in accounting</h2>
+
+            <p>Pacioli described three books, not two. Before the journal and the ledger came the <em>memoriale</em> &mdash; the memorandum book where the merchant wrote down what actually happened, in full narrative detail, before any of it was formalised into entries. The profession kept the journal and the ledger and quietly dropped the memorial, because capturing rich records of raw activity was expensive and abstracting them was cheap.</p>
+
+            <p>The idea has been reinvented on schedule ever since. McCarthy's REA model (1982) formalised resources-events-agents as the proper basis of accounting systems and became ISO 15944-4. Ian Grigg's triple-entry work put it crisply: <em>the receipt is the transaction</em> &mdash; a single signed record shared between parties beats two private ones. The thesis is old and, we think, correct. What killed every previous attempt was never the theory. It was adoption economics: someone had to key in the memorial by hand, and nobody would.</p>
+
+            <h2>Why now</h2>
+
+            <p>Three preconditions have arrived within a few years of each other.</p>
+
+            <p><strong>The rails.</strong> Structured e-invoicing is becoming the default carrier of business activity. The EU's ViDA package, adopted in 2025, makes digital reporting and structured e-invoicing the norm for cross-border trade from 2030; Australia has set 2026 deadlines for e-invoicing in federal procurement over the Peppol network, with the B2B network growing underneath. The regulator is becoming a subscriber to the activity stream rather than a reader of annual abstracts.</p>
+
+            <p><strong>The capture.</strong> Large language models can finally read the unstructured residue &mdash; the emails, contracts, quotes and PDFs that surround every deal. Hand-keying the memorial was the historic killer; nobody has to hand-key it any more.</p>
+
+            <p><strong>The settlement layer is already event-native.</strong> Payment processors emit webhooks. Banks emit feeds. The settlement leg of the lifecycle has been a machine-readable event stream for years.</p>
+
+            <p>One precondition is still missing, and it is not arriving from any standards committee: <strong>the trust layer</strong> &mdash; what makes a <em>shared</em> record of the scene admissible between parties whose interests are adverse, and to the auditors, lenders and regulators who rely on it. That is the piece the Scene Protocol exists to supply.</p>
+
+            <h2>What it replaces</h2>
+
+            <p>Reconciliation is the deadweight loss of not sharing the scene. One scene, honestly shared, supports any number of projections &mdash; per party, per basis (accounting, tax, cash), per jurisdiction &mdash; provided each projection is a <strong>pure, replayable function</strong> of the scene and a declared policy. When projection is replayable, audit collapses into recomputation: run the same function over the same evidence and compare. Sampling was only ever a workaround for projections that couldn't be re-run.</p>
+
+            <p>The risk profile changes shape, and we are direct about this: projection errors are systematic, not random. One wrong policy line misstates everything it matches, identically and silently. That is the argument <em>for</em> versioned, dated, attested, replayable policy &mdash; the error that would have hidden in ten thousand keystrokes becomes a one-line diff.</p>
+
+            <h2>The three components</h2>
+
+            <p><strong>Mirror</strong> &mdash; ledger mirrors from the systems businesses already use (Xero, QuickBooks, MYOB). Mirror is what kills the cold-start problem that buried every predecessor of this idea: it delivers value against the installed base on day one, with no counterparty adoption required. Backward replay against mirrored ledgers is where the protocol meets existing books.</p>
+
+            <p><strong>Scenery</strong> &mdash; the evidence layer: a canonical, hash-chained export format for scenes. Files first, machine-readable, portable. Specification in progress.</p>
+
+            <p><strong>Casting</strong> &mdash; the policy layer: projection policy as plain, versioned policy notes. The core mechanic is write-back: every resolved exception becomes a new policy note, so judgment is exercised once and accreted &mdash; not re-exercised per transaction, and not drifted through a model's weights. Resolution is layered: personal policy, then firm, then commons, then the statutory floor. Specification in progress.</p>
+
+            <h2>The algebra</h2>
+
+            <p>Six methods define the protocol surface:</p>
+
+            <p><code>mirror</code> &mdash; replicate an existing ledger faithfully. <code>project(scene, policy)</code> &mdash; compute a ledger view from evidence and declared policy. <code>abduce(journals, feeds, policy)</code> &mdash; run projection in reverse: infer <em>presumptive</em> scenes from legacy books; the gaps it cannot explain become a work-order, and presumptive scenes upgrade to evidenced ones as evidence attaches. <code>replay-diff</code> &mdash; recompute and compare, forward for scene-native books and backward for legacy ones. <code>attest</code> &mdash; bind a party's signature to a scene or a projection. <code>anchor</code> &mdash; commit a hash of the record to an external timestamping substrate.</p>
+
+            <h2>The conformance ladder</h2>
+
+            <ul>
+                <li><strong>L0 &mdash; Export:</strong> scenes leave the system in the canonical format, complete.</li>
+                <li><strong>L1 &mdash; Chained:</strong> exports carry tamper-evident hash chains.</li>
+                <li><strong>L2 &mdash; Anchored:</strong> chain heads are anchored to an external substrate.</li>
+                <li><strong>L3 &mdash; Attested:</strong> parties sign what they assert.</li>
+                <li><strong>L4 &mdash; Interchanged:</strong> two independent implementations exchange scenes and reproduce each other's projections.</li>
+            </ul>
+
+            <p>The specification will be prose; <strong>the test suite is the law.</strong> Conformance is decided by golden files, not by prose interpretation &mdash; any implementation, including a competitor's and including a vibe-coded one, can self-certify by running the suite.</p>
+
+            <h2>Commitments</h2>
+
+            <p>This is a protocol, not a product moat, and the commitments are structural rather than promissory:</p>
+
+            <ul>
+                <li><strong>Local-authoritative.</strong> The user's own repository of scenes is the source of truth. Hosted copies are caches and lose on conflict &mdash; as a conformance requirement, not a terms-of-service clause.</li>
+                <li><strong>No hostage data.</strong> A conforming host must re-emit full-fidelity files on demand, or it is nonconforming by definition.</li>
+                <li><strong>Multi-host by design.</strong> Nothing in the format binds a scene repository to any provider, including us.</li>
+                <li><strong>Paid rails that work for everyone.</strong> Anchoring, attestation, conformance certification and per-call verification are metered services (L402) available to every implementation, including competing ones. Ecosystem growth is the revenue model, not the threat model.</li>
+            </ul>
+
+            <h2>Where this stands &mdash; honestly</h2>
+
+            <p>We run both sides of a live exchange stack &mdash; proposals, invoicing, settlement events, auto-journals &mdash; and we are turning it into the first conformance experiment: nightly replay-diffs over a real engagement cohort, every diff classified, tamper-detection demonstrated, and the standard reports derived from the scene alone.</p>
+
+            <p>Two things should be said plainly. First, this is a <strong>hypothesis with a falsifier</strong>, not a result: if replay-diffs cannot be driven to explainable-zero on a real cohort, the thesis fails in public. Second, a single operator running both sides proves <strong>determinism and tamper-evidence</strong> &mdash; it does not and cannot prove trust-minimisation between adverse parties. That claim waits until independent parties run the protocol against each other at L4.</p>
+
+            <p>The graveyard of this idea is full &mdash; REA tooling, XBRL GL, a decade of triple-entry startups &mdash; and it died of adoption economics every time. Our bet is narrow: Mirror pays its way against the installed base before anyone adopts anything, and the test suite makes trust portable. If we are wrong, the replay-diffs will say so.</p>
+
+            <h2>Follow the work</h2>
+
+            <p>The methodology behind this programme &mdash; the discipline stack, the audit machinery, the receipts &mdash; is public in <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" rel="noopener noreferrer">brain-pattern</a>. Statutory calculators are verified in the open through the <a href="/bounties/">bounty programme</a>, where practitioner reviewers are paid to break our reasoning against statute. The Mirror specification and the conformance suite will publish first, here.</p>
+
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-obsidian py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-6 w-auto opacity-75">
+                <span class="text-slate-500 font-mono text-xs font-bold mt-0.5">Labs</span>
+            </div>
+
+            <div class="flex space-x-6 text-sm">
+                <a href="/" class="text-slate-500 hover:text-white transition">Home</a>
+                <a href="/blog/" class="text-slate-500 hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="text-slate-500 hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" class="text-slate-500 hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
