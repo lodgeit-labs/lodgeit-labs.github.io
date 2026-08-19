@@ -1,0 +1,320 @@
+# Reviewer verdict — bounty-04-small-business-general-pool
+
+> **Reviewer:** Benjamin Mueller, Tax Agent (TPB — lapsed)
+> **Consent posture:** named
+> **Reward paid (AUD):** $600
+> **Verdict outcome (from reviewer's §6):** FIX
+> **Verdict date:** 2026-07-10
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+---
+brief_id: bounty-04-small-business-general-pool
+bounty_title: "Small business general pool"
+statutory_anchors: "Subdiv 328-D ITAA 1997"
+reviewer:
+  name: ""
+  credential_class: "TPB"
+  registration_status: "lapsed"
+  jurisdiction: "Australia"
+  attribution_posture: "initialled"
+reviewed_calculator_version: "lodgeit-labs/Depreciation_Transforms v0.1.3"
+submission_date: 2026-07-10"
+top_level_verdict: "FIX"
+verdict_hash: ""
+---
+
+# Reviewer Verdict — Small business general pool
+
+**Bounty:** bounty-04-small-business-general-pool
+
+## 1. Top-level verdict
+
+**Your top-level verdict: FIX**
+
+The pool skeleton is correctly translated — the 15%/30% rate split, the
+addition and termination-value flows, and the roll-forward arithmetic
+reconcile internally. However, specific statutory predicates are wrong,
+and two of them make the brief's own FY2024-25 reference answer incorrect
+in law. Working the scenario from first principles, the correct output is
+**total deductions $19,325 and closing pool balance $23,425**, against the
+published $8,700 and $34,050. The errors are each localised, cited, and
+fixable with targeted changes:
+
+1. **Mandatory IAWO classification (flips the reference answer).** The
+   $12,500 trailer cannot be pooled: s 328-180(1) is imperative ("You
+   deduct…") and s 328-185(1) excludes from pooling any asset "for which
+   you have deducted or can deduct an amount under section 328-180". No
+   election to pool an IAWO-eligible asset exists; the only choice in the
+   Subdivision is the all-or-nothing s 328-175(1) choice. Fix: gate pool
+   additions on the year's IAWO threshold; correct the reference answer.
+2. **Threshold must be year-parameterised.** The $1,000 in s 328-210(1)
+   is displaced by $20,000 for income years within 1 July 2023 – 30 June
+   2026 (IT(TP)A 1997 s 328-180(6)) — including the example year. Fix: a
+   year-indexed threshold table, not a constant.
+3. **Low-pool test timing.** The s 328-210(2) amount is tested before
+   subtracting the year's 15%/30% decline; the published mechanics test
+   after, which over-triggers the write-off. Fix: test the pre-decline
+   amount; the write-off replaces the s 328-190 deductions.
+4. **Negative pool.** Where termination values drive the balance below
+   zero, the shortfall is assessable income (s 328-215(2)) with the pool
+   closing at zero — not a negative deduction. Fix: separate output field.
+5. **Taxable purpose proportion.** Additions, termination values and the
+   low-pool test amount must all be TPP-scaled (ss 328-190(2), 328-200,
+   328-205, 328-210(2)); the published mechanics carry no TPP. Fix: TPP
+   inputs, or a documented upstream-adjustment contract.
+
+Detail per question follows; edge cases in Section 4.
+
+---
+
+## 2. Per-question verdicts
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    verdict: "ACCEPT"
+    citation_authority: "ss 328-190(1)-(4) ITAA 1997"
+    reasoning: |
+      First year: 15% of the taxable purpose proportion of the asset's
+      adjustable value, for assets first used or installed ready for use
+      for a taxable purpose in the year — a flat rate with no pro-rata by
+      acquisition date. Subsequent years: 30% of the opening pool balance
+      (s 328-190(1)). Cost addition amounts for assets first used in an
+      earlier year: 15% of the TPP of the amount in the year incurred
+      (s 328-190(3), (4)). The brief's 15%/30% statement is correct.
+    edge_case_notes: |
+      Minor: the statutory 15% base is adjustable value, not cost
+      (s 328-190(2)). Identical for assets acquired and first used in the
+      same year; different for an asset held earlier but first used for a
+      taxable purpose in the current year. Worth a code comment.
+  - question_number: 2
+    verdict: "FIX"
+    citation_authority: "s 328-210(1)-(3) ITAA 1997; s 328-180(6) Income Tax (Transitional Provisions) Act 1997"
+    reasoning: |
+      The base figure is $1,000, set by s 328-210(1), tested against the
+      s 328-210(2) amount (opening balance + TPP of additions and cost
+      additions − TPP of termination values) where that amount exceeds
+      zero. Two corrections to the brief's statement. (1) Amount: for
+      income years within 1 July 2023 – 30 June 2026, IT(TP)A s 328-180(6)
+      substitutes $20,000 — so the operative figure for the brief's own
+      FY2024-25 example (and FY2025-26) is $20,000, not $1,000. FY2024-25
+      was enacted by Act No 29 of 2025; FY2025-26 by the Treasury Laws
+      Amendment (Strengthening Financial Systems and Other Measures) Act
+      2025. (2) Timing: the test amount is computed BEFORE subtracting the
+      year's 15%/30% decline (confirmed by ATO guidance: "before
+      calculating your deduction for the year"), and the write-off is
+      taken INSTEAD of the s 328-190 amounts, with the closing balance
+      becoming zero (s 328-210(3)). The published mechanics test the
+      post-decline balance against a constant $1,000 — both elements need
+      the targeted fix described in Section 1.
+    edge_case_notes: |
+      From 1 July 2026 the figure reverts to $1,000 under current law;
+      the permanent $20,000 announced in the 2026-27 Budget (12 May 2026)
+      was not yet law at the review date. The engine's threshold table
+      must track this transition rather than hardcode either figure.
+  - question_number: 3
+    verdict: "FIX"
+    citation_authority: "ss 328-190(2), 328-200, 328-205, 328-210(2), 328-225 ITAA 1997"
+    reasoning: |
+      Only the taxable purpose proportion enters the pool. On the posited
+      facts (mower 70% taxable purpose): pool addition = 70% × $28,000 =
+      $19,600 (s 328-200 step 1; s 328-205); first-year decline = 15% ×
+      $19,600 = $2,940 (s 328-190(2)) — not $4,200. The private 30% never
+      enters the pool and attracts no deduction. On a later disposal, the
+      pool is reduced by TPP × termination value, using the s 328-205(4)
+      average of estimates where business use changed across years. The
+      published mechanics carry no TPP on additions, termination values or
+      the low-pool test amount and therefore cannot produce these figures;
+      if TPP adjustment is intended to occur upstream of the calculator,
+      that contract should be stated explicitly in the interface.
+    edge_case_notes: |
+      Where the business-use estimate later moves by more than 10
+      percentage points, s 328-225 requires a pool adjustment (available
+      only up to the third income year after allocation, s 328-225(5)).
+      No mechanism for this exists in the published mechanics.
+  - question_number: 4
+    verdict: "FIX"
+    citation_authority: "ss 328-200, 328-215(1)-(3), 328-205(4) ITAA 1997"
+    reasoning: |
+      The pool is indifferent to the ute's original cost ($22,000) and to
+      deductions previously claimed: while an asset is pooled there is no
+      per-asset balancing adjustment, and only the TPP of the termination
+      value ($6,500) is subtracted (s 328-200). That much of the brief's
+      treatment is correct. The incomplete part is the negative-pool arm:
+      if termination values drive the closing pool balance, or the
+      s 328-210(2) amount, below zero, the amount below zero is included
+      in assessable income and the closing balance becomes zero
+      (s 328-215(2), (3)). Note the comparator includes current-year
+      additions — it is not simply "proceeds exceed opening balance" as
+      the question frames it. The published mechanics would emit a
+      negative deduction in this scenario (e.g. opening $5,000, disposal
+      $9,000 → "deduction −$4,000"); the magnitude coincides with the
+      assessable amount but the sign and character do not, and a consumer
+      clamping deductions at zero would produce a materially wrong return.
+    edge_case_notes: |
+      Disposal of substantially the whole pool on cessation of business is
+      the natural stress test of this arm.
+  - question_number: 5
+    verdict: "REJECT"
+    citation_authority: "ss 328-175(1), 328-180(1), 328-185(1) ITAA 1997; s 328-180(4) Income Tax (Transitional Provisions) Act 1997"
+    reasoning: |
+      The question's premise — that the taxpayer "could have elected" IAWO
+      and may instead pool an eligible asset — has no statutory basis.
+      While an SBE calculates deductions under Subdiv 328-D, the immediate
+      write-off is mandatory: s 328-180(1) provides "You deduct the
+      taxable purpose proportion..." (imperative), and s 328-185(1) pools
+      depreciating assets "except assets for which you have deducted or
+      can deduct an amount under section 328-180" — the words "can deduct"
+      exclude the asset from the pool whether or not the deduction was in
+      fact claimed. The only election in the Subdivision is the
+      all-or-nothing s 328-175(1) choice to use it. Applied to the brief:
+      P1 ($28,000 ≥ $20,000) is correctly pooled; P2 ($12,500 < $20,000)
+      must be written off in full and cannot be pooled. This flips the
+      reference answer: correct FY2024-25 totals are $19,325 deductions
+      ($12,500 IAWO + $4,200 first-year decline on P1 + $2,625 pool
+      decline) and a $23,425 closing balance, against the published $8,700
+      and $34,050 — a $10,625 divergence fully explained by this point.
+    edge_case_notes: |
+      The IAWO cost test is applied to the asset's GST-exclusive cost for
+      a registered entity: a $22,000 GST-inclusive purchase nets to
+      $20,000, which is not "less than" the threshold — pooled, not
+      written off. A boundary the engine should test.
+  - question_number: 6
+    verdict: "FIX"
+    citation_authority: "s 328-195(2) ITAA 1997; s 328-181(5) Income Tax (Transitional Provisions) Act 1997; ss 328-220, 328-175(10) ITAA 1997"
+    reasoning: |
+      Principal finding — opening-balance provenance. s 328-195(2) defines
+      the opening balance as the prior year's statutory closing balance,
+      and prior-year law tightly constrains what balances are reachable.
+      Temporary full expensing compulsorily zeroed every
+      simplified-depreciation pool for income years ending 6 October 2020
+      – 30 June 2023 (IT(TP)A s 328-181(5): s 328-210(1) applied
+      disregarding "less than $1,000 but"; SBEs using the regime could not
+      opt out). FY2023-24 pool additions were then confined to assets of
+      $20,000 or more each (mandatory IAWO below that), and the $20,000
+      low-pool test wiped any 30 June 2024 pre-decline balance under
+      $20,000. Absent FY2023-24 disposals, a continuing user's FY2024-25
+      opening balance is therefore $0 or at least $17,000 ($20,000 × 85%).
+      The scenario's $8,750 is reachable only on contrived facts (≈$75,000
+      of additions offset by ≈$55,000 of termination values) — yet it
+      falls out of the published mechanics in one step (a single ~$10,294
+      asset pooled in FY2023-24 under the $1,000 predicate, where the law
+      sends the asset to IAWO and leaves the pool at nil). The reference
+      scenario is thus consistent with the mechanics under review and
+      barely consistent with the statute, which suggests reference vectors
+      should be generated from the statute rather than from the engine.
+      Recommended fix: treat opening balance as an asserted input — either
+      validate reachability where asset history is available, or emit an
+      explicit assumption notice ("opening balance supplied; not verified
+      against prior-year TFE/low-pool-value rules"). Lawful readings that
+      would legitimise $8,750 (a first-year entrant under s 328-195(1); a
+      s 328-220 run-off pool) contradict the brief's own wording ("from
+      prior year"; ute "previously in pool").
+    edge_case_notes: |
+      On the brief's listed candidates: crossing the $10M turnover
+      threshold — the pool continues under s 328-220 (30% run-off, no new
+      allocations) even in non-SBE years; election in/out — the s
+      328-175(10) five-year lock-out is suspended for income years with a
+      day on or before 30 June 2026 (IT(TP)A s 328-180(2)) and resumes
+      after, unless further amended; whole-of-pool disposal — see Q4;
+      TPP changes — see Q3 notes. One corner I could not conclusively
+      resolve from the indexed sources: whether IT(TP)A s 328-181(5)
+      forced run-off pools (s 328-220 entities not using the regime) to
+      zero during the full-expensing years — flagged rather than asserted.
+```
+
+---
+
+## 3. Citation audit
+
+| # | Authority as cited | Your assessment | Notes |
+|---|---|---|---|
+| 1 | Subdiv 328-D ITAA 1997 (ss 328-175 to 328-260) as the governing anchor | ✓ correct citation | Correct Subdivision; operative sections for this bounty are ss 328-175 to 328-225. |
+| 2 | s 328-210 for the low-pool-value write-off, stated as "$1,000 threshold" | ⚠ citation exists but is misapplied | Right section, wrong operative figure for the years in play: IT(TP)A 1997 s 328-180(6) substitutes $20,000 for income years within 1 Jul 2023 – 30 Jun 2026, including the brief's FY2024-25 example. The brief also applies the test to the post-decline balance; s 328-210(2) tests pre-decline. |
+| 3 | 15% first-year / 30% subsequent-year rates (s 328-190, implied) | ✓ correct citation | Rates correct; note the 15% base is TPP of adjustable value (s 328-190(2)), and cost additions attract 15% under s 328-190(3), (4). |
+| 4 | "Elected pool treatment despite IAWO eligibility" (no section cited) | ✗ wrong citation | No statutory basis. s 328-180(1) is mandatory and s 328-185(1) excludes IAWO-eligible assets from the pool. The absence of a citation for this premise is itself the tell. |
+| 5 | Disposals: termination value subtracted from the pool (ss 328-200/328-215, implied) | ⚠ citation exists but is misapplied | Correct so far as stated, but incomplete: TPP scaling (s 328-205(4)) and the negative-balance assessable-income arm (s 328-215(2), (3)) are absent. |
+| 6 | Brief's scope note: full-expensing years "history; not relevant to a current-year audit" | ⚠ misapplied | TFE (IT(TP)A s 328-181(5)) determines which current-year opening balances are legally reachable — see Q6. |
+
+---
+
+## 4. Edge cases surfaced
+
+1. **Threshold transition, FY2025-26 → FY2026-27.** Same pool, run for
+   income_year 2025-26 vs 2026-27, must produce different low-pool
+   outcomes ($20,000 vs $1,000 under current law; the announced permanent
+   $20,000 from 1 July 2026 was not law at review date and must be
+   tracked). Any engine ignoring its income-year input fails this by
+   construction.
+2. **Opening-balance reachability.** Feed FY2023-24 with opening $0 and a
+   single $10,294 addition: correct treatment is mandatory IAWO with the
+   pool remaining nil; mechanics that emit ~$8,750 have reproduced the
+   brief's own scenario by an unlawful path (see Q6).
+3. **Negative pool on heavy disposals.** Opening $5,000, disposal $9,000:
+   expected output is $4,000 assessable income and a nil closing balance
+   (s 328-215(2), (3)) — never a negative deduction.
+4. **Boundary values.** Pre-decline balance exactly equal to the threshold
+   (not "less than" → no write-off); s 328-210(2) amount of exactly zero
+   ("more than zero" not satisfied → no deduction); GST-exclusive cost
+   landing exactly on the IAWO threshold (pooled, not written off).
+5. **Second-element cost additions.** A $4,000 tray fitted to a pooled ute
+   in a year after acquisition: 15% deduction in the year incurred and
+   $4,000 added to the pool (s 328-190(3), (4); s 328-200 step 1) — no
+   input for this exists in the published mechanics.
+
+---
+
+## 5. TaxGenii appendix coverage feedback
+
+The "Primary statutory sections" block in the public-dispatch appendix was
+empty (reviewer-to-source), so all statutory text underpinning this
+verdict was drawn independently from AustLII consolidated compilations of
+ITAA 1997 and IT(TP)A 1997 and from ATO published guidance, accessed
+8 July 2026.
+
+At my initiative I also ran two spot-checks against Tax Genii itself, on
+the two authorities this bounty most depends on. Both bottom-line answers
+were correct, but the citation layer needs attention. (1) "What is the low
+pool value threshold for FY2024-25?" returned the correct $20,000 — but
+its references pointed to the D6 "low-value pool deduction" items in the
+individual return instructions, which is the Division 40 low-value pool
+(a different regime that shares a confusingly similar name), rather than
+the SBE low pool value rule in s 328-210; it did not surface the operative
+provision (IT(TP)A 1997 s 328-180(6)); and its framing ("an income year
+that ends on or before 30 June 2025") does not acknowledge the legislated
+FY2025-26 extension of the $20,000 amount. A practitioner following that
+citation trail would land in the wrong Subdivision. The EM references
+point to earlier legislative vehicles for the measure rather than the
+enacted provision. (2) "Was the SBE pool write-off mandatory during
+temporary full expensing?" returned a correct and well-framed answer
+(mandatory, no threshold, no opt-out, income years ending 7:30 pm AEDT
+6 October 2020 – 30 June 2023), though it cited s 328-210 ITAA 1997
+rather than the transitional provision that effects the result (IT(TP)A
+s 328-181(5)).
+
+Two further coverage items worth feeding back: (1) the interaction of
+IT(TP)A s 328-181(5) with s 328-220 run-off pools during the
+full-expensing years appears unaddressed in the guidance I could locate,
+and is the one corner of Q6 I flag rather than assert; (2) the pending
+permanent $20,000 IAWO measure (2026-27 Budget) needs active tracking, as
+it changes the s 328-210 parameter from 1 July 2026.
+
+---
+
+## 6. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My
+verdict above reflects my professional judgement as at the submission
+date. I understand my verdict will be minted into the public reviewer
+registry with the attribution posture stated in the frontmatter.
+
+This review was prepared with AI-assisted research; the statutory
+citations were sourced from consolidated primary text, and the analysis,
+conclusions and verdict are my own professional judgement.
+
+**Signed:**
+**Name: Benjamin Mueller
+**Credential: Tax Agent
+**Date:10 July 2026

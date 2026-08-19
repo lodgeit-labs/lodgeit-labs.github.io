@@ -1,0 +1,232 @@
+# Reviewer verdict — bounty-05-fbt-car-statutory-vs-operating
+
+> **Reviewer:** Sami Charaf, FIPA + Tax Agent (TPB)
+> **Consent posture:** named
+> **Reward paid (AUD):** $800
+> **Verdict outcome (from reviewer's §6):** FIX
+> **Verdict date:** 2026-07-19
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+---
+brief_id: bounty-05-fbt-car-statutory-vs-operating
+bounty_title: "FBT car — statutory formula vs operating cost"
+statutory_anchors: "s 7, 8, 9, 10, 10A, 22A FBTAA 1986"
+reviewer:
+  name: "Sami Charaf"
+  credential_class: "FIPA, TPB"
+  registration_status: "active"
+  jurisdiction: "Australia"
+  attribution_posture: "initialled"
+reviewed_calculator_version: "0.2.0"
+submission_date: "2026-07-19"
+top_level_verdict: "FIX"
+verdict_hash: ""
+---
+
+# Reviewer Verdict — FBT car — statutory formula vs operating cost
+
+**Bounty:** bounty-05-fbt-car-statutory-vs-operating
+
+## 1. Top-level verdict
+
+**Your top-level verdict:**
+
+FIX
+
+Fix the operating cost formula.
+Fix the base value definition for the statutory method to exclude certain on-road costs such as stamp duty, compulsory third party, and initial registration.
+Fix the definition of operating expenses to apportion pre-paid operating costs to the holding period for a specific FBT year.
+Fix the deemed interest formula. The version used is a simplified version of that in legislation and based on the critical assumption that the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year.
+Fix the deemed statutory interest rate to use the FBT benchmark interest rate, not the general or Div 7A benchmark interest rate.
+Fix the deemed depreciation formula. The version used is a simplified version of that in legislation and based on the critical assumption that the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year.
+
+## 2. Per-question verdicts
+
+**Answers to Forensic Questions Asked in “03-forensic-questions.md”**
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    verdict: "ACCEPT"
+    citation_authority: "s 9(1) FBTAA 1986; schedule 5, part 1, sections 1-6 of Tax Laws Amendment (2011 Measures No. 5) Act 2011 (Cth)"
+    reasoning: The current statutory formula defined by section 9(1) of the FBTAA 1986 is (0.2 x Base value of the car x (Number of days during that year of tax on which the car fringe benefits were provided by the provider / Number of days in that year of tax) – Amount (if any) of the recipient’s payment. The different components of that definition are further specified in s 9(2) of FBTAA 1986. Hence the statutory formula rate is 0.2 = 20%. NEWPARA The current formula was introduced by schedule 5,part 1, sections 1-6 of Tax Laws Amendment (2011 Measures No. 5) Act 2011 (Cth) which repealed the old formula and definitions and substituted them with the current one. The amendments commenced on Royal Assent to Amendment Act dated 29 June 2011 https://www.legislation.gov.au/C2011A00062/asmade/details NEWPARA These changes were implemented as part of the 2011 Federal Budget, and transitional provisions were in place between 10 May 2011 until 31 March 2014 which varied the statutory percentage depending on total kilometres travelled during the FBT year for cars whether there was a binding financial commitment before 7:30PM AEST on 10 May 2011. For example: https://www.ato.gov.au/forms-and-instructions/fringe-benefits-tax-return-2017-completing-your-return/fringe-benefit-categories/a-cars-using-the-statutory-formula
+    edge_case_notes: Engine must not use currently implemented statutory formula except for 2015 FBT year onwards.
+  - question_number: 2
+    verdict: "ACCEPT"
+    citation_authority: "s 162H(1), s 162G(1), s 136(1) FBTAA 1986"
+    reasoning: The minimum log book period for a car fringe benefit under section 10 is legislatively specified in section 162H(1) of the FBTAA 1986. It is defined as a continuous period of not less than 12 weeks that begins and ends during the holding period. If the holding periods was 12 weeks or less, the log book must be for the entire period (s 162H(1)(a) FBTAA 1986). NEWPARA Section 4.2 of Fringe Benefits tax – a guide for employers - https://www.ato.gov.au/law/view/document?DocID=SAV%2FFBTGEMP%2F00005 NEWPARA A log book year occurs when the operating cost method is used to value the car fringe benefit for the first time. In a log book year, both a log book and odometer records must be kept. In a non-log book year, only odometer records are needed. NEWPARA A log book:- Must be in English.- Can only apply to one car. - Should have records made at the end of a trip/journey or as soon as reasonably practicable afterwards - For each business journey, it must record (136(1) ‘log book records’ (c)-(f) FBTAA 1986).: the dates on which the journey began and ended, and; the odometer readings at the start and end of each journey, and; the kilometres travelled, and; the purpose of the journey (not merely classify it as a business journey). - Must specify the period during which the log book is kept. - May extend across up to two tax years. - Is only valid for five years assuming no major change in the pattern of use. - Need not record private use/journeys (136(1) ‘log book records’ FBTAA 1986). NEWPARA Odometer records: - Must be in English. - Can record more than one car, but can only be used alone for cars which there exists a log book in the preceding 4 FBT years (s 162G(1)(a) FBTAA 1986). - Should be made at, or as soon as reasonably practicable after, the respective times to which the readings relate. - Must be for the same period as the FBT year or part thereof when the vehicle was used to provide fringe benefits. - Must detail at the beginning of each period (that is, FBT year, FBT part-year or logbook period) and also for the end of each period: the date the period began, or ended, and; the odometer reading at the start of the period. - If you replace a car during the year and the business percentage is transferred to a new car, the odometer records must also include an entry showing odometer readings of the replaced car and the new car on the replacement date.
+    edge_case_notes: Engine should differentiate between a log book and non log book year and ensure requirements are met. NEWPARA Engine should check that the logbook was prepared in the preceding 4 FBT years, and that the pattern of usage has not changed.
+  - question_number: 3
+    verdict: "REJECT"
+    citation_authority: "s 9(2)(a), s 136(1) FBTAA 1986; paras 6,7,8,9,11,12 TR 2011/3; TD 94/28; ATO ID 2006/253"
+    reasoning: Base value includes the: - Cost of the vehicle (s 9(2)a)(i) FBTAA 1986),- Goods and Services Tax (GST) (para 6 TR 2011/3),- Luxury Car Tax (para 6 TR 2011/3),- Price of each non-business accessory fitted to the car after the earliest holding time and before the end of the year of tax, and remained fitted to the car at a time during the year of tax when the car was held by the provider (s 9(2)(a)(iii) FBTAA 1986). A floor mat is a non-business accessory provided it is not required to meet the special needs of any business operations in relation to which the car is used (s 136(1) ‘non-business accessory’ FBTAA 1986),- Price of acquisition and fitting of eligible non-business accessories (s 136(1) ‘cost price’ (a)(ii)(B) FBTAA 1986),- Delivery charges generally (136(1) ‘cost price’ (a)(ii)(A) FBTAA 1986), including dealer delivery charges (para 7 TR 2011/3),- Acquisition costs (136(1) ‘cost price’ (a)(ii)(A) FBTAA 1986),- If the transaction acquiring the vehicle was not arm’s length, the amount that would have been expected to have been paid if the transaction was at arm’s length, at or about the time when the car was applied for the employee’s own use (s 136(1) ‘cost price’ (a)(i)(B) FBTAA 1986). NEWPARA Base value excludes:- Stamp Duty (s 136(1) ‘cost price’ (a)(ii)(A) FBTAA 1986), - Registration (including first-year registration) (s 136(1) ‘cost price’ (a)(ii)(A) FBTAA 1986), - Insurance (including Compulsory Third Party CTP) (para 8 TR 2011/3), - Extended warranty (para 8 TR 2011/3, ATO ID 2006/253). NEWPARA The base value is reduced by: - Any discounts (including fleet discounts) and Incentives (para 11 TR 2011/3),- Manufacturer rebates (para 12 TR 2011/3),- Value of traded-in assets (para 9 TR 2011/3),- A once only, one-third of the cost price of the vehicle, from the FBT tax year that commences after the fourth anniversary of the earliest holding time of the car (s 9(2)(a)(i) FBTAA 1986, and TD 94/28).
+    edge_case_notes: Calculator has not demonstrated ability to reduce base value by the once-only one-third of cost price after four years of holding the car. NEWPARA Calculator does not take into account whether the transaction was at arm's length or not and substitute arm's length value. NEWPARA The worked example and brief do not demonstrate the engine's capability for lease-based transactions.
+  - question_number: 4
+    verdict: "FIX"
+    citation_authority: "s 11(1AA), s 136(1) FBTAA 1986; s 40-72(1), s 40-100 ITAA 1997; TR 2022/1; LI 2025/20"
+    reasoning: Deemed Depreciation Rate: NEWPARA The depreciation rate is defined in section 11(1AA) of FBTAA 1986 as DV percentage divided by effective life of the car. NEWPARA The depreciation rate is based on the ‘effective life of the car’ as specified in a determination made by the Commissioner under section 40-100 of the ITAA 1997 and in effect at the most recent time (before the end of the year of tax) the person became the owner of the car (s 11 ‘effective life of the car’ FBTAA 1986). NEWPARA The most recent such determination was made on the 2nd of September 2025 in LI 2025/20. However, the worked example relates to a car purchased 1 May 2024, and as such, the most recent determination at that time was TR 2022/1. That determination provides a life of 8 years for cars (motor vehicles designed to carry a load of less than one tonne and fewer than 9 passengers) generally. NEWPARA The DV percentage is the percentage applicable in using the diminishing value method (within the meaning of the ITAA 1997) as at the start of the relevant tax year (s 11 ‘DV percentage’ FBTAA 1986). For standard assets held on or after May 10, 2006, the diminishing value percentage under the ITAA 1997 is 200% (s 40-72(1) ITAA 1997). NEWPARA Hence, the relevant depreciation rate 200%/8 = 25%. Therefore the deemed depreciation rate of 25% is correct.  NEWPARA Whilst the underlying determination has changed in the past 3 years (last determination change was 2 September 2025 in LI 2025/20), the effective life of motor vehicles designed to carry a load of less than one tonne and fewer than 9 passengers generally remains 8 years and has not changed since 1 January 2006 (LI 2025/20). Neither has the 200% DV percentage since 10 May 2006 (s 40-72(1) ITAA 1997). Therefore, the resulting deemed depreciation rate of 25% has NOT changed in the past three FBT years. NEWPARA Interest Rate: NEWPARA The interest rate is set by legislation in section 11 of the FBTAA 1986 as the statutory interest rate in relation to the relevant FBT year. Section 136(1) of FBTAA 1986 defines ‘statutory interest rate’ as the benchmark interest rate in relation to the year of tax for all amounts after 1 July 1986. That is in turn defined by same section as the rate of interest, known as the large bank housing lenders variable interest rate on loans for housing for owner occupation, last published by the Reserve Bank of Australia before the commencement of the year of tax (s 136(1) ‘benchmark interest rate’ FBTAA 1986). This can be found at https://www.rba.gov.au/statistics/tables/#interest-rates in the Indicator Lending Rates – F5 table ( https://www.rba.gov.au/statistics/tables/xls/f05hist.xlsx ), as Series ID FILRHLBVS published monthly for the preceding month. Hence, for any FBT year commencing 1 April, the latest data would be the February data which is published in March. NEWPARA The relevant FBT year for the worked example commenced 1 April 2024 and ended 31 March 2025, hence the relevant rate is that of February 2024 for series FILRHLBVS, which is 8.77% (Cell D793 in Sheet ‘Data’ of https://www.rba.gov.au/statistics/tables/xls/f05hist.xlsx?v=2026-07-08-17-51-36 ). Therefore the rate of 8.77% is correct. NEWPARA FIX – The question asks "Are those the correct rates for FY2025 FBT year?", caution must be used with this terminology which uses both FY (financial year) and FBT year as the FY2025 interest rate (such as that used for div 7A ITAA 1936 purposes) may be different to the FBT2025 interest rate. NEWPARA Coincidentally, the Division 7A ITAA 1936 benchmark interest rate for FY2025 (based on the June 2024 rather than February 2024 indicator lending rates) is also 8.77% (https://www.ato.gov.au/tax-rates-and-codes/division-7a-benchmark-interest-rate). However, for FY2026 the rate was 8.37% for Div 7A purposes, but is 8.62% for FBT2026. It is unclear where the 8.77% is coming from in the worked example. NEWPARA Hence, the benchmark interest rate is not fixed and varies each year. Data from Table 10 of the Fringe Benefit Tax Rates and Thresholds https://www.ato.gov.au/tax-rates-and-codes/fringe-benefits-tax-rates-and-thresholds clearly shows the rate varying from 4.52% for FBT2023, to 7.77% for FBT2024, to 8.77% for FBT2025, to 8.62% for FBT2026, to 8.27% for FBT2027. Hence, the rate HAS changed on the last three FBT years. NEWPARA Incorrect References: NEWPARA TR 2024/D3 is a draft taxation ruling which has been finalised by TR 2025/2, but it relates to Income tax: aspects of the third party debt test in Subdivision 820-EAB of the ITAA 1997 and does NOT relate to the interest rate and deemed depreciation under s 11 of the FBTAA 1986 ( https://www.ato.gov.au/law/view/document?DocID=DTR/TR2024D3/NAT/ATO/00001&PiT=99991231235958 ).
+    edge_case_notes: Consider vehicles that are not cars (motor vehicles designed to carry a load of less than one tonne and fewer than 9 passengers) generally, such as taxis made available to use by drivers, the relevant effective life would be substantially shorter at 4 years (TR 2022/1). NEWPARA The formulas used for both deemed depreciation and deemed interest assume that the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year. This assumption should NOT be made, and the full formula for each should instead be adopted from legislation.
+  - question_number: 5
+    verdict: "FIX"
+    citation_authority: "s 9, ss 10(2)-(3), s 136(1) FBTAA 1986; paras 22,101-105 TR 2001/2"
+    reasoning: The sum paid by the employee is a “recipient’s payment” pursuant to s 9(1) and 9(2)(e) in relation to the statutory formula method, and s 10(2) and s 10(3)(c) of the FBTAA 1986 in respect of the operating cost method. NEWPARA Per section 136(1) of the FBTAA 1986, the term ‘recipients contribution’ is used in relation to car parking fringe benefit, a property fringe benefit, a residual fringe benefit or a board fringe benefit (a), and in relation to an expense payment fringe benefit (b). NEWPARA The confusion is understandable as even the ATO Publication Fringe Benefits Tax – A Guide for Employers, Chapter 22 ( https://www.ato.gov.au/law/view/document?docid=SAV/FBTGEMP/00023 ) defines ‘Employee or recipient's contribution’ as “Also known as a recipient's payment or recipient's rent”. NEWPARA The real difference is for the employer. Contributions paid directly to the employer are assessable income for income tax purposes, and treated as a taxable supply for GST purposes, meaning the employer will have to pay GST on this amount (as if the recipient’s payment included GST).  The taxable value of the fringe benefit is the GST-inclusive amount of the recipient payment (para 22 of TR 2001/2). Where contributions/payments were made to third parties, such as for fuel, oil, or servicing, will have had the GST remitted on it directly by those suppliers, and as such, the employer does not recognise it as a taxable supply for GST purposes, although the full amount remains assessable income (paras 101-105 TR 2001/2).
+    edge_case_notes: Need to check that the employee has not been reimbursed for their payment or contribution. If they have, it will reduce the value of the payment. NEWPARA Need to check whether the employee directly contributed the amount to the employer or indirectly by paying for fuel, oil, servicing etc to third parties. As each has a different GST treatment for the employer.
+  - question_number: 6
+    verdict: "ACCEPT"
+    citation_authority: "ss 10(1), ss 10(4), ss 10(5), s 136(1) FBTAA 1986"
+    reasoning: An election can only be made by the employer, in relation a particular car, for all the car fringe benefits relating to that car for the FBT tax year (s 10(1) FBTAA 1986). The election must be made in writing to the Commissioner (s 10(4)(a)), and; must be lodged with the Commissioner on or before the declaration date (s 10(4)(b)). NEWPARA The relevant declaration date is the date the employer lodges the FBT Tax Return, or such later date as the Commissioner allows (s 136(1) ‘declaration date’ FBTAA 1986). Hence the keeping the log book itself does NOT constitute an election. NEWPARA The election is ONLY made upon lodgement of the FBT return with the ATO or otherwise sending the election in writing to the Commissioner on or before the declaration date.
+    edge_case_notes: Even when the operating cost method is elected, if the statutory formula results in a lower taxable value, legislation operates to act as if that election had never been made (s 10(5) FBTAA 1986).
+  - question_number: 7
+    verdict: "FIX"
+    citation_authority: ""
+    reasoning: There are multiple edge cases that require addressing as the brief and example do not test these. In addition to all the issues noted above, please see edge cases noted below.
+    edge_case_notes: The brief and worked example do not include leased cars. NEWPARA If the car is unregistered for the whole of the FBT year when the car was held and was used wholly or principally in direct connection with your business operations, any private use is exempt from FBT (Clause 7.6.1 of Fringe Benefits Tax - A Guide for Employers https://www.ato.gov.au/law/view/document?LocID="SAV%2FFBTGEMP%2F7.6"&PiT=99991231235958#7.6). This is quite common with rural and farm entities that provide off-road vehicles and ATVs for use. NEWPARA Emergency service cars that are not actually used for private use will not be deemed to be available for private use even if available for private use. The engine needs to check whether the vehicle is an emergency service vehicle. NEWPARA The engine needs to check if more than one car benefit is provided to the employee by a personal services entity, if so, only one car is subject to FBT, the remainder are exempt. NEWPARA Need to check whether the car is a car, taxi, panel van or utility truck designed to carry a load of less than 1 tonne. If not, then it may not be subject to a car fringe benefit tax altogether. NEWPARA Need to check if the pattern of use of the car has changed since the log book was completed. If so, a new logbook is required. NEWPARA Cars owned by foreign companies have separate rules and steps should be undertaken to ensure the vehicle is not subject to them before using the current calculation. NEWPARA Electric or Hydrogen Fuel Cell vehicles have separate rules and may be exempt from FBT under certain circumstances. NEWPARA Need to check days unavailable and holiday garaging, such as when undergoing repairs, or when you are overseas, as these can reduce the availability of the car for private use in the FBT year, and reduce the FBT liability accordingly.
+```
+
+**Answers to Questions Asked in “01-brief.md”**
+
+````yaml
+per_question_verdicts:
+  - question_number: 1
+    question: "Do the two calculations produce the correct answers under both methods?"
+    verdict: "REJECT"
+    citation_authority: "s 9, s 10 FBTAA 1986"
+    reasoning: NO. NEWPARA The answers to both the statutory method and the operating cost method are INCORRECT. NEWPARA Assuming the facts in the worked example and a correctly determined base value, the calculations should produce $9,931.51 (statutory) and $6,981.23 (operating cost). The error in the statutory method is a calculation error, but the errors in the operating cost method include both calculation and formulaic errors. These are detailed in the following sections.
+  - question_number: 2
+    question: "Do the two calculations produce the correct answers under both methods?"
+    verdict: "ACCEPT"
+    citation_authority: "s 10(1) FBTAA 1986"
+    reasoning: YES. NEWPARA But note that only one worked example was reviewed, in which the year in question is a log book year (the simplest case).
+````
+**Answers to Questions Asked in “02-worked-example.md”**
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    question: "Are the two calculation formulae correctly stated?"
+    verdict: "FIX"
+    citation_authority: "s 9(1), s 10(2) FBTAA 1986"
+    reasoning: NO. NEWPARA The statutory formula is CORRECT, it matches the formula in s 9(1) of FBTAA 1986. However, the definition of ‘base_value’ in “01-brief.md” includes on-road costs, and this is INCORRECT. Not all on-road costs are included, e.g. stamp duty, compulsory third party. NEWPARA The operating cost formula is INCORRECT. It does NOT match the formula in section 10(2) of the FBTAA 1986. There is no apportionment for days held in the formula.
+  - question_number: 2
+    question: "Is the days-available count correct (335)?"
+    verdict: "ACCEPT"
+    citation_authority: ""
+    reasoning: YES.
+  - question_number: 3
+    question: "Is the deemed depreciation rate (25%) and deemed interest rate (statutory benchmark 8.77% for FY2025) correctly applied under s 11?"
+    verdict: "FIX"
+    citation_authority: "s 11(1A), s 11(1), s 11(1AA), s11(1B), s11(2) FBTAA 1986"
+    reasoning: The rates used are CORRECT. However, it is unclear whether the statutory benchmark rate was correctly looked up as the FBT statutory interest rate, or whether the Div 7A / general statutory interest was used. They happen to be the same for the 2025FY and 2025FBT year. NEWPARA The formulae for deemed depreciation and deemed interest used are INCORRECT. The formulae are a simplified version of the formulae in the legislation and only work when the number of days the car was held for fringe benefit purposes is equal to the number of days the car was owned in the FBT year. However, this is not always the case. NEWPARA The correct formula for depreciation adapted from s11 and as implemented by the ATO FBT calculator is: NEWPARA (A x B x C / D) x (E / C) NEWPARA Where: NEWPARA A = Depreciated value of the car, B = Depreciation Rate, C = Number of days owned in the FBT year, D = Days in the FBT year, E = Number of days car held for fringe benefit, NEWPARA The correct formula for deemed interest is: NEWPARA (A x B x C / D) x (E / C) NEWPARA Where: NEWPARA A = Depreciated value of the car, B = Interest Rate, C = Number of days owned in the FBT year, D = Days in the FBT year, E = Number of days car held for fringe benefit. NEWPARA The calculated result for deemed interest was INCORRECT. There was an arithmetic/calculation error in the result of the stated formula.
+  - question_number: 4
+    question: "Does the log book qualify (12 weeks, 1 May to 24 July = ~12 weeks)?"
+    verdict: "ACCEPT"
+    citation_authority: "s 162H(1)(a) FBTAA 1986."
+    reasoning: YES.
+  - question_number: 5
+    question: "Is the recipient's payment correctly subtracted from the pre-contribution taxable value?"
+    verdict: "ACCEPT"
+    citation_authority: "s 9(2)(e), s10(3)(c) FBTAA 1986"
+    reasoning: YES, for both methods.
+  - question_number: 6
+    question: "Anything the engine is doing wrong or missing?"
+    verdict: "FIX"
+    citation_authority: ""
+    reasoning: Method A – Statutory Method: NEWPARA Base value – Possible error depending what on-road costs are included in the price. The GST is correctly included. NEWPARA Statutory rate of 20% is correct. NEWPARA Days available/days in FBT year is correct 335/365. NEWPARA The result of the taxable value (pre-contribution): is INCORRECT. $65,000 × 20% × (335/365) = $11,931.51, NOT $11,930.14. NEWPARA The “less employee contribution” component is correctly calculated. NEWPARA Taxable value is INCORRECT due to flow on effects, but has correct formulaic calculation: taxable value (pre contribution) less employee contribution. NEWPARA Method B – Operating Cost Method: NEWPARA Base value – Possible error depending what on-road costs are included in the price. The GST is correctly included. NEWPARA Possible error with total actual operating costs, it is unclear whether the individual amounts have been apportioned for the holding period. For instance, registration and CTP is typically for 1 year or 6 month periods, but the holding period is 335 days. Only the portion of the expenses relating to the holding period in the  relevant FBT year is claimable in that year (s 10(3)(a)(i)-(ii) FBTAA 1986). By contrast, fuel probably entirely relates to the holding period and may not need any apportionment. NEWPARA The final value of deemed depreciation is CORRECT but the formula used is INCORRECT. The formula used is not the formula set out in s11(1A) FBTAA 1986. It only works in the worked example because the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year. The formula from legislation should be adopted instead. NEWPARA INCORRECT formula and calculation of deemed Interest. $65,000 × 8.77% × (335/365) = $5,231.97 NOT $5,229.06. Benchmark used should also be the FBT2025 benchmark, not the FY2025 benchmark. They are both 8.77%, but this is a coincidence only. The formula for deemed interest is INCORRECT because it does not match that set out in s 11(1B) of FBTAA 1986. It only works in the worked example because the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year. The formula from legislation should be adopted instead. NEWPARA There is a consequential calculation error in the total operating costs. NEWPARA The private use percentage is correctly calculated. NEWPARA Taxable value (pre-contribution) formula is INCORRECT, there is no holding period adjustment in this manner at this stage. This double apportions for the holding period for deemed depreciation, deemed interest, and may be incorrectly apportioning for actual operating costs depending on the period they relate to. The correct formula at this stage is operating cost*(100%- business_percentage)). NEWPARA Hence it should be total operating cost multiplied by 32%.  NEWPARA The “less employee contribution” component is correctly calculated. NEWPARA Taxable value is incorrect due to flow on effects but has correct formulaic calculation as taxable value (pre contribution) less employee contribution. NEWPARA Engine Recommendation: NEWPARA The correct figures should be $6,981.23 (operating cost) versus $9,931.51 (statutory), assuming correct base value calculation, and no need to apportion actual operating costs. If so, then yes, I AGREE with the engine, choose operating cost method. The arithmetic discrepancies noted above are in addition to but separate from the underlying formula issues.
+```
+
+## 3. Citation audit
+
+_List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on. Mark each: ✓ correct citation / ✗ wrong citation / ⚠ citation exists but is misapplied._
+
+| # | Authority as cited | Your assessment | Notes |
+|---|---|---|---|
+| 1 |s 22A FBTAA 1986|✗ wrong citation|"01-brief.md" line 5. Section relates to Taxable value of in - house expense payment fringe benefits and NOT car fringe benefits. Also incorrectly cited on lines 4 and 32 of "05-taxgenii-appendix.md", and line 4 of "04-reviewer-verdict-template.md".|
+| 2 |s 9 FBTAA 1986|✓ correct citation|"01-brief.md" line 16.|
+| 3 |s 10 FBTAA 1986|⚠ citation exists but is misapplied|"01-brief.md" line 17. Formula quoted does not match that in legislation, with material effect on outcome.|
+| 4 |s 10(1) FBTAA 1986|✓ correct citation|"01-brief.md" line 19.|
+| 5 |s 9(2) FBTAA 1986|⚠ citation exists but is misapplied|"01-brief.md" line 36. The section does not state to include on-road costs as stated in the brief.|
+| 6 |s 10(2) FBTAA 1986|⚠ citation exists but is misapplied|"01-brief.md" line 37. The operating cost formula does NOT match the formula in section 10(2) of the FBTAA 1986. There is no apportionment for days held in the formula.|
+| 7 |s 10A FBTAA 1986|⚠ citation exists but is misapplied|"01-brief.md" line 38. The citation only specifies the business use percentage, but does not specify a minimum 12-week period as claimed. The relevant section for that is 162H(1)(a) FBTAA 1986. The relevant section for the five year validity period is s 162G(1)(a) FBTAA 1986.|
+| 8 |s 8A FBTAA 1986|✓ correct citation|"01-brief.md" line 42.|
+| 9 |s 9(2)(e) FBTAA 1986|✓ correct citation|"01-brief.md" line 44.|
+| 10 |s 11 FBTAA 1986|✓ correct citation|"02-worked-example.md" line 22. Correctly cited as related to deemed depreciation calculation.|
+| 11 |s 11 FBTAA 1986|✓ correct citation|"02-worked-example.md" line 23. Correctly cited as related to deemed interest calculation.|
+| 12 |s 9 FBTAA 1986|✓ correct citation|"02-worked-example.md" line 27. Correctly cited as being relevant to statutory formula.|
+| 13 |s 10 FBTAA 1986|✓ correct citation|"02-worked-example.md" line 35. Correctly cited as being relevant to operating cost formula, but the formula was incorrectly reproduced.|
+| 14 |s 11(1)(a) FBTAA 1986|✗ wrong citation|"02-worked-example.md" line 37. The correct citation is s 11(1A) FBTAA 1986. Even so, the formula applied is incorrect and does not match this section. The version used is a simplified version of that in legislation and based on the critical assumption that the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year|
+| 15 |s 11(1)(b) FBTAA 1986|✗ wrong citation|"02-worked-example.md" line 38. The correct citation is s 11(1B) FBTAA 1986. Even so, the formula applied is incorrect and does not match this section. The version used is a simplified version of that in legislation and based on the critical assumption that the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year.|
+| 16 |s 11 FBTAA 1986|✓ correct citation|"02-worked-example.md" line 53. Correctly cited in question 3 as being related to deemed depreciation and interest calculation.|
+| 17 |s 9 FBTAA 1986|✓ correct citation|"03-forensic-questions.md" line 9. Correctly cited as being relevant to statutory formula.|
+| 18 |s 10 FBTAA 1986|✓ correct citation|"03-forensic-questions.md" line 13. Correctly cited as being relevant to operating cost method.|
+| 19 |s 9(2) FBTAA 1986|✓ correct citation|"03-forensic-questions.md" line 17. Correctly cited as being relevant to "base value".|
+| 20 |TR 2024/D3|✗ wrong citation|"03-forensic-questions.md" line 23. TR 2024/D3 is a draft taxation ruling which has been finalised by TR 2025/2, but it relates to Income tax: aspects of the third party debt test in Subdivision 820-EAB of the ITAA 1997 and does NOT relate to the interest rate and deemed depreciation under s 11 of the FBTAA 1986.|
+| 21 |s 10A FBTAA 1986|✓ correct citation|"03-forensic-questions.md" line 38. Correctly cited as being relevant to log book year, but s 10B is the relevant section for non-log book years.|
+
+## 4. Edge cases surfaced
+
+_Anything the brief did not cover that you think should be tested by a future revision._
+
+1. Engine must not use currently implemented statutory formula except for 2015 FBT year onwards. This is due to transitional rates applying in respect of earlier FBT years.
+2. Engine should differentiate between a log book and non log book year and ensure requirements for each are met.
+3. Engine should check that the logbook was prepared in the preceding 4 FBT years, and that the pattern of usage has not changed.
+4. Calculator has not demonstrated ability to reduce base value by the once-only one-third of cost price after four years of holding the car.
+5. Calculator does not take into account whether the transaction was at arm's length or not and substitute arm's length value accordingly.
+6. The worked example and brief do not demonstrate the engine's capability for lease-based transactions.
+7. Consider vehicles that are not cars (motor vehicles designed to carry a load of less than one tonne and fewer than 9 passengers) generally, such as taxis made available to use by drivers, the relevant effective life would be substantially shorter at 4 years (TR 2022/1).
+8. The formulas used for both deemed depreciation and deemed interest assume that the number of days the car was held for fringe benefit purposes was equal to the number of days the car was owned in the FBT year. This assumption should NOT be made, and the full formula for each should instead be adopted from legislation.
+9. Need to check that the employee has not been reimbursed for their payment or contribution. If they have, it will reduce the value of the payment.
+10. Need to check whether the employee directly contributed the amount to the employer or indirectly by paying for fuel, oil, servicing etc to third parties. As each has a different GST treatment for the employer.
+11. Even when the operating cost method is elected, if the statutory formula results in a lower taxable value, legislation operates to act as if that election had never been made (s 10(5) FBTAA 1986).
+12. If the car is unregistered for the whole of the FBT year when the car was held and was used wholly or principally in direct connection with your business operations, any private use is exempt from FBT. This is quite common with rural and farm entities that provide off-road vehicles.
+13. Emergency service cars that are not actually used for private use will not be deemed to be available for private use even if available for private use. The engine needs to check whether the vehicle is an emergency service vehicle.
+14. The engine needs to check if more than one car benefit is provided to the employee by a personal services entity, if so, only one car is subject to FBT, the remainder are exempt.
+15. Need to check whether the car is a car, taxi, panel van or utility truck designed to carry a load of less than 1 tonne. If not, then it may not be subject to a car fringe benefit tax altogether.
+16. Need to check if the pattern of use of the car has changed since the log book was completed. If so, a new logbook is required.
+17. Cars owned by foreign companies have separate rules and steps should be undertaken to ensure the vehicle is not subject to them before using the current calculation.
+18. Electric or Hydrogen Fuel Cell vehicles have separate rules and may be exempt from FBT under certain circumstances.
+19. Need to check days unavailable and holiday garaging, such as when undergoing repairs, or when you are overseas, as these can reduce the availability of the car for private use in the FBT year, and reduce the FBT liability accordingly.
+
+---
+
+## 5. TaxGenii appendix coverage feedback
+
+_Was the pre-loaded statutory appendix (file 05) adequate? What was missing?_
+
+No, key legislative sections and resources were missing. They are as follows (their use is documented in the answers above):
+Fringe Benefits Tax Assessment Act 1986 (Cth)(FBTAA 1986):
+- s 11
+- s 136
+- s 162G
+- s 162H
+Income Tax Assessment Act 1997 (Cth)(ITAA 1997):
+- s 40-72
+- s 40-100
+Tax Laws Amendment (2011 Measures No. 5) Act 2011 (Cth):
+- Schedule 5, Part 1, Sections 1–6
+Taxation Rulings (TR):
+- TR 2001/2
+- TR 2011/3
+- TR 2022/1
+Taxation Determinations (TD):
+- TD 94/28
+ATO Interpretative Decisions
+- ATO ID 2006/253
+Legislative Instruments
+- LI 2025/20
+ATO Publications / Guidance:
+- Fringe Benefits Tax – A Guide for Employers
+Other official sources:
+- Reserve Bank of Australia – Indicator Lending Rates (F5 table), Series FILRHLBVS
+
+---
+
+## 6. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed:** SC
+**Name:** Sami Charaf
+**Credential:** FIPA, TPB
+**Date:** 19/07/2026

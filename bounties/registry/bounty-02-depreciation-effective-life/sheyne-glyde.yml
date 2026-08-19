@@ -1,0 +1,171 @@
+# Reviewer verdict — bounty-02-depreciation-effective-life
+
+> **Reviewer:** Sheyne Glyde, Tax Agent (TPB 26262744)
+> **Consent posture:** named
+> **Reward paid (AUD):** $400
+> **Verdict outcome (from reviewer's §6):** REJECT
+> **Verdict date:** 2026-07-13
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+---
+brief_id: bounty-02-depreciation-effective-life
+bounty_title: "Depreciation effective-life lookup"
+statutory_anchors: "s 40-95, s 40-100, s 40-102, s 40-105 ITAA 1997; TR 2024/4"
+reviewer:
+  name: "Sheyne Glyde"
+  credential_class: "TPB"        # CA / CTA / CPA / FIPA / MIPA / TPB
+  registration_status: "Active"     # active / lapsed / retired
+  jurisdiction: "Australia"
+  attribution_posture: "initialled"  # named | initialled | anonymous
+reviewed_calculator_version: "0.1.3"  # copy from brief
+submission_date: "13/7/2026"              # YYYY-MM-DD
+top_level_verdict: "REJECT"            # ACCEPT / REJECT / FIX
+verdict_hash: ""                 # (we compute this on receipt)
+---
+
+# Reviewer Verdict — Depreciation effective-life lookup
+
+**Bounty:** bounty-02-depreciation-effective-life
+
+## 1. Top-level verdict
+
+_Choose one: **ACCEPT** / **REJECT** / **FIX**._
+
+- **ACCEPT** — the calculator's statute-to-predicate translation is correct on the facts of the brief. Minor stylistic comments allowed.
+- **REJECT** — the calculator's translation is materially wrong. State the section/case-law authority you rely on.
+- **FIX** — the translation is mostly correct but has a specific error that can be fixed with a targeted change. Describe the fix.
+
+**Your top-level verdict:*REJECT*
+
+---
+
+## 2. Per-question verdicts
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    verdict: "REJECT"              # ACCEPT / REJECT / FIX
+    citation_authority: "TR 2022/1. ANZSIC 2006 (Revision 2.0) available at https://www.abs.gov.au/statistics/classifications/australian-and-new-zealand-standard-industrial-classification-anzsic/latest-release"   # section reference or case citation
+    reasoning: |
+      The question uses the incorrect citation for the Commissioner's effective life ruling.  TR 2022/1 is the applicable ruling for FY25.
+      Per the ANZSIC 2006 codes on the ABS website, 3232 is also the incorrect ANZSIC code for Plumbing Services, it should be 3231.
+      Plumbing services (3231) falls under Construction in the ANZSIC classification, unless mainly engaged in repairing gas appliances (Other Services)
+      or pumping or cleaning septic tanks (Electricity, Gas, Water and Waste Services, specifically Waste Treatment and Disposal Services).
+      Table A is therefore the applicable table depending on which of these ANZSIC industry headings applies.  
+      Construction/earthmoving equipment (including mini-excavators) does not appear in Table B.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      Mapping from the ANZSIC hierarchy to the Commissioner's ruling (Table A industries) can require more detail of the taxpayer's business.
+      For example, in this case it is not necessarily sufficient to know the taxpayer is engaged in plumbing services without also knowing if they specialise in pumping or cleaning septic tanks (which would remove them from the 'Construction' industry heading classification for the purpose of TR 2022/1).
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 2
+    verdict: "REJECT"              # ACCEPT / REJECT / FIX
+    citation_authority: "TR 2022/1, Table A"   # section reference or case citation
+    reasoning: |
+      Incorrect citation for Commissioner's determinations as per Q1.  For the FY25 year the applicable ruling was TR 2022/1 (now superseded by LI 2025/20).  Assuming the plumbing services activities fall under the Construction industry per the ANZSIC heirarchy (and are not one of the exceptions mentioned in Q1 response above), the Table A effective life for mini-excavators (Construction industry) is 8 years.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 3
+    verdict: "REJECT"              # ACCEPT / REJECT / FIX
+    citation_authority: "s40-95(1)(a), s40-102(2), s40-102(4)"   # section reference or case citation
+    reasoning: |
+      Section 40-95(2) posed by the question is the incorrect citation reference for a choice to use the Commissioner's determination of effective life.   
+      The correct reference for a choice to use Commissioner's determination is 40-95(1)(a).   
+      If a statutory cap in s40-102(4) or (5) is shorter than the Commissioner's determination of effective life for the asset, s40-102(2) is clear that the capped life applies.  
+      Note that in the hypothetical asked by this question (5 year Commissioner's determination), there are no capped lives in s40-102(4) or (5) that are less than 5 years, therefore no capped life would apply.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      The statutory cap lives in s40-102(4) require specific information on the nature of the depreciating asset to confirm whether (or which) of the caps apply.  
+      For example, in certain cases, the weight of the asset, what the predominant use of the asset is, or in the case of vessels, what certification applies.  
+      Unclear how the calculator plans to capture this information in order to decide whether a statutory cap life applies.
+      Similarly, s40-102(5) requires matching the kind of depreciating asset with the industry in which it is used.
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 4
+    verdict: "FIX"              # ACCEPT / REJECT / FIX
+    citation_authority: "s40-95(1)(b), s40-105"   # section reference or case citation
+    reasoning: |
+      Section 40-95(3) posed by the question is the incorrect citation reference for a choice to self-assess effective life.  
+      The correct reference for a choice to self-assess is 40-95(1)(b).  
+      Where this choice is made, section 40-105 requires an assessment of the period the asset can be used by any entity having regard to wear and tear you reasonably expect from your     expected circumstances of use of the asset and assuming the asset will be maintained in reasonably good order and condition.  A shorter period will also apply if it is expected the asset would likely be scrapped, abandoned or sold for no more than scrap value (unless due to reasons attributable to the technical risk in conducting R&D activities).   
+      Self-assessment is particularly relevant for second-hand assets, per para 48 of TR 2022/1:  "The Commissioner only makes determinations of the effective life of new assets. If you purchase a second-hand asset where its condition justifies a shorter life than that determined by the Commissioner, you can self-assess."
+      There is insufficient information in the example to determine a self-assessed life, however given the mini-excavator is second-hand and depending on its condition and expected usage, there may be a case for a shorter self-assessed life compared to the Commissioner's determination of effective life for mini-excavators.  The factors and analysis supporting the self-assessment decision would need to be documented by the taxpayer.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 5
+    verdict: "FIX"              # ACCEPT / REJECT / FIX
+    citation_authority: "s40-60"   # section reference or case citation
+    reasoning: |
+      Per s40-60, depreciation should only be calculated from the start time for the asset, which is when it is first used, or installed ready for use for any purpose.  
+      Some examples where this may differ from purchase date could include:
+      The asset is ordered but yet to be delivered;
+      The asset is delivered but remains in a shipping container or is not fully assembled;
+      The asset functions as part of a system (composite asset) and the individual components allowing operational use are missing or yet to be installed (refer TR 2024/1);
+      The asset is sitting in inventory and not 'held in reserve'.
+      Presumably the calculator is looking to purchase date only and may not have separate capability for a later start time.  
+      Relevant factors to determine if a later start time is applicable would need to be informed by additional user input.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 6
+    verdict: "FIX"              # ACCEPT / REJECT / FIX
+    citation_authority: "s40-95"   # section reference or case citation
+    reasoning: |
+      In addition to the areas already noted by the question:
+      Subsection 40-95(2) of the ITAA 1997 requires an entity to apply the effective life determined by the Commissioner in the relevant instrument that was in force at the time.  This may require the calculator to look up previous iterations of the Commissioner's determination.
+      Table A of the Commissioner's determination can still be applied even if the description of asset doesn't match exactly, provided it is of a kind that falls within or broadly satisfies the function described in column 1 of the table.  The calculator may require additional context for this.
+      Mapping of the ANZSIC classification to the appropriate industry in the Commissioner's determination may also require additional context on the taxpayer's business, or the nature and use of the asset.
+      Logic for second element costs (including where incurred in later years).
+      Reassessments of effective life due to change in use.
+      Special rules in s40-95 for assets acquired from associates.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+```
+
+---
+
+## 3. Citation audit
+
+_List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on. Mark each: ✓ correct citation /  wrong citation / ⚠ citation exists but is misapplied._
+
+| # | Authority as cited | Your assessment | Notes |
+|---|---|---|---|
+| 1 |TR 2024/4| ✗ | Should be TR 2022/1 (or LI 2025/20 for later years) |
+| 2 |40-95(2)| ⚠ | Incorrect authority for choice to use Commissioner's determination (should be 40-95(1)(a) |
+| 3 |40-95(3)| ⚠ | Incorrect authority for choice to self-assess effective life (should be 40-95(1)(b) |
+| 4 |40-102| ✓ |  |
+| 5 |40-105| ✓ |  |
+| 6 |40-60| ✓ |  |
+
+---
+
+## 4. Edge cases surfaced
+
+_Anything the brief did not cover that you think should be tested by a future revision._
+
+1. Second element costs
+2. Prime cost vs diminishing value
+3. Reassessments of effective life
+
+---
+
+## 5. TaxGenii appendix coverage feedback
+
+_Was the pre-loaded statutory appendix (file 05) adequate? What was missing?_
+
+Adequate
+
+---
+
+## 6. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed:*SGlyde*
+**Name:*Sheyne Glyde*
+**Credential:*TPB 26262744*
+**Date:*13/7/2026*

@@ -1,0 +1,273 @@
+# Reviewer verdict — bounty-09-cgt-active-asset-test
+
+> **Reviewer:** Anonymous, CPA
+> **Consent posture:** anonymous
+> **Reward paid (AUD):** $750
+> **Verdict outcome (from reviewer's §6):** FIX
+> **Verdict date:** 2026-07-19
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+\---
+
+brief\_id: bounty-09-cgt-active-asset-test
+bounty\_title: "CGT small business active-asset test"
+statutory\_anchors: "s 152-35, s 152-40 ITAA 1997; TR 2019/1"
+reviewer:
+name: "[Anonymous]"
+credential\_class: "CPA"        # CA / CTA / CPA / FIPA / MIPA / TPB
+registration\_status: "Active"     # active / lapsed / retired
+jurisdiction: "Australia"
+attribution\_posture: "anonymous"  # named | initialled | anonymous
+reviewed\_calculator\_version: "Spec-first bounty\*\* — no existing calculator"  # copy from brief
+submission\_date: "2026-07-19"              # YYYY-MM-DD
+top\_level\_verdict: "FIX"            # ACCEPT / REJECT / FIX
+verdict\_hash: ""                 # (we compute this on receipt)
+---
+
+# Reviewer Verdict — CGT small business active-asset test
+
+**Bounty:** bounty-09-cgt-active-asset-test
+
+## 1\. Top-level verdict
+
+*Choose one: **ACCEPT** / <b>REJECT</b> / <b>FIX</b>.*
+
+* **ACCEPT** — the calculator's statute-to-predicate translation is correct on the facts of the brief. Minor stylistic comments allowed.
+* **REJECT** — the calculator's translation is materially wrong. State the section/case-law authority you rely on.
+* **FIX** — the translation is mostly correct but has a specific error that can be fixed with a targeted change. Describe the fix.
+
+**Your top-level verdict:**
+
+FIX
+
+## 2\. Per-question verdicts
+
+```yaml
+per\_question\_verdicts:
+  - question\_number: 1
+    verdict: "FIX"             
+    citation\_authority: "s 152-40(1)(a); s 152-40(1)(b); s 152-40(3)" 
+    reasoning: 
+
+&#x20;     s 152-40(1) itself contains two paragraphs, not three limbs: (a) the
+
+&#x20;     tangible-asset limb (used, or held ready for use, in a business carried
+
+&#x20;     on by the taxpayer, an affiliate, or a connected entity) and (b) the
+
+&#x20;     intangible-asset limb (goodwill etc. inherently connected with such a
+
+&#x20;     business). The commonly-used "three limbs" framing folds in the
+
+&#x20;     separate share/interest deeming rule at s 152-40(3) (the 80% active-asset
+
+&#x20;     test for shares/trust interests). This is a defensible shorthand in
+
+&#x20;     practice but should be labelled as combining s 152-40(1) with s 152-40(3),
+
+&#x20;     not presented as three sub-paragraphs of s 152-40(1) alone. |
+      
+    edge\_case\_notes: |
+      If the calculator ever needs to handle shares in a holding company or
+
+&#x20;     trust interests (rather than a direct asset), s 152-40(3)'s 80% test is
+
+&#x20;     a materially different mechanism and should be a distinct code path,
+
+&#x20;     not folded into the s 152-40(1) logic.
+
+
+  - question\_number: 2
+    verdict: "ACCEPT"              
+    citation\_authority: "s 152-40(4)(e)"
+    reasoning: |
+      Correctly stated - the exclusion is not automatic on any rent being
+
+&#x20;     derived. It requires that the "main use" of the asset be to derive
+
+&#x20;     rent, assessed on the facts, and carries a temporary-use carve-out
+
+&#x20;     (main use is to derive rent "only temporarily" does not trigger
+
+&#x20;     exclusion). No divergence from the calculator's treatment.
+    edge\_case\_notes: |
+      The temporary-use carve-out is not tested anywhere in this brief's
+
+&#x20;     scenario
+
+
+  - question\_number: 3
+    verdict: "REJECT"              
+    citation\_authority: "TR 2019/1" 
+    reasoning: |
+      TR 2019/1 is titled "Income tax: when does a company carry on
+
+&#x20;     a business?" and its entire binding scope (paras 1, 4-8) is limited to
+
+&#x20;     whether a company is a "small business entity" for s 328-110 ITAA 1997
+
+&#x20;     and the now-superseded s 23 ITRA 1986 lower-corporate-tax-rate test. It
+
+&#x20;     contains no proportional main-use-to-derive-rent methodology and does
+
+&#x20;     not mention floor area, rental value, or time-based apportionment
+
+&#x20;     proxies anywhere in the ruling.
+    edge\_case\_notes: |
+      Example 3,Paras 66-70 confirms that
+
+&#x20;     letting commercial property to a third party at market rate can itself
+
+&#x20;     amount to carrying on a business - relevant to the FIRST limb of the
+
+&#x20;     active-asset test (s 152-40(1)(a), is the asset used in a business at
+
+&#x20;     all) but not to the SECOND question this bounty concerns (how to
+
+&#x20;     apportion a mixed-use asset's "main use" under s 152-40(4)(e)).
+
+
+  - question\_number: 4
+    verdict: "ACCEPT"              
+    citation\_authority: "s 152-35(1); s 152-40(1)(a)"  
+    reasoning: |
+      Correct treatment: a genuinely vacant period is neither "active" (absent
+
+&#x20;     a case that the space was being held ready for use in the business)
+
+&#x20;     nor "excluded under s 152-40(4)(e)" (no rent is being derived at all
+
+&#x20;     during vacancy, so the rent-exclusion cannot bite). The ownership/test
+
+&#x20;     period for the s 152-35 cumulative threshold keeps running regardless —
+
+&#x20;     vacancy is a pure cost to the ratio (lengthens the denominator without
+
+&#x20;     adding to the numerator), not a neutral non-event.
+    edge\_case\_notes: |
+      On these specific facts (10 of 14.5 years active) a 12-month vacancy
+
+&#x20;     reclassification doesn't flip the outcome. In a tighter fact pattern it
+
+&#x20;     could be outcome-determinative
+
+
+  - question\_number: 5
+    verdict: "FIX"             
+    citation\_authority: "s 152-40(1)(a); s 152-40(4A); s 328-125; s 328-130"  
+    reasoning: |
+      The brief's reference to "s 152-40(1A)" is incorrect — no such
+
+&#x20;     subsection exists. The correct mechanism is: s 152-40(1)(a) already
+
+&#x20;     treats use by a connected entity or affiliate as active use by the
+
+&#x20;     owner; s 152-40(4A) then disregards rent paid by that connected
+
+&#x20;     entity/affiliate for the purposes of the s 152-40(4)(e) main-use-to-
+
+&#x20;     derive-rent exclusion. Connection is tested under s 328-125 (control
+
+&#x20;     test) and affiliate status under s 328-130. On the hypothetical (a
+
+&#x20;     wholly-owned subsidiary occupying the premises), both tests are met
+
+&#x20;     comfortably, and the building would likely be active for the full
+
+&#x20;     ownership period rather than only 10 of 14.5 years.
+    edge\_case\_notes: |
+      
+  - question\_number: 6
+    verdict: "ACCEPT"              
+    citation\_authority: "Div 108 (s 108-70); s 152-35(1)(b); s 152-10"  
+    reasoning: |
+      The gap analysis is directionally sound. Of the four candidates listed,
+
+&#x20;     the most consequential and least obvious is capital improvements
+
+&#x20;     changing the asset's character — under Div 108 (s 108-70), a
+
+&#x20;     sufficiently large improvement can be a separate CGT asset with its own
+
+&#x20;     ownership start date, which would require running the active-asset and
+
+&#x20;     half-of-ownership tests independently for the original asset and the
+
+&#x20;     improvement. Trust/partnership composition changes are also a genuine
+
+&#x20;     gap, both for the connected-entity analysis (Q5) and for downstream
+
+&#x20;     CGT-concession-stakeholder tests. FBT-attributable use and below-market
+
+&#x20;     rent to a connected entity are lower-priority gaps given s 152-40(4A)
+
+&#x20;     already neutralises the rent-quantum question for connected-entity
+
+&#x20;     arrangements.
+    edge\_case\_notes: |
+      Additional gaps beyond the four candidates worth banking: (1) the
+
+&#x20;     s 152-35(1)(b) "ceasing to carry on a business" limb, adjacent to but
+
+&#x20;     distinct from the declining-owner-occupation fact pattern tested here;
+
+&#x20;     (2) the s 152-10 basic conditions (net asset value / turnover /
+
+&#x20;     significant individual tests) as a hard prerequisite gate the
+
+&#x20;     calculator will eventually need, sitting outside the active-asset test
+
+&#x20;     itself; (3) consistency-of-proxy handling where the appropriate
+
+&#x20;     main-use proxy (floor area vs rental value) might need to change
+
+&#x20;     between periods within a single asset's history.
+```
+
+\---
+
+## 3\. Citation audit
+
+*List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on. Mark each: ✓ correct citation / ✗ wrong citation / ⚠ citation exists but is misapplied.*
+
+|#|Authority as cited|Your assessment|Notes|
+|-|-|-|-|
+|1 |s 152-40(1A)|Wrong Citation|No such subsection exists. Correct authorities for the connected-entity scenario are s 152-40(1)(a) (base active-use limb) and s 152-40(4A) (disregard of connected-entity rent for the main-use exclusion).|
+|2|TR 2019/1, cited for the proportional main-use-to-derive-rent methodology (floor area/time/value proxies)|Wrong citation|TR 2019/1 is titled "Income tax: when does a company carry on a business?" and is scoped solely to the s 328-110 small-business-entity / former s 23 ITRA 1986 test. It contains no apportionment methodology and no floor-area/time/value proxy discussion. Its only reference to s 152-40 is a passing footnote to the general concept of "business" in the note to s 152-40(4), not to the main-use exclusion's apportionment test.|
+|3|s 152-35(1); s 152-40(1)(a); s 152-40(3); s 152-40(4)(e)|Correct Citation|Core provisions correctly identified and applied to the scenario's facts|
+|4|TR 2019/1, Example 3 (paras 66-70)|Citation exists but different application|Genuinely supports that letting commercial property to a third party can constitute carrying on a business - relevant to s 152-40(1)(a) (the "used in a business" limb), not to the s 152-40(4)(e) main-use exclusion the brief actually asks about.|
+
+
+
+## 4\. Edge cases surfaced
+
+*Anything the brief did not cover that you think should be tested by a future revision.*
+
+1. Vacancy periods — confirmed as a "pure cost" to the half-of-ownership ratio (denominator runs, numerator doesn't gain), but the brief's facts don't create a case where this is outcome-determinative; a tighter fact pattern should be added to the test suite.
+2. Temporary-use carve-out (s 152-40(4)(e)) untested — a short-term lease pending redevelopment or resale would exercise the "only temporarily" exception, which this brief's scenario never triggers.
+3. Div 108 separate-asset improvements — a large capital improvement mid-ownership could require splitting the active-asset and half-of-ownership calculations across two assets with different start dates. Not addressed anywhere in this bounty.
+4. Mid-ownership changes to trust/partnership/connected-entity status — affects both the Q5 connected-entity analysis and downstream CGT-concession-stakeholder requirements; not addressed.
+
+\---
+
+## 5\. TaxGenii appendix coverage feedback
+
+*Was the pre-loaded statutory appendix (file 05) adequate? What was missing?*
+
+
+
+*TR 2019/1 was incorrect: it's the wrong ruling entirely — it addresses s 328-110 small-business-entity status, not the main-use-to-derive-rent apportionment test this bounty needed. Recommend the KB team treat this as a correctness issue, not a coverage gap, and check whether the same wrong anchor is attached to other active-asset bounties.*
+
+\---
+
+## 6\. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed: [Anonymous]
+Name: [Anonymous]
+Credential: CPA
+Date: 19th July 2026**
+

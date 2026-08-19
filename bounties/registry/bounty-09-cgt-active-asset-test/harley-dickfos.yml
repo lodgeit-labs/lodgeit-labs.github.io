@@ -1,0 +1,167 @@
+# Reviewer verdict — bounty-09-cgt-active-asset-test
+
+> **Reviewer:** Harley Dickfos, Tax Agent (TPB 26334789)
+> **Consent posture:** named
+> **Reward paid (AUD):** $750
+> **Verdict outcome (from reviewer's §6):** FIX
+> **Verdict date:** 2026-07-14
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+---
+brief_id: bounty-09-cgt-active-asset-test
+bounty_title: "CGT small business active-asset test"
+statutory_anchors: "s 152-35, s 152-40 ITAA 1997; TR 2019/1"
+reviewer:
+  name: "Harley Dickfos"
+  credential_class: ""        # TPB 26334789
+  registration_status: ""     # active 
+  jurisdiction: "Australia" 
+  attribution_posture: "named"  #  anonymous
+reviewed_calculator_version: ""  # v0.1-spec
+submission_date: ""              # 2026-07-14
+top_level_verdict: ""            # FIX
+verdict_hash: ""                 # (we compute this on receipt)
+---
+
+# Reviewer Verdict — CGT small business active-asset test
+
+**Bounty:** bounty-09-cgt-active-asset-test
+
+## 1. Top-level verdict
+
+_Choose one: **FIX**
+
+**Your top-level verdict:**
+I would conclude that the worked example produces the correct outcome and is broadly consistent with the active asset provisions.
+
+However, it should not be treated as a complete calculator specification without further refinement.
+
+In particular:
+
+the example may imply a 50% threshold that does not appear in the legislation;
+it assumes floor area is the preferred measurement methodology;
+it provides limited guidance regarding vacancy periods;
+it does not adequately address changing ownership or connected-entity relationships over time; and
+it does not fully explore the interaction between s 152-40(1), s 152-40(1A) and s 152-40(4)(e).
+Accordingly, the example is best viewed as a useful illustration of the legislative outcome rather than a complete implementation specification.
+---
+
+## 2. Per-question verdicts
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    verdict: "Accept"              # ACCEPT 
+    citation_authority: ""   # section reference or case citation
+    reasoning: |
+      # The three principal limbs in s 152-40(1) are:
+
+the asset is used, or held ready for use, in a business carried on by the taxpayer;
+the asset is used, or held ready for use, in a business carried on by an affiliate; or
+the asset is used, or held ready for use, in a business carried on by an entity connected with the taxpayer.
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 2
+    verdict: "Accept"              # ACCEPT 
+    citation_authority: ""   # section reference or case citation
+    reasoning: |
+      # Under s 152-40(4)(e), an asset is excluded where its main use is to derive rent, unless that use is only temporary.
+
+The exclusion applies only where rent-producing use is the asset's predominant use. The derivation of some rent does not, by itself, cause the exclusion to apply.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 3
+    verdict: "Accept"              # ACCEPT 
+    citation_authority: ""   # section reference or case citation
+    reasoning: |
+      # Taxation Ruling TR 2019/1 treats the "main use" inquiry as a comparative question that must be determined having regard to the facts and circumstances. Appropriate indicators may include floor area, rental value, income generation, time-based measures, or other objective methodologies. The focus is on identifying the asset's predominant use in substance.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 4
+    verdict: "Accept"              # ACCEPT
+    citation_authority: ""   # section reference or case citation
+    reasoning: |
+    # For the purposes of s 152-35, a vacant period will generally count as neither active asset time nor excluded time unless the asset was being held ready for use in carrying on a business. Only periods that satisfy the active asset requirements contribute toward the active asset test.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 5
+    verdict: ""              # ACCEPT 
+    citation_authority: "Accept"   # section reference or case citation
+    reasoning: |
+      # Section 152-40(1A) allows business use by a connected entity or affiliate to be attributed to the asset owner for active asset purposes. Consequently, a lease to a wholly-owned operating subsidiary may still support active asset status, provided the connected entity uses the asset in carrying on a business and the remaining legislative requirements are satisfied.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 6
+    verdict: "FIX"              # ACCEPT 
+    citation_authority: ""   # section reference or case citation
+    reasoning: |
+      # The worked example assumes that ownership, control and connected-entity relationships remain unchanged throughout the ownership period. A calculator should not make this assumption.
+
+Because active asset status is tested throughout the ownership period, the calculator should accommodate changes such as:
+
+changes in partnership interests;
+admission or retirement of partners;
+changes in trust ownership arrangements;
+changes of trustee;
+changes in shareholdings affecting connected-entity status;
+business restructures; and
+transactions that cause an entity to cease being connected with the asset owner.
+The calculator should re-assess active asset status whenever a relevant ownership, control or connected-entity change occurs.
+
+
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+```
+
+---
+
+## 3. Citation audit
+
+_List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on. Mark each: ✓ correct citation / ✗ wrong citation / ⚠ citation exists but is misapplied._
+
+| Section | Status | Notes |
+|---------|--------|-------|
+| ITAA 1997 s 152-40(1) | OK     | Correctly states the core active asset test: ownership plus use/held ready for use in a business carried on by the taxpayer, affiliate, or connected entity.|
+|
+| ITAA 1997 s 152-40(1A)  | FIX  | Needs review.|
+| ITAA 1997 s 152-40(4)  | Ok   | Correctly identified as the exclusions subsection.|
+| ITAA 1997 s 152-40(4)(e)  | Ok   | Correctly identified as the rent / interest / royalty / annuity / FX gains exclusion, subject to the temporary-use and development exceptions|
+| ITAA 1997 s 152-40(4A)  | Ok   | Correctly supports the rule that, for paragraph (4)(e), affiliate/connected-entity use is treated as your use and personal use is disregarded.|
+| ITAA 1997 s 152-35  | Ok   | Correctly identified as the active asset test section.|
+| ITAA 1997 s 152-35 (1)  | Ok   | Correct on the 15-years-or-less / more-than-15-years timing thresholds.|
+| ITAA 1997 s 152-35(2) | Ok   | Correctly describes the “relevant period” for the active asset test.|
+| ITAA 1997 s 152-78 | Fix   | Needs review.|
+| ITAA 1997 s 152-10(1)(d)| Fix   | Needs review.|
+| TD 2021/2| Ok  | Needs review.|
+| TD 2006/78| Fix | The citation exists and is relevant to premises used in a business providing accommodation for reward, but it is only useful in that specific accommodation/business context. It should not be treated as authority for all mixed-use or ordinary leased-property cases.|
+| TR 2019/1| Fix | The ruling may be relevant to whether an entity carries on a business, but it does not answer the active asset exclusion question by itself. It should be used only as background, not as the core authority for the calculator’s active asset conclusion.|
+| TR 2006/10| Fix | This is a public rulings / settlements reference in TD 2021/2, not authority for the substantive active asset logic. It should not be cited as legal support for the calculator’s decision rules.|
+
+
+## 4. Edge cases surfaced
+
+_Anything the brief did not cover that you think should be tested by a future revision.No
+
+1.
+2.
+3.
+
+---
+
+## 5. TaxGenii appendix coverage feedback
+
+_Was the pre-loaded statutory appendix (file 05) adequate? What was missing? Yes
+
+---
+
+## 6. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed:**HDICKFOS
+**Name:** Harley Dickfos
+**Credential:** TPB 26334789
+**Date:**14/07/2026
+
+
