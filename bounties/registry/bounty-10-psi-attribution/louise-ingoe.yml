@@ -1,0 +1,142 @@
+# Reviewer verdict — bounty-10-psi-attribution
+
+> **Reviewer:** Louise Ingoe, CA + Tax Agent (TPB)
+> **Consent posture:** named
+> **Reward paid (AUD):** $850
+> **Verdict outcome (from reviewer's §6):** ACCEPT
+> **Verdict date:** 2026-07-17
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+---
+brief_id: bounty-10-psi-attribution
+bounty_title: "PSI attribution — 80/20 and results test"
+statutory_anchors: "Div 84–87 ITAA 1997; s 87-15, 87-18, 87-20, 87-25, 87-30"
+reviewer:
+  name: "Louise Ingoe"
+  credential_class: "CA / TPB"        # CA / CTA / CPA / FIPA / MIPA / TPB
+  registration_status: "active"     # active / lapsed / retired
+  jurisdiction: "Australia"
+  attribution_posture: "named"  # named | initialled | anonymous
+reviewed_calculator_version: ""  # copy from brief
+submission_date: "2026-07-17"              # YYYY-MM-DD
+top_level_verdict: "ACCEPT"            # ACCEPT / REJECT / FIX
+verdict_hash: ""                 # (we compute this on receipt)
+---
+
+# Reviewer Verdict — PSI attribution — 80/20 and results test
+
+**Bounty:** bounty-10-psi-attribution
+
+## 1. Top-level verdict
+
+_Choose one: **ACCEPT / REJECT / FIX**._
+
+- **ACCEPT** — the calculator's statute-to-predicate translation is correct on the facts of the brief. Minor stylistic comments allowed.
+- **REJECT** — the calculator's translation is materially wrong. State the section/case-law authority you rely on.
+- **FIX** — the translation is mostly correct but has a specific error that can be fixed with a targeted change. Describe the fix.
+
+**Your top-level verdict: ACCEPT**
+
+---
+
+## 2. Per-question verdicts
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "s 87-15(3)"   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: | - When a tax payer's PSI is obtained from 80% or more from one client, or related clients. Employment income, office holder payments and payments to religious practitioners are excluded from this consideration. For example a person who is contracted and then becomes an employee, the individual would only include the revenue from the contract.
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 2
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "s 87-15(2)"   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |- s 87-18: The results test, s 87-20: The unrelated clients test, s 87-25: The employment test, s 87-30: The business premises test
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 3
+    verdict: "FIX"              # ACCEPT / REJECT / FIX
+    citation_authority: "s 87-20(1)(b), TR2022/3, Commissioner of Taxation v Fortunatow [2020] FCAFC 139; 278 FCR 409"   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: | - Offers or invitations to the public can include advertising on the internet, radio, tv or print, having a website or submitting public tenders (TR2022/3). a LinkedIn page can constitute the making of an offer or invitation to the public (CoT v Fortunatow). The offer needs to have been made to the client, and be directly related to why they have chosen to undertake the services. The taxpayer cannot have simply made the offer or availability known to an intermediary (CoT v Fortunatow). Practically the more public offers shown by a taxpayer (e.g. a website plus a LinedIn profile plus advertising), the more weight there is to support the argument of making public offers.
+      # Optional — anything surfaced by this question worth banking. - CoT v Fortunatow put a heavy emphasis on the 'direct result' wording in s 87-20(1)(b).
+  - question_number: 4
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "s 87-18, ATO ID 2006/248 by reference to Vaughn v. Official Trustee in Bankruptcy, Douglass v Commissioner of Taxation [2019] FCA 1246, Home Building Act 1989 (NSW), Bellgrove v Eldridge (1954) 90 CLR 613"   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: | - s 87-18(1)(a): the income is for producing a result. The contract between the two entities must require the taxpayer to produce a result in order to get paid (Douglass v CoT)., s 87-18(1)(b): supply of plant and equipment or tools of trade. Any tool required to perform the work can be considered a 'tool of trade', thus a laptop or software could be considered a 'tool of trade' (ATO ID 2006/248). The ATO also provides clarification on their website that you are not precluded from meeting this point just because you do not require any equipment., s87-18(1)(c) the taxpayer is liable for the cost of rectifying defective work. Contracts should specify that the taxpayer is required to rectify any defective work at no extra cost. The concept of rectifying work or being entitled to claim rectification damages is common in the building industry, as demonstrated in the Home Building Act 1989 in NSW and Bellgrove v Eldridge (1954) 90 CLR 613. Time-and-materials engagements tend to fare worse than fixed-price engagements because they usually refer to work being undertaken rather than producing a specific result, therefore not passing limb one. Both contracts will usually pass the other two limbs evenly. However, each contract will be reviewed based on all three limbs and a fixed-price engagement may not tick all of the boxes, while a time-and-materials one might. So, it is important to review the full contract, not just the type.
+      # Optional — anything surfaced by this question worth banking. - Note that only 75% of the income has to pass this test. The other 25% can fail the test.
+  - question_number: 5
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "TR2022/3, PCG2025/5, TR 2023/4"   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: | - PCG2025/5 provides that 'Principal work does not include associated clerical or administrative work (such as bookkeeping and answering phones)'. Employment or contractor engagement is appropriate for this test as the legislation refers to engages one or more entities. It does not refer to 'employee', which as it is not defined in ITAA 1936 or ITAA 1997 takes on its ordinary meaning (TR 2023/4). This is also supported by TR 2022/3 para 112.
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 6
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "s 86-15, s 86-20, TR 2003/6, s 12-35 schedule 1 ITAA 1953, Div 86, Schedule 1 ITAA 1953"   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: | - Amounts paid by a PSE to the individual as salary and wages are treated as salary and wages and require PAYG withholding, the same as any other employee (s 12-35 schedule 1 ITAA 1953). Amounts that are not paid as salary and wages need to be attributed (s 86-15 and s 86-20, TR 2003/6), and additional PAYG needs to be withheld (s 13-5(1)(a) schedule 1 ITAA 1953) on a quarterly or monthly basis, depending on the withholding size of the PSE (s 13-5(4),(5) schedule 1 ITAA 1953).
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 7
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "TR 2003/6, PCG 2025/5, s 86-30, s 86-35, Part IVA ITAA 1936, TR 2022/3"   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |- Div 86 provides sections like 86-35 to ensure amounts are not double taxed across entities. However, when a distribution is made to a company and that company distributes an amount from its profits to a non-associate of the test individual, the amount will be taxable in the hands of that shareholder (TR 2003/6). While income from a partnership is usually split based on the partnership agreement, the taxing of personal services income is connected to the individual who undertook the work (ss 86-35, 86-30). Therefore, care should be given to identifying the difference between the accounting distribution and the taxation distribution in a partnership return or revenue received by a partner from a partnership (TR 2022/3). In addition to considering the amount of PSI being attributed, consideration must also go to any revenue obtained by the PSE that was not for reward of services, such as the sale of goods. This income can be attributed or disbursed as seen fit by the entity (TR 2022/3). Most importantly Part IVA should be considered as the Commissioner can use this to override any income splitting or 'tax benefit' (PCG 2025/5). From a practical perspective when lodging a tax return the facts will be demonstrated and the tax can be calculated based on those facts. However, it would be possible for the software to review all connected entities and make note that the structure may be considered high risk based on the examples in PCG 2025/5.
+      # Optional — anything surfaced by this question worth banking.
+```
+
+---
+
+## 3. Citation audit
+
+_List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on. Mark each: ✓ correct citation / ✗ wrong citation / ⚠ citation exists but is misapplied._
+
+| # | Authority as cited | Your assessment | Notes |
+|---|---|---|---|
+| 1 |s 84-5  |✓ correct citation  |  |
+| 2 |s 87-15(3)  |✓ correct citation  | Ensure a fail relates to 80% or more, or a pass is less than 80% |
+| 3 |s 87-20  |✓ correct citation  | |
+| 4 |Commissioner of Taxation v Fortunatow [2020] FCAFC 139; 278 FCR 409  |⚠ citation exists but is misapplied  |The load-bearing consideration isn't reviewing the offers or invitations directly to each contract. Their needs to be a direct connection between the offers and the contracts. If Jason's BigBankCorp contract was obtained by word of mouth and his brother-in-law's contract is obviously obtained through his relationship, he would need the other two contracts to have been obtained by tender or from direct request from those clients, due to finding him through his website or LinkedIn profile  |
+| 5 |TR 2022/3  |✓ correct citation  | A LinkedIn profile and tenders can be considered offers |
+| 6 |s 87-18  |✓ correct citation  | The assumption of time-and-materials contracts rarely passing the results test is true, however, the facts are what matters not the type of contract |
+| 7 |Div 86  |✓ correct citation  | PSI will need to be attributed under Div 86 if the tests are not passed |
+---
+
+## 4. Edge cases surfaced
+
+_Anything the brief did not cover that you think should be tested by a future revision._
+
+1. ATO ID 2006/248 by reference to Vaughn v. Official Trustee in Bankruptcy - Definition of tools of trade
+2. Douglass v Commissioner of Taxation [2019] FCA 1246 - Results test, usual practice does not constitute a result
+3.
+
+---
+
+## 5. TaxGenii appendix coverage feedback
+
+_Was the pre-loaded statutory appendix (file 05) adequate? What was missing?_
+To truly understand the impacts of PSI rules, PCGs and TRs provided by the ATO should be referred to. I believe the following should have been listed as required reading
+- PCG 2025/5
+- TR 2022/3
+- TR 2003/6
+---
+
+## 6. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed:** "Louise Ingoe"
+**Name:** "Louise Ingoe"
+**Credential:** "CA and TPB"
+**Date:** "17 July 2026"

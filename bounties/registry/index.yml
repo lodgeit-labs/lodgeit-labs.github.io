@@ -1,0 +1,122 @@
+# Bounty programme reviewer registry
+# Append-only by design. New verdicts append a new entry; existing entries are
+# never mutated in-place (integrity of published-sha256 requires this).
+# Source of truth for build-time rendering of Reviewed blocks + status badges.
+
+schema_version: 1
+programme_total_paid_aud: 6650
+programme_unfulfilled_prize_aud: 1350
+verdict_count: 10
+
+entries:
+  - bounty: bounty-01-div7a-minimum-yearly-repayment
+    reviewer: 'Bhunesh Patel'
+    credential: 'CPA'
+    consent: named
+    reward_aud: 650
+    verdict: FIX_THEN_RE_REVIEW
+    date: '2026-07-13'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-01-div7a-minimum-yearly-repayment/bhunesh-patel.yml
+    sha256: c223dbc59b53c98abc4cbba62e5afd26514e062ab86c97f56e5be26e0dbf42d7
+  - bounty: bounty-02-depreciation-effective-life
+    reviewer: 'Sheyne Glyde'
+    credential: 'Tax Agent (TPB 26262744)'
+    consent: named
+    reward_aud: 400
+    verdict: REJECT
+    date: '2026-07-13'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-02-depreciation-effective-life/sheyne-glyde.yml
+    sha256: fa141560412174ea1697fd3e7d444b91f6baaa9788a4776944775615885d8c51
+  - bounty: bounty-04-small-business-general-pool
+    reviewer: 'Benjamin Mueller'
+    credential: 'Tax Agent (TPB — lapsed)'
+    consent: named
+    reward_aud: 600
+    verdict: FIX
+    date: '2026-07-10'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-04-small-business-general-pool/benjamin-mueller.yml
+    sha256: 0042bb921ccb3983bd8f82668b1b499d58b1c6400d7fe1f86d6b55d2a28c070b
+  - bounty: bounty-04-small-business-general-pool
+    reviewer: 'Tim Martin'
+    credential: 'CPA + Tax Agent (TPB)'
+    consent: named
+    reward_aud: 600
+    verdict: ACCEPT
+    date: '2026-07-19'
+    status: paid_reviewed
+    yaml_path: null
+    sha256: null
+    note: 'verdict text not published'
+  - bounty: bounty-05-fbt-car-statutory-vs-operating
+    reviewer: 'Sami Charaf'
+    credential: 'FIPA + Tax Agent (TPB)'
+    consent: named
+    reward_aud: 800
+    verdict: FIX
+    date: '2026-07-19'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-05-fbt-car-statutory-vs-operating/sami-charaf.yml
+    sha256: a8fd916641f6fedecb49ae06b6e05e7297d2eb6fbe86c2e1b65a5366562b90ad
+  - bounty: bounty-06-fbt-car-parking
+    reviewer: 'Graeme Pollard'
+    credential: 'LLB, GDLP, LLM (tax lawyer)'
+    consent: named
+    reward_aud: 700
+    verdict: FIX
+    date: '2026-07-13'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-06-fbt-car-parking/graeme-pollard.yml
+    sha256: d84466eade517c276f247ca4823dc35af8ddcb523fcb8ad87e5d3fb4fb032ccd
+  - bounty: bounty-07-hire-purchase-interest-apportionment
+    reviewer: 'L.W.'
+    credential: 'Tax Agent (TPB 51194 009)'
+    consent: initialled
+    reward_aud: 550
+    verdict: ACCEPT
+    date: '2026-07-14'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-07-hire-purchase-interest-apportionment/lw.yml
+    sha256: 10f4e3fb325e366ffc8f4a0f6b7c0002105664da85305bf8e7cf9ed159e4e453
+  - bounty: bounty-09-cgt-active-asset-test
+    reviewer: 'Harley Dickfos'
+    credential: 'Tax Agent (TPB 26334789)'
+    consent: named
+    reward_aud: 750
+    verdict: FIX
+    date: '2026-07-14'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-09-cgt-active-asset-test/harley-dickfos.yml
+    sha256: 3c10d6572cc287d25237d0a824241adf9e977ad0c42f67664294446ca600f4f2
+    supplement:
+      yaml_path: bounties/registry/bounty-09-cgt-active-asset-test/harley-dickfos-round1.yml
+      sha256: bcf8d88b7eb6142a9f0d5947b2c50e154eb33e765aac4fec3ed710a5fbe02c34
+      label: 'Round 1 submission (superseded by resubmit above)'
+  - bounty: bounty-09-cgt-active-asset-test
+    reviewer: 'Anonymous'
+    credential: 'CPA'
+    consent: anonymous
+    reward_aud: 750
+    verdict: FIX
+    date: '2026-07-19'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-09-cgt-active-asset-test/anonymous-cpa.yml
+    sha256: 851162d48f54a2450a4fa661182cdcf2c47c8a34d27d6edf38d8f6bc7c930ae1
+  - bounty: bounty-10-psi-attribution
+    reviewer: 'Louise Ingoe'
+    credential: 'CA + Tax Agent (TPB)'
+    consent: named
+    reward_aud: 850
+    verdict: ACCEPT
+    date: '2026-07-17'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-10-psi-attribution/louise-ingoe.yml
+    sha256: 7e3f04473c2b3ce9f9e00826b889faa79e82d2a21ed5e5d269b54d24fbfa4aed
+
+in_progress:
+  - bounty: bounty-03-instant-asset-write-off
+    prize_aud: 450
+  - bounty: bounty-08-cgt-sb-15-year-exemption
+    prize_aud: 900

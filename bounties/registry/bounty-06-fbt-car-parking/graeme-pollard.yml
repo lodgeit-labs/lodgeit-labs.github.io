@@ -1,0 +1,129 @@
+# Reviewer verdict — bounty-06-fbt-car-parking
+
+> **Reviewer:** Graeme Pollard, LLB, GDLP, LLM (tax lawyer)
+> **Consent posture:** named
+> **Reward paid (AUD):** $700
+> **Verdict outcome (from reviewer's §6):** FIX
+> **Verdict date:** 2026-07-13
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+---
+brief_id: bounty-06-fbt-car-parking
+bounty_title: "FBT car parking — commercial parking station threshold"
+statutory_anchors: "s 39A FBTAA 1986; TR 2021/2"
+reviewer:
+  name: "Graeme Pollard"
+  credential_class: "LLB, GDLP, LLM"        # CA / CTA / CPA / FIPA / MIPA / TPB
+  registration_status: "N/A"     # active / lapsed / retired
+  jurisdiction: "Australia"
+  attribution_posture: "named"  # named | initialled | anonymous
+reviewed_calculator_version: "v0.2.0"  # copy from brief
+submission_date: "2026-07-13"              # YYYY-MM-DD
+top_level_verdict: "FIX"            # ACCEPT / REJECT / FIX
+verdict_hash: ""                 # (we compute this on receipt)
+---
+
+# Reviewer Verdict — FBT car parking — commercial parking station threshold
+
+**Bounty:** bounty-06-fbt-car-parking
+
+## 1. Top-level verdict
+
+_Choose one: **ACCEPT** / **REJECT** / **FIX**._
+
+- **ACCEPT** — the calculator's statute-to-predicate translation is correct on the facts of the brief. Minor stylistic comments allowed.
+- **REJECT** — the calculator's translation is materially wrong. State the section/case-law authority you rely on.
+- **FIX** — the translation is mostly correct but has a specific error that can be fixed with a targeted change. Describe the fix.
+
+**Your top-level verdict:** FIX
+
+---
+
+## 2. Per-question verdicts
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "ATO Car Parking Threshold Rates Table (FY2025)"   # section reference or case citation
+    reasoning: |
+      The engine correctly identifies the FY2025 threshold as $10.77.
+    edge_case_notes: |
+      None.
+  - question_number: 2
+    verdict: "FIX"              # ACCEPT / REJECT / FIX
+    citation_authority: "FBTAA 1986, s 39B; TR 2021/2, para 17"   # section reference or case citation
+    reasoning: |
+      The engine incorrectly evaluates the 1 km radius by reference to a Google Maps straight line radius search. However the 1km distance is not to be measured as a straight line or 'as the crow flies'. Instead, it must be measured via the 'shortest practicable route', travelled by foot, car, train or boat, starting from the closest vehicle entrance of the employer's work car park to the closest vehicle entrance of the commercial parking station. Currently the engine identifies all stations within a 1km radius, however these stations must pass through a second filter to exclude those whose 'shortest practicable route' exceeds 1km.
+    edge_case_notes: |
+      The calculator engine code must be updated to transition away from raw geodesic distance models and instead query a road-network routing API that calculates true travel-path distances.
+  - question_number: 3
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "FBTAA 1986, s 39A; TR 2021/2, paras 34-41; Commissioner of Taxation v Toowoomba Regional Council [2026] FCAFC 50"   # section reference or case citation
+    reasoning: |
+      The engine correctly identifies stations 4 and 5 as commercial parking stations. The test in accordance with TR 2021/2 is purely objective: if the facility is permanent, open to the public, and charges a fee for all-day parking in the ordinary course of business, it is a commercial parking station. The previous position under TR 96/26 that car parks primary to another business purpose (like hotels, hospitals, churches, or shopping centres) is no longer relevant.  
+    edge_case_notes: |
+      The position as established by TR 2021/2 was confirmed by the Federal Court decision in Commissioner of Taxation v Toowoomba Regional Council [2026] FCAFC 50, which also confirmed that the "40% capacity rule" is no longer relevant.
+  - question_number: 4
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "TR 2021/2, para 4"   # section reference or case citation
+    reasoning: |
+      The engine correctly identifies that 'all-day parking' means a continuous 6+ hour period during the day.
+    edge_case_notes: |
+      None.
+  - question_number: 5
+    verdict: "ACCEPT"              # ACCEPT / REJECT / FIX
+    citation_authority: "TR 2021/2, para 52"   # section reference or case citation
+    reasoning: |
+      The engine correctly adopts the early-bird rate as the 'lowest fee'. It is irrelevant that the employer's specific employees may arrive too late to use it. The threshold test measures public availability, not individual employee behavior. Because the engine's filter (`if s.is_all_day_parking`) has already established that the stations being evaluated meet the 6-hour continuous stay profile, running a flat `min()` across those qualified entries produces a legally correct result.
+    edge_case_notes: |
+      None.
+  - question_number: 6
+    verdict: "FIX"              # ACCEPT / REJECT / FIX
+    citation_authority: "FBTAA 1986, s 39AB; TR 2021/2, paras 50-51"   # section reference or case citation
+    reasoning: |
+      The engine completely overlooks the mandatory 'Representative Fee' test. Paragraph 50 of TR 2021/2 establishes that an employer cannot use an isolated, one-day cheap promotional rate if it is unrepresentative of the provider's standard fees. The engine needs a fix to look at a broader 4-week window to ensure it reflects a stable market rate on the first business day of the FBT year.
+    edge_case_notes: |
+      The calculator engine requires a database structural upgrade to support historical 4-week rate logs rather than relying entirely on a single daily snapshot variable.
+```
+
+---
+
+## 3. Citation audit
+
+_List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on. Mark each: ✓ correct citation / ✗ wrong citation / ⚠ citation exists but is misapplied._
+
+| # | Authority as cited | Your assessment | Notes |
+|---|---|---|---|
+| 1 | FBTAA 1986, s 39A | ✓ correct citation | The brief and calculator correctly identify this as the core operative section for car parking fringe benefits. |
+| 2 | FBTAA 1986, s 39A(1)(f) | ⚠ citation exists but is misapplied | Referenced for the commercial parking station limb, however the engine misapplies it by executing a flat Google Maps radius search instead of calculating the 'shortest practicable route'. |
+| 3 | TR 2021/2 | ⚠ citation exists but is misapplied | The ruling is referenced to widen the commercial scope, however the engine completely overlooks the mandatory 'Representative Fee' rule in paragraph 50 which requires a 4-week window analysis. |
+
+---
+
+## 4. Edge cases surfaced
+
+_Anything the brief did not cover that you think should be tested by a future revision._
+
+None.
+
+---
+
+## 5. TaxGenii appendix coverage feedback
+
+_Was the pre-loaded statutory appendix (file 05) adequate? What was missing?_
+
+Adequate, however a coverage gap exists with respect to the Federal Court decision of Commissioner of Taxation v Toowoomba Regional Council [2026] FCAFC 50, which was delivered on 27 April 2026.
+
+---
+
+## 6. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed:** GP
+**Name:** Graeme Pollard
+**Credential:** LLB, GDLP, LLM
+**Date:** 13 July 2026

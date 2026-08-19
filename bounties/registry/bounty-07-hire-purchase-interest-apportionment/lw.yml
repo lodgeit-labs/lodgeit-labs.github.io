@@ -1,0 +1,130 @@
+# Reviewer verdict — bounty-07-hire-purchase-interest-apportionment
+
+> **Reviewer:** L.W., Tax Agent (TPB 51194 009)
+> **Consent posture:** initialled
+> **Reward paid (AUD):** $550
+> **Verdict outcome (from reviewer's §6):** ACCEPT
+> **Verdict date:** 2026-07-14
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+---
+brief_id: bounty-07-hire-purchase-interest-apportionment
+bounty_title: "Hire purchase — interest apportionment"
+statutory_anchors: "Div 240 ITAA 1997; s 240-25, s 240-40"
+reviewer:
+  name: "L.W."
+  credential_class: "TPB"        
+  registration_status: "active"     
+  jurisdiction: "Australia"
+  attribution_posture: "initialled" 
+reviewed_calculator_version: "copy from brief"  
+submission_date: "2026-07-14"           
+top_level_verdict: "ACCEPT"            
+verdict_hash: ""                 # (we compute this on receipt)
+---
+
+# Reviewer Verdict — Hire purchase — interest apportionment
+
+**Bounty:** bounty-07-hire-purchase-interest-apportionment
+
+## 1. Top-level verdict
+
+_Choose one: **ACCEPT** _
+
+- **ACCEPT** — the calculator's statute-to-predicate translation is correct on the facts of the brief. Minor stylistic comments allowed.
+
+
+**Your top-level verdict:*ACCEPT*
+
+---
+
+## 2. Per-question verdicts
+
+```yaml
+per_question_verdicts:
+  - question_number: 1
+    verdict: "ACCEPT"             
+    citation_authority: "section 240.25 ITAA 1997 hire purchase agreement is recategorised as notional loan." 
+    reasoning: Notional buyer may be entitled to notional interest on notional loan.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 2
+    verdict: "ACCEPT"             
+    citation_authority: "section 240.50 ITAA 1997 Notional interest is deductible to the extent that would otherwise have been entitled."  
+    reasoning: TR 2005/20 deals with interaction of hire purchase and holding requirements for Division 40 depreciation.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 3
+    verdict: "ACCEPT"              
+    citation_authority: "Section 240.60 ITAA 1997 uses implicit interest rate; i.e. actuarial method of calculation"   
+    reasoning: TR 93/16 details when Rule of 78 may be used, which is rare given Division 240 applies to all hire purchase agreements from 27 February 1998.
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 4
+    verdict: "ACCEPT"              
+    citation_authority: "section 240.60(2) ITAA 1997 subtracts both payments made - deposits and payments due to be made i.e. balloon payment. It is thus treated as final principal payment.
+    "   # section reference or case citation
+    reasoning: |
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 5
+    verdict: "ACCEPT"             
+    citation_authority: " ATO ID 2013/52 deals with GST when a hire purchase agreement is terminated early. Accrued notional interest previously deductible is unchanged.TR 93/16 deals with Rule of 78, only pre 27/2/98 transactions and when financier does not give any detail of how interest is calculated."   
+    reasoning: Unearned interest under Rule of 78 unlikely given Division 240 has been in operation for over 28 years
+      # Free-text reasoning here. Cite where you diverge.
+    edge_case_notes: |
+      # Optional — anything surfaced by this question worth banking.
+  - question_number: 6
+    verdict: "ACCEPT"              
+    citation_authority: " Section 240.60 provides method of calculating notional interest
+TR 2005/20 covers interaction with Division 40."   
+    reasoning: The asset must be wholly or partially used for income producing purposes. 
+      
+    edge_case_notes: |
+      # Optional — Notional buyer should not have an obligation for what the financier reports.
+anything surfaced by this question worth banking.
+```
+
+---
+
+## 3. Citation audit
+
+_List every statutory section, ATO ruling, or case-law citation the calculator/brief relies on. Mark each: ✓ correct citation / ✗ wrong citation / ⚠ citation exists but is misapplied._
+
+| # | Authority as cited | Your assessment | Notes |
+|---|---|---|---|
+| 1 |  |  |  |
+| 2 |  |  |  |
+| 3 |  |  |  |
+
+---
+
+## 4. Edge cases surfaced
+
+_Anything the brief did not cover that you think should be tested by a future revision._
+
+1.
+2.
+3.
+
+---
+
+## 5. TaxGenii appendix coverage feedback
+
+_Was the pre-loaded statutory appendix (file 05) adequate? What was missing?_
+
+---
+
+## 6. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed:**
+**Name:**
+**Credential:**
+**Date:**

@@ -1,0 +1,201 @@
+# Reviewer verdict — bounty-01-div7a-minimum-yearly-repayment
+
+> **Reviewer:** Bhunesh Patel, CPA
+> **Consent posture:** named
+> **Reward paid (AUD):** $650
+> **Verdict outcome (from reviewer's §6):** FIX_THEN_RE_REVIEW
+> **Verdict date:** 2026-07-13
+> **PII sweep:** applied (see build script for pattern set); receipts logged in this PR body.
+
+---
+
+Reviewer Verdict — Div 7A MYR Calculator, FY2025
+
+Bounty: bounty-01-div7a-myr  ·  Calculator: lodgeit-labs/Div7A\_Calculator  ·  Income year: FY2025
+
+Preparation note: The analysis below was researched and drafted using publicly available ATO guidance and the text of ss 109D, 109E and 109N ITAA 1936, to give you a working first draft against the brief. It is not a substitute for your own professional judgement, and it is not a qualified reviewer's sign-off in itself — the fields highlighted in yellow throughout this document are the ones only you can complete (your identity, credentials, dates, time spent, and signature), and you should read through the substantive analysis and satisfy yourself of it before this is submitted or hash-anchored anywhere.
+
+Front matter
+
+calculator\_commit: \[fill in: short SHA of the engine version reviewed]
+
+reviewer name: \[BHUNESH PATEL]
+
+reviewer role / credential class: \[CPA]
+
+affiliation: \[independent]
+
+reviewer\_id: \[to be assigned by LodgeiT Labs]
+
+received\_date: \[2026-07-10]
+
+started\_date: \[2026-07-13]
+
+completed\_date: \[2026-07-13]
+
+time\_spent\_hours: \[3.00]
+
+verdict: FIX\_THEN\_RE\_REVIEW
+
+verdict\_confidence: MEDIUM-HIGH
+
+1\. Headline verdict
+
+FIX\_THEN\_RE\_REVIEW. The core maths is sound: the s 109E(6) formula is correctly and faithfully encoded, and — contrary to the brief's own working hypothesis — the engine's treatment of the $30,000 pre-lodgment-day repayment (netting it against principal before applying the formula) is the treatment the ATO's own published worked examples use, not an error. What isn't yet safe to ship is everything around the formula: the calculator doesn't validate the s 109N preconditions it silently assumes are true, doesn't label which income year its MYR output applies to, hasn't demonstrated correct behaviour beyond the loan's first repayment year, and its documentation cites two statute references incorrectly (s 109E(2) and "TD 2024/X", neither of which say what the brief says they say). None of these are formula bugs; all of them are the kind of gap that turns a mathematically correct engine into a misleading one in a careless caller's hands.
+
+2\. Statute-citation audit
+
+Statute claimed
+
+Correctly cited?
+
+Correct citation / note
+
+ITAA 1936 s 109D(1)
+
+YES
+
+Fine as a general anchor — s 109D(1) is the core deeming rule; the exclusions live in s 109N.
+
+ITAA 1936 s 109N(3)
+
+PARTLY
+
+s 109N(3) only defines the maximum term (7 / 25 years). The three-limb exclusion test (agreement in writing, benchmark interest rate, term within the max) is s 109N(1)(a)-(c). The benchmark-rate definition itself is s 109N(2), not (3).
+
+ITAA 1936 s 109E(6)
+
+YES
+
+The formula is in s 109E(6), gated by s 109E(5) ("the MYR is worked out using the formula in subsection (6), unless the regulations provide otherwise").
+
+ITAA 1936 s 109E(2)
+
+NO
+
+The amalgamated-loan definition and the "amount of the amalgamated loan" rule are in s 109E(3), not (2). Payments on constituent loans being treated as payments on the amalgamated loan is s 109E(4).
+
+TD 2024/X (FY2025 benchmark)
+
+NO
+
+No such determination exists. The ATO stopped issuing an annual benchmark-rate TD after TD 2018/14 (withdrawn). The rate is now set automatically each year by s 109N(2) as the RBA "Indicator Lending Rates — Bank variable housing loans, owner-occupier" rate last published before the year starts (effectively the May figure). For FY2025 that rate is 8.77%, up from 8.27% in FY2024 and stepping down to 8.37% in FY2026.
+
+Additional references the calculator's documentation should probably carry:
+
+? s 109N(1)(a)–(c) — the actual three-limb exclusion test (agreement in writing / benchmark rate / term within the max), rather than citing (3) alone for all of it.
+
+? s 109N(2) — the definition of "benchmark interest rate" (RBA indicator lending rate published before the year starts), which is what should be cited in place of the non-existent "TD 2024/X".
+
+? s 109E(3)–(4) — amalgamation and the "amount of the amalgamated loan" rule.
+
+? s 109E(7) — the definition of the remaining-term variable "n" used in the s 109E(6) formula.
+
+3\. Formula-fidelity verdict
+
+Yes — algebraically identical to the statute, just expressed as a single closed-form fraction rather than the ATO's five-step manual walkthrough (multiply balance by rate; divide 1 by (1+rate); raise to the power of the remaining term; take 1 minus that; divide step 1 by step 4). Both reduce to MYR = (L × r) / (1 ? (1+r)^?n).
+
+Is the engine's "Remaining Term" correct? Yes for the calculation shown, but only provisionally validated. Under s 109E(7), n = (the longest term among the constituent loans) minus (the whole number of years between the end of the year the loan was made and the end of the year before the year the MYR is being worked out). For the very first MYR year — the year immediately after the loan was made — that subtracted figure is zero, so n does equal the full original term (7 here). That is exactly what the engine did, which is a point in its favour, not against it. But the brief and worked example only exercise year 1. Year 2 should use n = 6, year 3 should use n = 5, and so on down to n = 1 in the loan's final year — none of that decrementing behaviour has actually been demonstrated.
+
+4\. Forensic question answers
+
+Q1 — s 109E(6) statute pin
+
+Equivalent, as set out in Section 3 above. On variable naming: the statute's own label for the base figure is "the amount of the loan not repaid by the end of the previous year of income" (per ATO ID 2013/36), not "amalgamated loan balance." Those two things coincide in year 1 (the amalgamated amount at lodgment day is the opening balance for year 1's MYR), but they diverge from year 2 onward, once the balance has started amortising. The engine's variable name is only safe if it's understood to mean "this year's opening balance," not "the fixed amalgamated loan figure" — see the naming edge case in Section 5.
+
+Q2 — timing-of-repayments (the load-bearing question)
+
+The engine is correct, and this is well settled rather than ambiguous: s 109E(3)–(4) defines the amount of an amalgamated loan as the sum of the constituent loans that have not been repaid before lodgment day for the year the loan was made. The ATO's own published worked example on this exact point nets a pre-lodgment-day repayment off the principal before the amalgamated amount (and hence the MYR base) is struck — precisely the engine's Option A. Option B, as framed in the worked example (computing the MYR on the full original balance and crediting the repayment against that MYR figure), doesn't reflect the mechanics of s 109E(3)/(4) for this scenario: the repayment reduces the amalgamated loan amount itself, it isn't a payment credited against a year-1 MYR (there is no MYR obligation in year 1 at all — see Q5/edge cases). One nuance worth flagging for the calculator's documentation: this netting only applies to repayments made before lodgment day for the year the loan was made. A different rule (ATO ID 2013/36) applies to shortfalls in later years — a capital shortfall that triggers a deemed dividend in one year does NOT get netted off the opening balance for the following year's MYR. That's a distinct, later-year scenario the engine doesn't need to handle for this bounty, but the documentation should be precise about which rule it's applying and when.
+
+Q3 — FY2025 benchmark interest rate citation
+
+8.77% is the correct FY2025 (1 July 2024 – 30 June 2025) Div 7A benchmark rate — up from 8.27% in FY2024 and stepping down to 8.37% in FY2026. There is, however, no "TD 2024/X" to cite. The ATO stopped issuing an annual determination for this rate after TD 2018/14 was withdrawn. Since then, s 109N(2) sets the rate automatically each year as the RBA's "Indicator Lending Rates — Bank variable housing loans; Standard; Owner-occupier" figure last published before the income year starts — in practice, the rate published for May. That means the rate for a mid-year run is knowable in advance (it's fixed by the prior May's published figure, not backdated), but the correct citation is the statutory formula (s 109N(2)) plus the specific RBA publication it points to for that year, not a Taxation Determination number.
+
+Q4 — secured-loan 25-year term requirements
+
+Under s 109N(3), the 25-year term requires: the whole of the loan to be secured by a registered mortgage over real property (registered under the relevant State/Territory law); and, when the loan is first made, the market value of that property — net of any other liabilities secured over it in priority to this loan — must be at least 110% of the loan amount. Only a registered mortgage over real property qualifies; chattel mortgages, charges over shares, and personal guarantees don't meet the s 109N(3) test (they may still be commercially useful security, just not security that unlocks the 25-year term). On partial security: the wording ("the whole of the loan" secured) is generally read as requiring full security, not partial — I'd flag a partially-secured loan as a genuine open question for a partner sign-off rather than assume it qualifies pro-rata. On refinancing: converting an unsecured loan to a secured one extends the term, but the clock isn't reset — the maximum secured term becomes 25 years less however much of the unsecured term had already run. The engine currently trusts loan\_type wholesale and validates none of this — see the CRITICAL/WARNING edge cases in Section 5.
+
+Q5 — s 109N(3) precondition validation gaps
+
+If there's no written agreement in place before lodgment day, the loan simply isn't excluded by s 109N at all — the entire unpaid balance is a deemed dividend under s 109D(1) in the year the loan was made (subject to the s 109Y distributable-surplus cap). In that scenario the MYR calculation isn't a smaller, more conservative answer than the truth — it's the wrong question. A careless practitioner who ran this calculator on a loan with no written agreement would get a plausible-looking MYR figure for a loan that in fact has no MYR mechanism available to it; the deemed dividend has already crystallised. If the interest rate actually charged in a prior year fell short of the benchmark for that year, the position is less clean-cut: s 109N(1)(b) is framed around what the agreement specifies for future years, so a single year's under-charging is more naturally analysed as an MYR shortfall for that year under s 109E than as retrospectively disqualifying the loan from ever having been a complying loan — but I'd want a second opinion on this before treating it as settled, since the interaction between the agreement's stated terms and actual conduct each year isn't something I've seen definitively tested.
+
+Q6 — multi-loan amalgamation under s 109E(2)/(3)
+
+First, the citation: this rule is in s 109E(3), not (2) — see Section 2. On the substance: loans amalgamate under s 109E(3) if they are made to the same entity in the same income year, each is unrepaid before that year's lodgment day, each would (absent s 109N) trigger s 109D, and — critically — each shares the same maximum term. For the three-loan example ($40k/15 July 2024, $35k/1 December 2024, $25k/1 May 2025), all three would amalgamate into a single $100,000 amalgamated loan provided all three are unsecured 7-year loans (or all secured 25-year loans) on the same terms; "same income year" is tested by the year the funds were actually advanced (the year the loan was made), not the agreement date or the year it became a Div 7A loan. If one of the three instead carries a 5-year term, it fails the "same maximum term" test and forms its own separate amalgamated loan (of just itself), sitting alongside a $75,000 amalgamated loan for the other two. Loan type (secured/unsecured) doesn't need to match as an independent test — it matters only insofar as it drives a different maximum term, which is the actual statutory trigger. One open question I'd flag rather than assert: ATO guidance (ATO ID 2012/61) notes that whether reducing an existing arrangement to a complying written agreement creates a "new loan" (with its own making-date) or merely documents an existing one is a question of contract law on the specific facts — this matters for exactly which income year a constituent loan is treated as "made" in, and I wouldn't resolve it in the abstract.
+
+5\. Edge cases the calculator should disclaim or handle
+
+\[CRITICAL] No validation that a written s 109N agreement actually exists before lodgment day.
+
+Why it matters: If there's no complying agreement, the loan never enters MYR territory at all — the whole unpaid balance is a deemed dividend under s 109D(1) in the year the loan was made (capped by distributable surplus under s 109Y). Running the MYR engine on such a loan produces a number that is not just wrong but answering the wrong question entirely.
+
+Suggested remedy: Block the calculation with a hard error unless the caller confirms (or the ledger evidences) a written agreement dated before lodgment day — don't silently return an MYR.
+
+\[CRITICAL] No indication of which income year the returned statutory\_myr relates to.
+
+Why it matters: No MYR is ever due for the year the loan is made (s 109E only bites in years after that). A caller could easily read "statutory\_myr: 13,815.65" as an FY2025 obligation when it can only be the first MYR, due for FY2026.
+
+Suggested remedy: Add an explicit income\_year (or myr\_due\_for\_year) field to the output.
+
+\[WARNING] The multi-year decrement of "remaining term" (n) is untested by the one worked example supplied.
+
+Why it matters: n = (longest constituent term) ? (whole years between the end of the year the loan was made and the end of the year before the MYR year). For the very first MYR year that difference is 0, so n = 7 is in fact correct here — but the brief only demonstrates year 1. If year 2+ isn't decrementing n to 6, 5, 4… correctly, later-year MYRs will be understated for the rest of the loan's life.
+
+Suggested remedy: Request a second worked example covering years 2 and 3 of the same loan before shipping.
+
+\[WARNING] "Amalgamated\_Loan\_Balance" is used as the base figure every year, but after year 1 the statutory base is the declining opening balance for that year, not the original amalgamated amount.
+
+Why it matters: Reusing the same variable name for two different things (opening amalgamated amount vs. current year's opening balance) is a naming/documentation risk, not a maths error in the example shown, but it's the kind of ambiguity that produces real bugs once the engine is extended to multi-year schedules.
+
+Suggested remedy: Rename to something like current\_year\_opening\_balance and reserve "amalgamated loan amount" for the fixed s 109E(3)/(4) figure.
+
+\[WARNING] No validation of the "secured" claim behind the 25-year term.
+
+Why it matters: A 25-year term requires the whole of the loan to be secured by a registered mortgage over real property worth at least 110% of the loan when made. The engine trusts loan\_type without checking any of that, so a caller could pass loan\_type=secured for something that doesn't actually qualify (e.g. a chattel mortgage, a guarantee, or a partially-secured loan), and the engine would happily amortise over 25 years instead of 7.
+
+Suggested remedy: Either validate security\_value\_ratio and security\_type as required inputs, or explicitly disclaim that qualification of the security is the caller's responsibility.
+
+\[NOTE] The benchmark rate is accepted as a bare number with no year-alignment check.
+
+Why it matters: Div 7A benchmark rates move year to year (8.27% ? 8.77% ? 8.37% across FY24–FY26); a stale or mismatched rate silently produces a wrong MYR with no error.
+
+Suggested remedy: Have the calculator (or its caller) pin the rate to a lookup table keyed by income year, sourced from the RBA's published indicator rate, rather than accept an unchecked float.
+
+\[NOTE] Interest capitalisation / non-payment in a later year is out of scope of this bounty but adjoins it closely.
+
+Why it matters: If a shortfall in one year's MYR gives rise to a deemed dividend, that capital shortfall does NOT reduce the opening balance used for next year's MYR (confirmed by ATO ID 2013/36). A future version of this engine that chains years together needs to get that right, or repeated shortfalls will understate every subsequent year's MYR.
+
+Suggested remedy: Flag as a documented boundary for the next calculator in this family, not a fix to this one.
+
+6\. Open questions
+
+Partial security and the 25-year term. Whether a loan secured over real property for less than the full loan amount (or below the 110% cover ratio at some point in its life, short of at inception) can retain any portion of the 25-year term, or falls back wholesale to 7 years. Why this matters: it changes both the term cap and every subsequent MYR calculation for a mixed-security loan. How I'd resolve it with time: check current ATO Legal Database guidance and, if genuinely silent, a private ruling request.
+
+Interest-rate shortfall in a single year and its effect on the s 109N exclusion. Whether under-charging interest in one year of an otherwise-complying loan disqualifies the loan from s 109N retrospectively, or is purely an s 109E MYR-shortfall issue for that year. Why this matters: the two readings produce very different consequences (a single bad year vs. the whole loan becoming a deemed dividend). How I'd resolve it: partner review, and a check of current ATO guidance/rulings on point.
+
+When a constituent loan is "made" for amalgamation purposes, where an existing arrangement is later reduced to writing. Why this matters: it can shift which income year — and therefore which amalgamated loan — a constituent loan falls into. How I'd resolve it: fact-specific contract analysis per ATO ID 2012/61, not a general rule.
+
+7\. If FIX\_THEN\_RE\_REVIEW — what needs to change
+
+? Defect: no year-of-income label on the MYR output. Remedy: add an explicit field identifying which income year the returned MYR applies to. Re-review: not needed, straightforward output change.
+
+? Defect: multi-year "remaining term" decrement is unverified. Remedy: supply a second worked example covering at least years 2–3 of the same loan. Re-review: yes — this is the one item I'd want to see evidence on before moving to ACCEPT.
+
+? Defect: no validation of the s 109N preconditions (written agreement, benchmark-rate-compliant terms, term within cap). Remedy: either validate these as required inputs and hard-error when unmet, or add an explicit, prominent disclaimer that the engine assumes them and is not a substitute for confirming them. Re-review: not needed if a clear disclaimer is adopted; needed if validation logic is added.
+
+? Defect: incorrect statutory citations (s 109E(2) should be s 109E(3); "TD 2024/X" should be s 109N(2) + the relevant RBA publication). Remedy: correct the documentation table. Re-review: not needed.
+
+
+
+8\. Reviewer attestation
+
+By signing below, the reviewer attests that they read the brief, the worked example and the forensic questions; that the verdict reflects their own good-faith professional judgement (the analysis above is a researched starting draft, not a substitute for that judgement); and that they agree to the publication and hash-anchoring terms set out in the brief and the bounty terms document.
+
+Name: \[BHUNESH PATEL]
+
+Date: \[2026-07-13]
+
+Signature: \[BHUNESH PATEL]
+
+
+

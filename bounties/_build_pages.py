@@ -12,6 +12,7 @@ index.html files. This script itself is committed for reproducibility.
 
 from pathlib import Path
 import html
+import re
 
 BOUNTIES_DIR = Path(__file__).parent
 
@@ -117,7 +118,7 @@ SKELETON = """<!DOCTYPE html>
         <!-- Hero -->
         <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="flex items-center justify-between mb-6">
-                <span class="text-lodgeit-light font-mono text-xs uppercase tracking-widest">Bounty #{num_padded} &middot; {calc_status}</span>
+                <span class="text-lodgeit-light font-mono text-xs uppercase tracking-widest">Bounty #{num_padded} &middot; {calc_status} &middot; {status_badge_text}</span>
                 <span class="text-white bg-lodgeit-blue px-4 py-2 rounded-full text-sm font-mono font-bold">${prize}</span>
             </div>
             <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
@@ -139,6 +140,9 @@ SKELETON = """<!DOCTYPE html>
             {body}
 
         </article>
+
+        <!-- Reviewed block (rendered when registry entries exist for this bounty) -->
+        {reviewed_block}
 
         <!-- Artefacts -->
         <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
@@ -482,6 +486,169 @@ def render_artefact_links(artefacts):
     return "\n                ".join(out)
 
 
+# ---------------------------------------------------------------------------
+# Registry loader + Reviewed-block renderer (PR-B addition)
+# ---------------------------------------------------------------------------
+
+def load_registry():
+    """Read bounties/registry/index.yml and return a dict {bounty_id: [entry, entry, ...]}.
+    Minimal YAML parser — handles only the shape emitted by /tmp/sweep_and_stage.py.
+    Kept dependency-free to match the existing build script's zero-dependency posture.
+    """
+    registry_path = BOUNTIES_DIR / "registry" / "index.yml"
+    if not registry_path.exists():
+        return {}
+
+    text = registry_path.read_text(encoding="utf-8")
+    by_bounty = {}
+    current = None
+    supplement_mode = False
+    in_entries_block = False
+
+    for line in text.splitlines():
+        # Skip comments + blanks + top-level scalar lines outside entries block
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        # Section headers
+        if line.startswith("entries:"):
+            in_entries_block = True
+            continue
+        if line.startswith("in_progress:"):
+            in_entries_block = False
+            current = None
+            continue
+
+        if not in_entries_block:
+            continue
+
+        # Start of a new entry
+        if line.startswith("  - bounty:"):
+            current = {"_supplement": None}
+            current["bounty"] = line.split(":", 1)[1].strip()
+            supplement_mode = False
+            by_bounty.setdefault(current["bounty"], []).append(current)
+            continue
+
+        if current is None:
+            continue
+
+        # supplement sub-block
+        if line.startswith("    supplement:"):
+            supplement_mode = True
+            current["_supplement"] = {}
+            continue
+
+        # supplement fields
+        if supplement_mode and line.startswith("      "):
+            key, _, val = line.strip().partition(":")
+            val = val.strip().strip("'\"")
+            current["_supplement"][key.strip()] = val
+            continue
+
+        # regular entry field
+        if line.startswith("    "):
+            supplement_mode = False
+            key, _, val = line.strip().partition(":")
+            val = val.strip()
+            # Strip surrounding quotes
+            if (val.startswith("'") and val.endswith("'")) or (val.startswith('"') and val.endswith('"')):
+                val = val[1:-1]
+            current[key.strip()] = val
+
+    return by_bounty
+
+
+def render_reviewed_block(bounty_id, entries):
+    """Render 'Reviewed' HTML block for a bounty. One card per reviewer entry."""
+    if not entries:
+        return ""
+
+    cards = []
+    for e in entries:
+        reviewer = e.get("reviewer", "")
+        credential = e.get("credential", "")
+        consent = e.get("consent", "named")
+        reward = e.get("reward_aud", "")
+        verdict = e.get("verdict", "")
+        date = e.get("date", "")
+        yaml_path = e.get("yaml_path", "null")
+        sha256 = e.get("sha256", "null")
+
+        # Render "Anonymous" or "L.W."-style display
+        if consent == "anonymous":
+            display_name = f"Anonymous ({credential})"
+        else:
+            display_name = f"{reviewer}, {credential}"
+
+        # YAML link (or 'not published' notice for Tim-shaped rows)
+        if yaml_path and yaml_path != "null":
+            yaml_ref = yaml_path[len("bounties/"):] if yaml_path.startswith("bounties/") else yaml_path
+            yaml_link_html = f'<a href="/{html.escape(yaml_path)}" class="text-lodgeit-light hover:text-white underline font-mono text-sm">{html.escape(yaml_ref)}</a>'
+            sha_html = f'<span class="font-mono text-xs text-slate-500">sha256 {html.escape(sha256)}</span>'
+        else:
+            yaml_link_html = '<span class="text-slate-500 italic text-sm">Verdict text not published</span>'
+            sha_html = ''
+
+        # Supplement (Harley round-1)
+        supp_html = ""
+        supp = e.get("_supplement")
+        if supp:
+            supp_path = supp.get("yaml_path", "")
+            supp_sha = supp.get("sha256", "")
+            supp_label = supp.get("label", "")
+            if supp_path:
+                supp_ref = supp_path[len("bounties/"):] if supp_path.startswith("bounties/") else supp_path
+                supp_html = (
+                    '\n                    <div class="mt-3 pt-3 border-t border-slate-800">\n'
+                    f'                        <div class="text-xs text-slate-400 mb-1">Supplement</div>\n'
+                    f'                        <a href="/{html.escape(supp_path)}" class="text-lodgeit-light hover:text-white underline font-mono text-xs">{html.escape(supp_ref)}</a>\n'
+                    f'                        <div class="font-mono text-xs text-slate-500 mt-1">sha256 {html.escape(supp_sha)}</div>\n'
+                    f'                        <div class="text-xs text-slate-500 italic mt-1">{html.escape(supp_label)}</div>\n'
+                    '                    </div>'
+                )
+
+        card = f"""
+                <div class="rounded-2xl bg-obsidian border border-emerald-500/30 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <div class="text-white font-bold text-lg">{html.escape(display_name)}</div>
+                            <div class="text-xs text-slate-500 font-mono uppercase tracking-wider mt-1">Consent: {html.escape(consent)} &middot; Date: {html.escape(date)}</div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Verdict: {html.escape(verdict)}</span>
+                            <span class="text-slate-400 font-mono text-xs">Reward: ${html.escape(str(reward))}</span>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-slate-800">
+                        <div class="text-xs text-slate-400 mb-1">Published verdict artefact</div>
+                        {yaml_link_html}
+                        <div class="mt-1">{sha_html}</div>{supp_html}
+                    </div>
+                </div>
+"""
+        cards.append(card)
+
+    return (
+        '<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-slate-800/50">\n'
+        '            <h2 class="text-3xl font-bold text-white mb-2">Reviewed</h2>\n'
+        '            <p class="text-slate-400 mb-6 text-sm">Reviews are published in full, with hash receipts. See the '
+        '<a href="/bounties/registry/index.yml" class="text-lodgeit-light hover:text-white underline font-mono">registry index</a> '
+        'for the append-only ledger.</p>\n'
+        '            <div class="grid grid-cols-1 gap-4">\n'
+        + "\n".join(cards)
+        + '\n            </div>\n        </section>'
+    )
+
+
+def render_status_badge(bounty_id, registry):
+    entries = registry.get(bounty_id, [])
+    if entries:
+        return "PAID & REVIEWED"
+    return "IN PROGRESS"
+
+
 def render_next_link(idx):
     if idx + 1 < len(BOUNTIES):
         b_next = BOUNTIES[idx + 1]
@@ -490,12 +657,17 @@ def render_next_link(idx):
 
 
 def main():
+    registry = load_registry()
     for idx, b in enumerate(BOUNTIES):
         num_padded = f"{b['num']:02d}"
         dir_name = f"bounty-{num_padded}-{b['slug']}"
         target_dir = BOUNTIES_DIR / dir_name
         target_dir.mkdir(exist_ok=True)
         (target_dir / "artefacts").mkdir(exist_ok=True)
+
+        bounty_id = f"bounty-{num_padded}-{b['slug']}"
+        entries = registry.get(bounty_id, [])
+        status_badge_text = render_status_badge(bounty_id, registry)
 
         html_out = SKELETON.format(
             title=b["title"],
@@ -511,6 +683,8 @@ def main():
             body=render_body(b),
             artefact_links=render_artefact_links(b["artefacts"]),
             next_link=render_next_link(idx),
+            reviewed_block=render_reviewed_block(bounty_id, entries),
+            status_badge_text=status_badge_text,
         )
         (target_dir / "index.html").write_text(html_out)
         print(f"  wrote {dir_name}/index.html ({len(html_out)} bytes)")
