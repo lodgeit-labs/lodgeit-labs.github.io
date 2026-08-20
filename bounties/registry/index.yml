@@ -1,6 +1,11 @@
 # Bounty programme reviewer registry
-# Append-only by design. New verdicts append a new entry; existing entries are
+# Append-only-by-default: new verdicts append; existing verdict CONTENT is
 # never mutated in-place (integrity of published-sha256 requires this).
+# Consent-posture upgrades (attribution-only mutations ratified by fresh
+# explicit reviewer consent) are the sole ratified exception, tracked via
+# consent_date field in the YAML + rehashed sha256 in this index; the
+# underlying verdict content is unchanged. See PR 'G4 consent upgrades'
+# (2026-08-20) for the anchor precedent (Devashish Magoon + Leanne Williamson).
 # Source of truth for build-time rendering of Reviewed blocks + status badges.
 
 schema_version: 1
@@ -71,15 +76,23 @@ entries:
     yaml_path: bounties/registry/bounty-06-fbt-car-parking/graeme-pollard.yml
     sha256: d84466eade517c276f247ca4823dc35af8ddcb523fcb8ad87e5d3fb4fb032ccd
   - bounty: bounty-07-hire-purchase-interest-apportionment
-    reviewer: 'L.W.'
+    reviewer: 'Leanne Williamson'
     credential: 'Tax Agent (TPB 51194 009)'
-    consent: initialled
+    consent: named
+    consent_date: '2026-08-20'
+    consent_upgrade_history:
+      - date: '2026-07-14'
+        posture: initialled
+        note: 'Initial submission posture'
+      - date: '2026-08-20'
+        posture: named
+        note: 'Upgraded from initialled per fresh explicit consent, Andrew direct-voice'
     reward_aud: 550
     verdict: ACCEPT
     date: '2026-07-14'
     status: paid_reviewed
-    yaml_path: bounties/registry/bounty-07-hire-purchase-interest-apportionment/lw.yml
-    sha256: 10f4e3fb325e366ffc8f4a0f6b7c0002105664da85305bf8e7cf9ed159e4e453
+    yaml_path: bounties/registry/bounty-07-hire-purchase-interest-apportionment/leanne-williamson.yml
+    sha256: 37784a6c962d667849c300b82a614725f6567b689bacdfff153e5eb081caf048
   - bounty: bounty-09-cgt-active-asset-test
     reviewer: 'Harley Dickfos'
     credential: 'Tax Agent (TPB 26334789)'
@@ -95,15 +108,23 @@ entries:
       sha256: bcf8d88b7eb6142a9f0d5947b2c50e154eb33e765aac4fec3ed710a5fbe02c34
       label: 'Round 1 submission (superseded by resubmit above)'
   - bounty: bounty-09-cgt-active-asset-test
-    reviewer: 'Anonymous'
+    reviewer: 'Devashish Magoon'
     credential: 'CPA'
-    consent: anonymous
+    consent: named
+    consent_date: '2026-08-20'
+    consent_upgrade_history:
+      - date: '2026-07-19'
+        posture: anonymous
+        note: 'Initial submission posture'
+      - date: '2026-08-20'
+        posture: named
+        note: 'Upgraded from anonymous per fresh explicit consent, Andrew direct-voice'
     reward_aud: 750
     verdict: FIX
     date: '2026-07-19'
     status: paid_reviewed
-    yaml_path: bounties/registry/bounty-09-cgt-active-asset-test/anonymous-cpa.yml
-    sha256: 851162d48f54a2450a4fa661182cdcf2c47c8a34d27d6edf38d8f6bc7c930ae1
+    yaml_path: bounties/registry/bounty-09-cgt-active-asset-test/devashish-magoon.yml
+    sha256: e46395113bb71f8fab3ef3e3205c967591699ea3c0921cb0a5e35cf37dccf34b
   - bounty: bounty-10-psi-attribution
     reviewer: 'Louise Ingoe'
     credential: 'CA + Tax Agent (TPB)'

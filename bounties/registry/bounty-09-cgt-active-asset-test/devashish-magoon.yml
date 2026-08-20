@@ -1,7 +1,8 @@
 # Reviewer verdict — bounty-09-cgt-active-asset-test
 
-> **Reviewer:** Anonymous, CPA
-> **Consent posture:** anonymous
+> **Reviewer:** Devashish Magoon, CPA
+> **Consent posture:** named (upgraded from anonymous on 2026-08-20 per fresh explicit consent, Andrew direct-voice)
+> **Consent date:** 2026-08-20
 > **Reward paid (AUD):** $750
 > **Verdict outcome (from reviewer's §6):** FIX
 > **Verdict date:** 2026-07-19
@@ -15,11 +16,12 @@ brief\_id: bounty-09-cgt-active-asset-test
 bounty\_title: "CGT small business active-asset test"
 statutory\_anchors: "s 152-35, s 152-40 ITAA 1997; TR 2019/1"
 reviewer:
-name: "[Anonymous]"
+name: "Devashish Magoon"
 credential\_class: "CPA"        # CA / CTA / CPA / FIPA / MIPA / TPB
 registration\_status: "Active"     # active / lapsed / retired
 jurisdiction: "Australia"
-attribution\_posture: "anonymous"  # named | initialled | anonymous
+attribution\_posture: "named"     # named | initialled | anonymous (upgraded from anonymous 2026-08-20 per fresh explicit consent)
+consent\_date: "2026-08-20"
 reviewed\_calculator\_version: "Spec-first bounty\*\* — no existing calculator"  # copy from brief
 submission\_date: "2026-07-19"              # YYYY-MM-DD
 top\_level\_verdict: "FIX"            # ACCEPT / REJECT / FIX
@@ -266,8 +268,8 @@ per\_question\_verdicts:
 
 I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
 
-**Signed: [Anonymous]
-Name: [Anonymous]
+**Signed: Devashish Magoon
+Name: Devashish Magoon
 Credential: CPA
-Date: 19th July 2026**
+Date: 19th July 2026** (attribution upgraded from Anonymous → named on 2026-08-20 per fresh explicit consent, Andrew direct-voice; verdict content unchanged)
 

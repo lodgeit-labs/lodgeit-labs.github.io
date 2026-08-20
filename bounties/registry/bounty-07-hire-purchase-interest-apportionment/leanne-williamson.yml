@@ -1,7 +1,8 @@
 # Reviewer verdict — bounty-07-hire-purchase-interest-apportionment
 
-> **Reviewer:** L.W., Tax Agent (TPB 51194 009)
-> **Consent posture:** initialled
+> **Reviewer:** Leanne Williamson, Tax Agent (TPB 51194 009)
+> **Consent posture:** named (upgraded from initialled on 2026-08-20 per fresh explicit consent, Andrew direct-voice)
+> **Consent date:** 2026-08-20
 > **Reward paid (AUD):** $550
 > **Verdict outcome (from reviewer's §6):** ACCEPT
 > **Verdict date:** 2026-07-14
@@ -14,11 +15,12 @@ brief_id: bounty-07-hire-purchase-interest-apportionment
 bounty_title: "Hire purchase — interest apportionment"
 statutory_anchors: "Div 240 ITAA 1997; s 240-25, s 240-40"
 reviewer:
-  name: "L.W."
+  name: "Leanne Williamson"
   credential_class: "TPB"        
   registration_status: "active"     
   jurisdiction: "Australia"
-  attribution_posture: "initialled" 
+  attribution_posture: "named"      # upgraded from initialled 2026-08-20 per fresh explicit consent, Andrew direct-voice
+  consent_date: "2026-08-20"
 reviewed_calculator_version: "copy from brief"  
 submission_date: "2026-07-14"           
 top_level_verdict: "ACCEPT"            
