@@ -216,9 +216,11 @@ polite approval of something that isn't right.
 
 None of this is required.
 
-- The full working file, `div36_loss_sequencing.le`, has the same law plus machinery a reviewer
-  doesn't need — aggregation, a conservation check, and a corporate-entity branch.
-- `div36_loss_sequencing.transcript.txt` shows the proof trees the rules produce, in English.
+- The full working file (same law plus machinery a reviewer doesn't need — aggregation, a
+  conservation check, and a corporate-entity branch) is available on request. Email
+  `support@lodgeit.net.au` and we'll send it.
+- A transcript showing the proof trees the rules produce, in English, is likewise available on
+  request.
 - The live editor is at **le2.logicalcontracts.com** — you can paste a file in and press a button. It
   is genuinely fun to poke at. It is also entirely unnecessary for this review.
 
@@ -226,7 +228,7 @@ None of this is required.
 
 ## 11 — How to respond
 
-Use the response form we've attached (`div36-review-verdict-form.md`) — it keeps verdicts comparable
+Use the response form we've attached (`03-verdict-form.md`) — it keeps verdicts comparable
 across reviewers and slots into our registry. Plain prose in an email is fine too if you'd rather;
 we'll transcribe it.
 
