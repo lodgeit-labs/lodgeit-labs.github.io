@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Division 36 loss sequencing — Logical English rules | LodgeiT Bounties</title>
+    <meta name="description" content="Ratify a Logical English statement of Division 36 loss sequencing — s 36-10, 36-15, 36-20 ITAA 1997. First rule-ratification bounty. $750 ex GST.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit h4 { font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit blockquote { border-left: 3px solid #4D94FF; padding-left: 1rem; margin: 1.5rem 0; color: #94a3b8; font-style: italic; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; Bounty #11
+            </p>
+        </div>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-lodgeit-light font-mono text-xs uppercase tracking-widest">Bounty #11 &middot; Rule-ratification &middot; INVITATION-ONLY &middot; OPEN</span>
+                <span class="text-white bg-lodgeit-blue px-4 py-2 rounded-full text-sm font-mono font-bold">$750 ex GST</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Division 36 loss sequencing, written as executable rules</span>
+            </h1>
+            <p class="text-slate-300 text-lg leading-relaxed mb-6">
+                Ratify a Logical English statement of Division 36 — how a tax loss is calculated (s 36-10), how earlier-year losses are deducted (s 36-15), and how net exempt income (s 36-20) interacts with both. About 90 lines of rules. No software to install. Two to three hours.
+            </p>
+            <div class="flex flex-wrap gap-3 text-xs font-mono">
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">s 36-10 &middot; 36-15 &middot; 36-20 ITAA 1997</span>
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">~2&ndash;3 hours</span>
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">Rules, not a calculator</span>
+            </div>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 prose-lodgeit">
+
+            <h3>This one is different from Phase 1</h3>
+            <p>
+                Phase 1 of the bounty programme asked reviewers to check a <em>calculator</em>. You&rsquo;d read a brief, run through a worked example, and tell us whether our engine agreed with what a competent practitioner would produce from the statute.
+            </p>
+            <p>
+                Here, you won&rsquo;t be checking a calculator. <strong>You&rsquo;ll be checking the law itself, written out as rules &mdash; and telling us whether we&rsquo;ve stated it correctly.</strong>
+            </p>
+
+            <h3>The story behind it</h3>
+            <p>
+                A LodgeiT customer told us our software was carrying forward too much tax loss. Division 36, exempt income against prior-year losses. Over three days two support staff, our dev team and two AI systems failed to work out whether she was right.
+            </p>
+            <p>
+                She was.
+            </p>
+            <p>
+                Our calculation had been built from the ATO&rsquo;s L1 label worksheet rather than from the statute &mdash; and in a loss year those two diverge, because <code>s 36-15(4)(a)</code> has a step the worksheet doesn&rsquo;t. Nobody in that chain was careless. The form and the law disagree, quietly, in exactly one kind of year.
+            </p>
+            <p>
+                What we&rsquo;ve done about it is write Division 36 out as rules a machine can execute and a practitioner can read. The language is <strong>Logical English</strong> &mdash; developed by Bob Kowalski at Imperial, and LodgeiT is a co-owner of the current version. It produces a proof tree in plain English for every answer, and it refuses to answer when it hasn&rsquo;t been told enough.
+            </p>
+            <p>
+                But a rule is only trustworthy if someone with a practising certificate has read it and agreed it states the law correctly. That&rsquo;s the job. It&rsquo;s the first one of these we&rsquo;ve done, and if it works it becomes how we build.
+            </p>
+
+            <h3>What&rsquo;s involved</h3>
+            <ul>
+                <li><strong>One file, about 90 lines of rules</strong>, with a plain-English note above each one saying what we think it means.</li>
+                <li><strong>No software.</strong> It&rsquo;s a text file. Open it in Notepad or your mail preview. You can&rsquo;t break anything.</li>
+                <li><strong>Roughly two to three hours</strong> for a careful read.</li>
+                <li><strong>$750 ex GST</strong>, paid within five business days of your verdict.</li>
+            </ul>
+
+            <h3>A REJECT is worth the same as an ACCEPT</h3>
+            <p>
+                We want to be unambiguous about this because the incentive matters. Phase 1&rsquo;s most valuable finding by information-per-dollar was a reviewer who rejected our brief outright &mdash; the question itself was defective. He was paid in full and it changed how we write briefs.
+            </p>
+            <p>
+                If this file is sound, say so and take the fee. If it&rsquo;s rotten, say that and take the same fee. <strong>A polite approval of something wrong is the one outcome we can&rsquo;t use.</strong>
+            </p>
+
+            <h3>The three attachments</h3>
+            <ol>
+                <li>
+                    <strong><a href="artefacts/01-how-to-read-logical-english.md" class="text-lodgeit-light hover:text-white underline">01 &mdash; How to read a Logical English rule.</a></strong> Start here. What the language is, how to read a rule line by line, what every odd-looking symbol means, and what we&rsquo;re asking you to look for. Written for someone with no technical background. If any line of the rules doesn&rsquo;t read as clear English, that&rsquo;s our defect, not your failing &mdash; and it&rsquo;s a finding worth reporting.
+                </li>
+                <li>
+                    <strong><a href="artefacts/02-div36-rules.le" class="text-lodgeit-light hover:text-white underline">02 &mdash; The rules themselves</a></strong> (<code>div36-rules.le</code>).
+                </li>
+                <li>
+                    <strong><a href="artefacts/03-verdict-form.md" class="text-lodgeit-light hover:text-white underline">03 &mdash; The verdict form.</a></strong> Eight specific questions. Prose in an email is equally fine.
+                </li>
+            </ol>
+
+            <h3>The question we value most is Q6</h3>
+            <p>
+                <em>Can you construct a fact pattern where these rules produce a plausible figure that&rsquo;s wrong?</em>
+            </p>
+            <p>
+                That one is worth the fee on its own.
+            </p>
+
+            <h3>What we&rsquo;re asking you to do</h3>
+            <ol>
+                <li>Read <em>How to read a Logical English rule</em> (attachment 01) &mdash; ten minutes.</li>
+                <li>Read <em>the rules</em> (attachment 02), one line at a time, cross-checking against your reading of s 36-10, 36-15 and 36-20.</li>
+                <li>Fill out the verdict form (attachment 03), or write your verdict as free-form prose in an email. Both are equally acceptable.</li>
+                <li>Email your verdict to <a href="mailto:support@lodgeit.net.au?subject=Bounty%20%2311%20verdict%20-%20Div%2036%20LE%20rules" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a>.</li>
+            </ol>
+
+            <h3>What is <em>not</em> in scope</h3>
+            <p>
+                You are not being asked to install anything, run anything, audit our software architecture, review our source code, or learn a programming language. You are being paid for your <strong>tax judgement</strong>. The file is text. The question is: <em>does this text state the law correctly?</em>
+            </p>
+
+            <h3>Ask questions</h3>
+            <p>
+                <em>&ldquo;I don&rsquo;t understand what this line is doing&rdquo;</em> is <strong>not</strong> a sign you&rsquo;re doing it wrong; it&rsquo;s a sign we wrote it badly, and we&rsquo;d rather hear it than not. Email <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a> any time.
+            </p>
+
+            <h3>Timeline</h3>
+            <p>
+                We&rsquo;d like verdicts by <strong>20 August 2026</strong> (approximately two weeks from your invitation). Happy to extend if you need it &mdash; just say.
+            </p>
+
+            <h3>Attribution &mdash; how your work gets credited</h3>
+            <p>
+                Your accepted verdict is minted into the public <a href="/bounties/#attribution" class="text-lodgeit-light hover:text-white underline">reviewer registry</a> with:
+            </p>
+            <ul>
+                <li>Your name and credential class</li>
+                <li>The verdict hash (SHA-256 of your submitted document)</li>
+                <li>The version of the rules file you ratified (SHA-256 of the <code>.le</code> file)</li>
+                <li>The publication date</li>
+            </ul>
+            <p>
+                Default is <strong>named credit</strong>. You may opt down to initialled or anonymous when you submit. Opt-down does not reduce the prize.
+            </p>
+
+        </article>
+
+        <!-- Artefacts -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Download the pack</p>
+            <h2 class="text-3xl font-bold text-white mb-4">The four files</h2>
+            <p class="text-slate-400 leading-relaxed mb-6">
+                Everything you need &mdash; start with attachment 01. Text files, open in Notepad, TextEdit, or your email preview.
+            </p>
+            <div class="grid gap-3">
+                <a href="artefacts/01-how-to-read-logical-english.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">01-how-to-read-logical-english.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">How to read a Logical English rule &mdash; start here (no technical background needed)</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/02-div36-rules.le" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">02-div36-rules.le</div>
+                            <div class="text-white group-hover:text-blue-400 transition">The rules themselves &mdash; ~90 lines of Logical English</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/03-verdict-form.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">03-verdict-form.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Verdict form &mdash; eight questions (prose in an email equally fine)</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+                <a href="artefacts/04-terms.md" class="block group rounded-xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-mono text-xs text-lodgeit-light mb-1">04-terms.md</div>
+                            <div class="text-white group-hover:text-blue-400 transition">Terms &mdash; prize, payment, IP, attribution, timeline</div>
+                        </div>
+                        <div class="text-slate-500 group-hover:text-lodgeit-light transition text-2xl ml-4">&darr;</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Apply -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Send your verdict</p>
+            <h2 class="text-3xl font-bold text-white mb-6">Ready to give us your read?</h2>
+            <p class="text-slate-400 leading-relaxed mb-6">
+                Email your verdict &mdash; on the form or as free-form prose &mdash; to <a href="mailto:support@lodgeit.net.au?subject=Bounty%20%2311%20verdict%20-%20Div%2036%20LE%20rules" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a>. Questions welcome at any stage.
+            </p>
+            <a href="mailto:support@lodgeit.net.au?subject=Bounty%20%2311%20verdict%20-%20Div%2036%20LE%20rules" class="inline-block px-8 py-4 bg-lodgeit-blue hover:bg-lodgeit-light text-white font-bold rounded-lg transition-all shadow-neon">
+                Submit Bounty #11 verdict
+            </a>
+        </section>
+
+        <!-- Nav to next / index -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <div class="flex justify-between items-center">
+                <a href="/bounties/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">
+                    &larr; All bounties
+                </a>
+                <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
