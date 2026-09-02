@@ -26,7 +26,7 @@ The three attachments in the artefact bundle tell you everything you need to kno
 
 ## 3. Timeline
 
-- **Verdicts requested by:** 20 August 2026 (approximately two weeks from invitation).
+- **Verdicts requested by:** 16 September 2026 (approximately two weeks from invitation).
 - Extensions available on request — just say. Real life happens.
 
 ## 4. What you agree to when you reserve this bounty
