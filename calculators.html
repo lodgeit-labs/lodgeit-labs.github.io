@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculator Constellation — LodgeiT Labs</title>
+<meta name="description" content="Deterministic Australian tax and accounting calculators, available as a public HTTP API. Built for agents.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/calculators.html">lodgeit labs / calculator constellation</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Deterministic tax and accounting calculators, over HTTP</h1>
+
+<p class="lede">A small fleet of Australian tax and accounting calculators with a single public front door.
+No key, no signup, no client library. Built so an agent can call them without a human in the loop.</p>
+
+<p>Each calculator is a deterministic engine — Prolog or Python, no model in the path — behind a
+gateway that validates your request, refuses the ones it cannot answer, and tells you which
+statutory rate tables it consumed to produce the number.</p>
+
+<h2>What's live</h2>
+
+<table>
+<thead><tr><th>Calculator</th><th>Status</th><th>What it does</th></tr></thead>
+<tbody>
+<tr>
+  <td><a href="/depreciation.html"><strong>Depreciation</strong></a></td>
+  <td><span class="pill ok">available</span></td>
+  <td>Single-asset carrying amount under AASB&nbsp;116. Prime cost or diminishing value, at a date or over an arbitrary range.</td>
+</tr>
+<tr>
+  <td><a href="/div7a.html"><strong>Division 7A</strong></a></td>
+  <td><span class="pill ok">available</span></td>
+  <td>Minimum yearly repayment, shortfall and deemed dividend under ITAA&nbsp;1936 Div&nbsp;7A.</td>
+</tr>
+<tr>
+  <td><strong>Fringe Benefits Tax</strong></td>
+  <td><span class="pill no">not yet</span></td>
+  <td>Twenty-one benefit categories. Reachable, but with a known defect that makes cross-category totals wrong — see below.</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note stop">
+<strong>FBT is not ready and we would rather say so.</strong> The engine returns correct taxable
+values, but only three of nineteen benefit calculators currently emit the grossed-up figure and
+the FBT payable. The rest return <code>null</code> for those fields. Anything summing
+<code>fbt_payable</code> across benefit types will silently undercount. We are fixing it at the
+dispatch boundary rather than one calculator at a time. Until then, treat FBT as unavailable.
+</div>
+
+<h2>Working with an agent?</h2>
+
+<p>Give it this and stop reading:</p>
+
+<pre><code>https://lodgeit.org/llms.txt</code></pre>
+
+<p>That file is the entire API surface in plain text — every endpoint, every field, the day-count
+semantics, the error contract, the known limitations, and how the numbers are represented. An
+agent can read it once and call these calculators correctly without parsing a single HTML page.</p>
+
+<p>It is written to be read by a machine and understood by a person. If you are evaluating whether
+this is worth your time, that file will tell you faster than these pages will.</p>
+
+<h2>Base URL</h2>
+
+<pre><code>https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app</code></pre>
+
+<p>The service name is historical — it fronts every calculator, not just FBT.</p>
+
+<div class="note warn">
+<strong>This host will change.</strong> A stable custom domain is coming; until then you are calling
+the underlying Cloud Run URL directly. Put the base URL in configuration rather than in your code,
+and re-check this page before assuming it still resolves.
+</div>
+
+<h2>Thirty seconds</h2>
+
+<p>Written-down value of a $10,000 asset with a five-year life, one month after purchase:</p>
+
+<pre><code>curl -s -X POST \
+  "https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app/v1/calculators/depreciation/at/urn:sbrm:period:depreciation:unscoped" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "basis": "accounting",
+    "asset": {
+      "cost": 10000,
+      "acquisition_date": "2023-07-01",
+      "accounting_useful_life_years": 5,
+      "accounting_method": "prime_cost"
+    },
+    "at_date": "2023-07-31"
+  }'</code></pre>
+
+<pre><code>{
+  "basis": "accounting",
+  "at_date": "2023-07-31",
+  "wdv_at": "9830.60",
+  "period_dep_at": "169.40",
+  "day_count": "actual/actual",
+  "schedule_summary": { "opening_balance": "10000.00", "closing_balance_at": "9830.60", ... },
+  "manifest": { "rate_table_uris": [] },
+  "advisory": { ... }
+}</code></pre>
+
+<h2>Discovery</h2>
+
+<p>The gateway describes itself. Point an agent at these before hardcoding anything:</p>
+
+<dl class="kv">
+  <dt>GET /v1/calculators</dt>
+  <dd>Every calculator, its URN, its input schema reference, and the period URNs it accepts.</dd>
+  <dt>GET /openapi.json</dt>
+  <dd>Full OpenAPI 3 document for every route.</dd>
+  <dt>GET /v1/rates/{period_uri}</dt>
+  <dd>The statutory rate tables registered for a period, each with a content hash.</dd>
+  <dt>GET /healthz</dt>
+  <dd>Liveness.</dd>
+</dl>
+
+<h2>How the responses are shaped</h2>
+
+<p>Every successful response carries two blocks beyond the calculation itself.</p>
+
+<p><strong><code>manifest.rate_table_uris</code></strong> lists the statutory rate tables the
+calculation actually consumed, each with a SHA-256 of its contents. An empty list means the figure
+was derived arithmetically from your inputs alone. This is emitted by the computation, not attached
+by hand — if the list changes, the arithmetic changed.</p>
+
+<p><strong><code>advisory</code></strong> states what kind of figure you have been given and what
+it is not. It varies by calculator: an AASB&nbsp;116 carrying amount carries a warning against
+using it in a tax return; a Division&nbsp;7A figure carries the tax-agent framing. Read it — the
+distinction is the point.</p>
+
+<h2>Errors</h2>
+
+<p>Status codes mean what they say. We treat this as a contract:</p>
+
+<table>
+<thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>422</code></td><td>Your request is malformed or incomplete. The body names the field. Do not retry unchanged.</td></tr>
+<tr><td><code>400</code></td><td>Your request is well-formed but outside what this calculator will answer. The body carries a <code>refusal_class</code>.</td></tr>
+<tr><td><code>404</code></td><td>Unknown calculator URN or a period URN this calculator does not accept. The body names what it does accept.</td></tr>
+<tr><td><code>5xx</code></td><td>Our fault. Retrying is reasonable.</td></tr>
+</tbody>
+</table>
+
+<p>A 4xx from the engine behind the gateway is never reported to you as a 5xx. If you get a 5xx,
+something is genuinely wrong on our side.</p>
+
+<h2>Refusals are a feature</h2>
+
+<p>These calculators refuse rather than guess. A Division&nbsp;7A loan with a zero or negative
+balance is not a loan, so it returns 400 instead of a compliance verdict. A pooled depreciating
+asset is out of scope, so it returns 400 with <code>pool_asset_out_of_t6_scope</code> instead of a
+number computed under the wrong rules.</p>
+
+<p>If you are used to APIs that return something for everything, this will occasionally be
+inconvenient. It is deliberate. A refusal you can see beats a plausible number you cannot check.</p>
+
+<h2>What this is not</h2>
+
+<ul>
+  <li><strong>Not advice.</strong> Every response says so, and names the statute it says so under.</li>
+  <li><strong>Not a replacement for judgement.</strong> A depreciation figure is only as sound as the useful life you assert. We compute; we do not assess whether your inputs are reasonable.</li>
+  <li><strong>Not stable yet.</strong> Response shapes may change. Nothing here is versioned for production integration.</li>
+</ul>
+
+<h2>Rate limits, cost, keys</h2>
+
+<p>None, none, and none. The services are capped at three instances each, so sustained heavy load
+will queue. If you need more than that, or you are building something that would break when we
+change a field name, get in touch first.</p>
+
+<h2>Telling us it's wrong</h2>
+
+<p>The most useful thing you can send us is a request and the response it produced, with the number
+you expected and where that expectation comes from. Two independent implementations disagreeing is
+how the last four defects in these calculators were found — including one where our engine was
+right and our own reasoning was wrong.</p>
+
+<p><a href="https://github.com/lodgeit-labs">github.com/lodgeit-labs</a></p>
+
+<footer class="site">
+  <p>LodgeiT Labs — open-source financial infrastructure.<br>
+  Calculators are deterministic engines. No language model is in the calculation path.</p>
+</footer>
+
+</div>
+</body>
+</html>
