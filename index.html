@@ -63,11 +63,30 @@ the FBT payable. The rest return <code>null</code> for those fields. Anything su
 dispatch boundary rather than one calculator at a time. Until then, treat FBT as unavailable.
 </div>
 
+<h2>Working with an agent?</h2>
+
+<p>Give it this and stop reading:</p>
+
+<pre><code>https://lodgeit.org/llms.txt</code></pre>
+
+<p>That file is the entire API surface in plain text — every endpoint, every field, the day-count
+semantics, the error contract, the known limitations, and how the numbers are represented. An
+agent can read it once and call these calculators correctly without parsing a single HTML page.</p>
+
+<p>It is written to be read by a machine and understood by a person. If you are evaluating whether
+this is worth your time, that file will tell you faster than these pages will.</p>
+
 <h2>Base URL</h2>
 
 <pre><code>https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app</code></pre>
 
 <p>The service name is historical — it fronts every calculator, not just FBT.</p>
+
+<div class="note warn">
+<strong>This host will change.</strong> A stable custom domain is coming; until then you are calling
+the underlying Cloud Run URL directly. Put the base URL in configuration rather than in your code,
+and re-check this page before assuming it still resolves.
+</div>
 
 <h2>Thirty seconds</h2>
 
