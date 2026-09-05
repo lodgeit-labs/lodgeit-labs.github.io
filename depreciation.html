@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Depreciation — Calculator Constellation</title>
+<meta name="description" content="AASB 116 carrying amounts at a date or over an arbitrary range. Prime cost and diminishing value.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs / calculator constellation</a>
+    <nav>
+      <a href="/">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Depreciation <span class="pill ok">available</span></h1>
+
+<p class="lede">Single-asset carrying amounts under AASB&nbsp;116. Prime cost or diminishing value,
+valued at a date or across an arbitrary range — including ranges that have nothing to do with a
+financial year.</p>
+
+<p>The range endpoint exists because that is the thing nobody offers. If you bought an asset on
+1&nbsp;April&nbsp;2022 and need the depreciation charge for August&nbsp;2023 alone, that is one
+call, not a schedule you post-process.</p>
+
+<div class="note">
+<strong>This is an accounting figure, not a tax figure.</strong> It is a carrying amount computed
+from the cost, useful life, method and dates you supply. It does not represent a deduction under
+ITAA&nbsp;1997 Division&nbsp;40, and the tax figure will not equal it. Every response says so.
+</div>
+
+<h2>Endpoints</h2>
+
+<pre><code>POST /v1/calculators/depreciation/at/urn:sbrm:period:depreciation:unscoped
+POST /v1/calculators/depreciation/range/urn:sbrm:period:depreciation:unscoped</code></pre>
+
+<p>The period segment reads <code>:unscoped</code> because this calculator is not period-scoped —
+all date semantics live in <code>at_date</code>, or in <code>from_date</code> and
+<code>to_date</code>. The segment is required for path uniformity across the constellation and does
+not affect the calculation. Fiscal-year URNs are not accepted here and will return 404.</p>
+
+<h2>The asset</h2>
+
+<dl class="kv">
+  <dt>basis <span class="pill ok">required</span></dt>
+  <dd>Only <code>"accounting"</code>. Tax basis is reachable at the engine but not exposed at the front door; it will land as its own registry entry.</dd>
+
+  <dt>asset.cost <span class="pill ok">required</span></dt>
+  <dd>Acquisition cost.</dd>
+
+  <dt>asset.acquisition_date <span class="pill ok">required</span></dt>
+  <dd>ISO date.</dd>
+
+  <dt>asset.accounting_useful_life_years <span class="pill ok">required</span></dt>
+  <dd>Useful life in years. Yours to determine — we do not assess whether it is appropriate.</dd>
+
+  <dt>asset.accounting_method <span class="pill ok">required</span></dt>
+  <dd><code>"prime_cost"</code> or <code>"diminishing_value"</code>.</dd>
+
+  <dt>asset.dv_rate_factor <span class="pill wip">optional</span></dt>
+  <dd>Multiplier for diminishing value, not a rate. <code>2.0</code> means 200% — a 5-year life at 2.0 gives a 40% annual rate.</dd>
+
+  <dt>asset.pool_type</dt>
+  <dd>Refused. Pooled assets are out of scope and return 400 with <code>refusal_class: "pool_asset_out_of_t6_scope"</code>.</dd>
+</dl>
+
+<h2>Day-count conventions</h2>
+
+<p><code>day_count</code> is required on <code>/range/</code> and optional on <code>/at/</code>,
+where it defaults to <code>actual/actual</code>. Whichever applies is echoed in the response.</p>
+
+<table>
+<thead><tr><th>Value</th><th>Behaviour</th></tr></thead>
+<tbody>
+<tr><td><code>actual/actual</code></td><td>Anniversary-year denominators. Each year charges exactly cost ÷ life, and the asset lands on zero at life-end. This is the AASB&nbsp;116-faithful choice.</td></tr>
+<tr><td><code>actual/365</code></td><td>365 days always, including leap years. Honest to its own label; a leap-containing year charges slightly more than cost ÷ life.</td></tr>
+<tr><td><code>monthly</code></td><td>Equal monthly instalments, rounded per month and summed.</td></tr>
+</tbody>
+</table>
+
+<h2>Value at a date</h2>
+
+<pre><code>curl -s -X POST \
+  "$BASE/v1/calculators/depreciation/at/urn:sbrm:period:depreciation:unscoped" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "basis": "accounting",
+    "asset": {
+      "cost": 10000,
+      "acquisition_date": "2023-07-01",
+      "accounting_useful_life_years": 5,
+      "accounting_method": "prime_cost"
+    },
+    "at_date": "2025-06-30"
+  }'</code></pre>
+
+<pre><code>{
+  "wdv_at": "6000.00",
+  "period_dep_at": "2000.00",
+  "day_count": "actual/actual",
+  "schedule_summary": {
+    "opening_balance": "10000.00",
+    "closing_balance_at": "6000.00",
+    "total_depreciation_to_date": "4000.00",
+    "total_cost_additions": "0.00",
+    "fiscal_years_covered": [2024, 2025]
+  }
+}</code></pre>
+
+<h3>Diminishing value</h3>
+
+<p>Same asset, <code>"accounting_method": "diminishing_value"</code> with
+<code>"dv_rate_factor": 2.0</code>, at 30&nbsp;June&nbsp;2024 — 40% of $10,000 in year one:</p>
+
+<pre><code>"wdv_at": "6000.00",  "period_dep_at": "4000.00"</code></pre>
+
+<h2>Charge over a range</h2>
+
+<p>August 2023 alone, on an asset acquired 1&nbsp;July&nbsp;2023. Both endpoints of the range are
+inclusive — 1 to 31 August is 31 days.</p>
+
+<pre><code>curl -s -X POST \
+  "$BASE/v1/calculators/depreciation/range/urn:sbrm:period:depreciation:unscoped" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "basis": "accounting",
+    "asset": {
+      "cost": 10000,
+      "acquisition_date": "2023-07-01",
+      "accounting_useful_life_years": 5,
+      "accounting_method": "prime_cost"
+    },
+    "from_date": "2023-08-01",
+    "to_date": "2023-08-31",
+    "day_count": "actual/actual"
+  }'</code></pre>
+
+<pre><code>{
+  "from_date": "2023-08-01",
+  "to_date": "2023-08-31",
+  "day_count": "actual/actual",
+  "days_in_range": 31,
+  "range_dep": "169.40",
+  "opening_wdv": "9830.60",
+  "closing_wdv": "9661.20",
+  "truncated": false
+}</code></pre>
+
+<h3>The ledger identity</h3>
+
+<p><code>closing_wdv = opening_wdv − range_dep</code>, exactly, to the cent. The balances are
+computed and the movement is derived from them, so consecutive ranges telescope: twelve monthly
+calls sum to the annual charge, with no rounding drift to reconcile.</p>
+
+<h3>Boundaries</h3>
+
+<table>
+<thead><tr><th>from_date relative to acquisition</th><th>opening_wdv</th><th>truncated</th></tr></thead>
+<tbody>
+<tr><td>before</td><td><code>0.00</code></td><td><code>true</code></td></tr>
+<tr><td>equal</td><td>cost</td><td><code>false</code></td></tr>
+<tr><td>after</td><td>the fold's value at that date</td><td><code>false</code></td></tr>
+</tbody>
+</table>
+
+<div class="note warn">
+<strong>Known limitation — ranges that span the acquisition date do not reconcile.</strong>
+When <code>from_date</code> falls before <code>acquisition_date</code>, the asset's cost enters
+during the window and the response carries no column for it. The three published figures then fail
+the identity above:
+<pre><code>from 2023-05-01 to 2023-08-31, acquired 2023-07-01
+  opening_wdv  0.00
+  range_dep    338.80
+  closing_wdv  9661.20      ← 0.00 − 338.80 ≠ 9661.20</code></pre>
+The correct form is <code>closing_wdv = opening_wdv + cost_additions − range_dep</code>, and
+<code>cost_additions</code> is not yet emitted. The engine change is queued. Until it ships, treat a
+range spanning the acquisition as informational: <code>range_dep</code> and <code>closing_wdv</code>
+are correct; the roll-forward is not closable from the response alone. Ranges that start on or after
+the acquisition date are unaffected.
+</div>
+
+<h2>Refusals</h2>
+
+<pre><code>// pool_type supplied
+400  {"detail": {
+       "refusal_class": "pool_asset_out_of_t6_scope",
+       "refusal_payload": {"pool_type": "general", "asset_acquisition_date": "2023-07-01"}
+     }}
+
+// accounting_useful_life_years omitted
+422  {"detail": [{"type": "value_error",
+       "msg": "Value error, basis='accounting' requires asset.accounting_useful_life_years"}]}
+
+// basis other than "accounting"
+422  {"detail": [{"type": "literal_error", "loc": ["body", "basis"],
+       "msg": "Input should be 'accounting'"}]}</code></pre>
+
+<h2>Notes for integrators</h2>
+
+<ul>
+  <li>Money is returned as <strong>decimal strings</strong>, not floats. Parse accordingly.</li>
+  <li>Internal arithmetic is exact rational; only the emitted values are quantised.</li>
+  <li><code>manifest.rate_table_uris</code> is empty for this calculator — no statutory rate table is consumed. Every figure derives from your inputs.</li>
+  <li>The generic route <code>/v1/calculators/{calc_uri}/{period_uri}</code> reaches the same handlers if you prefer URN-addressed dispatch. Responses are byte-identical.</li>
+</ul>
+
+<footer class="site">
+  <p><a href="/">← Calculator Constellation</a> &nbsp;·&nbsp; Not advice. AASB&nbsp;116 carrying amounts only.</p>
+</footer>
+
+</div>
+</body>
+</html>
