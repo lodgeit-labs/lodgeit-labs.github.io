@@ -1,0 +1,150 @@
+# LodgeiT Labs — Calculator Constellation
+
+> Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
+> No authentication, no key, no client library. Designed to be called by agents.
+> Engines are Prolog and Python. No language model is in the calculation path.
+
+BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
+(The service name is historical — it fronts every calculator, not only FBT.)
+
+Last updated: 2026-09-05
+
+## Status
+
+- depreciation — AVAILABLE. AASB 116 carrying amounts, at a date or over an arbitrary range.
+- div7a — AVAILABLE. ITAA 1936 Division 7A minimum yearly repayment and deemed dividend.
+- fbt — NOT AVAILABLE. Reachable but defective: 16 of 19 benefit calculators return null for
+  gross_up_factor, grossed_up_taxable_value and fbt_payable. Any sum of fbt_payable across
+  benefit categories will silently undercount. Do not integrate FBT yet.
+
+## Discovery
+
+GET /v1/calculators          every calculator URN, input schema ref, accepted period URNs
+GET /openapi.json            full OpenAPI 3 document
+GET /v1/rates/{period_uri}   registered rate tables for a period, with content hashes
+GET /healthz                 liveness
+
+Prefer discovery over hardcoding. The registry is authoritative for which period URNs
+each calculator accepts.
+
+## Depreciation
+
+POST /v1/calculators/depreciation/at/urn:sbrm:period:depreciation:unscoped
+POST /v1/calculators/depreciation/range/urn:sbrm:period:depreciation:unscoped
+
+Not period-scoped. The `:unscoped` segment is required for path uniformity and does not
+affect the calculation; fiscal-year URNs return 404 here.
+
+Request:
+  basis                              "accounting"   (only accepted value)
+  asset.cost                         number
+  asset.acquisition_date             ISO date
+  asset.accounting_useful_life_years number
+  asset.accounting_method            "prime_cost" | "diminishing_value"
+  asset.dv_rate_factor               number, optional. Multiplier not rate; 2.0 = 200%.
+  asset.pool_type                    refused — 400 pool_asset_out_of_t6_scope
+  at_date                            ISO date            (/at/ only)
+  from_date, to_date                 ISO dates, both inclusive   (/range/ only)
+  day_count                          "actual/actual" | "actual/365" | "monthly"
+                                     required on /range/; optional on /at/,
+                                     defaulting to actual/actual. Always echoed.
+
+Response (/at/):    wdv_at, period_dep_at, day_count, schedule_summary, manifest, advisory
+Response (/range/): range_dep, opening_wdv, closing_wdv, days_in_range, truncated,
+                    day_count, manifest, advisory
+
+Ledger identity on /range/:  closing_wdv = opening_wdv - range_dep, exact to the cent.
+Consecutive ranges telescope; twelve monthly calls sum to the annual charge.
+
+Day-count semantics:
+  actual/actual  anniversary-year denominators. Each year charges exactly cost/life and the
+                 asset reaches zero at life-end. AASB 116-faithful.
+  actual/365     365 days always. Honest to its label; a leap-containing year charges slightly
+                 more than cost/life.
+  monthly        equal monthly instalments, rounded per month and summed.
+
+Boundary rules on /range/:
+  from_date < acquisition_date   opening_wdv 0.00, truncated true
+  from_date = acquisition_date   opening_wdv = cost, truncated false
+  from_date > acquisition_date   opening_wdv = fold value at that date
+
+KNOWN LIMITATION: when from_date precedes acquisition_date, the asset's cost enters during
+the window and no cost_additions field is emitted. The three published figures then fail the
+ledger identity. Correct form is closing_wdv = opening_wdv + cost_additions - range_dep.
+range_dep and closing_wdv are correct; the roll-forward is not closable from the response
+alone. Ranges starting on or after acquisition_date are unaffected. Fix is queued.
+
+This is an ACCOUNTING figure. It is not a deduction under ITAA 1997 Division 40 and the tax
+figure will not equal it. Do not carry it into a tax return.
+
+## Division 7A
+
+POST /v1/calculators/div7a/at/urn:sbrm:period:div7a:fy2025
+POST /v1/calculators/div7a/at/urn:sbrm:period:div7a:fy2026
+
+Period-scoped — the URN selects the benchmark interest rate table. Do not substitute
+`:unscoped`; it returns 404.
+
+Request:
+  amalgamated_base        number, must be > 0
+  loan_term_years         integer. 7 max unsecured, 25 max secured over real property;
+                          shorter terms are lawful and compute normally.
+  loan_origination_date   ISO date
+  income_year_start_date  ISO date
+  is_first_real_myr_year  boolean
+  repayments              array, may be empty
+
+Response: benchmark_rate, remaining_term_years, statutory_myr, total_repayments, shortfall,
+          is_complying, deemed_dividend, interest_accrued, manifest, advisory
+
+manifest cites urn:sbrm:rate:div7a:{period}:benchmark-interest with a SHA-256 content hash.
+Pin against it to detect a rate-table change.
+
+## Response envelope
+
+Every 200 carries two blocks beyond the calculation.
+
+manifest.rate_table_uris — the statutory rate tables the calculation actually consumed, each
+with a content hash. Emitted by the computation, not attached by hand: if the list changes,
+the arithmetic changed. An empty list means the figure derives from your inputs alone.
+
+advisory — what kind of figure this is and what it is not. Varies by calculator. An AASB 116
+carrying amount carries a warning against tax use; a Division 7A figure carries the tax-agent
+framing. Read it; the distinction is load-bearing.
+
+## Errors
+
+422  malformed or incomplete request. The body names the field. Do not retry unchanged.
+400  well-formed but outside scope. Body carries refusal_class.
+404  unknown calculator URN, or a period URN this calculator does not accept. Body names
+     what it does accept.
+5xx  our fault. Retry is reasonable.
+
+A 4xx from the engine behind the gateway is never surfaced as a 5xx. A 5xx means something is
+genuinely wrong on our side, not that your request was bad.
+
+These calculators refuse rather than guess. A zero or negative Division 7A balance returns 400
+instead of a compliance verdict. A pooled depreciating asset returns 400 instead of a number
+computed under the wrong rules.
+
+## Numeric representation
+
+Money and rates are returned as DECIMAL STRINGS, not JSON floats — "9830.60", not 9830.6.
+Internal arithmetic is exact rational; only emitted values are quantised. Parse as decimal.
+
+(FBT responses currently return JSON floats. This inconsistency is known and will be resolved
+when FBT becomes available.)
+
+## Limits
+
+No authentication, no rate limit, no cost. Services are capped at three instances each, so
+sustained heavy load will queue. Response shapes are not yet versioned and may change; nothing
+here is stable for production integration.
+
+## Reporting a wrong number
+
+Send the request, the response it produced, the number you expected, and where that expectation
+comes from. Independent implementations disagreeing is how the last several defects here were
+found — including one where the engine was right and our own reasoning was wrong.
+
+https://github.com/lodgeit-labs

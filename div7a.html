@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Division 7A — Calculator Constellation</title>
+<meta name="description" content="Minimum yearly repayment, shortfall and deemed dividend under ITAA 1936 Division 7A.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs / calculator constellation</a>
+    <nav>
+      <a href="/">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Division 7A <span class="pill ok">available</span></h1>
+
+<p class="lede">Minimum yearly repayment, shortfall, and deemed dividend for a complying
+Division&nbsp;7A loan under ITAA&nbsp;1936. Benchmark interest rate is read from a period-scoped
+rate table and cited in every response.</p>
+
+<h2>Endpoint</h2>
+
+<pre><code>POST /v1/calculators/div7a/at/urn:sbrm:period:div7a:fy2025
+POST /v1/calculators/div7a/at/urn:sbrm:period:div7a:fy2026</code></pre>
+
+<p>Unlike depreciation, this calculator <em>is</em> period-scoped — the benchmark interest rate
+changes each income year, so the period URN selects the rate table. Supplying a year that has no
+registered rate table returns 404 naming the ones that do.</p>
+
+<h2>Input</h2>
+
+<dl class="kv">
+  <dt>amalgamated_base <span class="pill ok">required</span></dt>
+  <dd>Opening amalgamated loan balance for the income year. Must be greater than zero — see refusals.</dd>
+
+  <dt>loan_term_years <span class="pill ok">required</span></dt>
+  <dd>The loan's term. Seven years is the maximum for an unsecured loan; twenty-five for a loan secured over real property. Shorter terms are lawful and compute normally.</dd>
+
+  <dt>loan_origination_date <span class="pill ok">required</span></dt>
+  <dd>ISO date the loan was made.</dd>
+
+  <dt>income_year_start_date <span class="pill ok">required</span></dt>
+  <dd>ISO date — the first day of the income year being tested.</dd>
+
+  <dt>is_first_real_myr_year <span class="pill ok">required</span></dt>
+  <dd>Boolean. True for the first income year in which a minimum yearly repayment is required.</dd>
+
+  <dt>repayments <span class="pill ok">required</span></dt>
+  <dd>Array of repayments made during the income year. Empty array if none.</dd>
+</dl>
+
+<h2>Worked example</h2>
+
+<p>A $70,000 amalgamated base, seven-year unsecured term, first MYR year, no repayments made:</p>
+
+<pre><code>curl -s -X POST \
+  "$BASE/v1/calculators/div7a/at/urn:sbrm:period:div7a:fy2025" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amalgamated_base": 70000,
+    "loan_term_years": 7,
+    "loan_origination_date": "2024-06-01",
+    "income_year_start_date": "2024-07-01",
+    "is_first_real_myr_year": true,
+    "repayments": []
+  }'</code></pre>
+
+<pre><code>{
+  "period_uri": "urn:sbrm:period:div7a:fy2025",
+  "amalgamated_base": "70000.0",
+  "benchmark_rate": "0.0877",
+  "remaining_term_years": 6,
+  "statutory_myr": "15497.53",
+  "total_repayments": "0.00",
+  "shortfall": "15497.53",
+  "is_complying": false,
+  "deemed_dividend": "15497.53",
+  "interest_accrued": "6122.18",
+  "manifest": {
+    "rate_table_uris": [{
+      "uri": "urn:sbrm:rate:div7a:fy2025:benchmark-interest",
+      "content_hash": "eb203be2431484215fd5b8ce310fa1645a5638e7dcda2491712faeea6fff4045",
+      "hash_algorithm": "sha256"
+    }]
+  },
+  "advisory": { ... }
+}</code></pre>
+
+<h2>Output fields</h2>
+
+<dl class="kv">
+  <dt>benchmark_rate</dt>
+  <dd>The benchmark interest rate for the income year, read from the cited rate table.</dd>
+
+  <dt>remaining_term_years</dt>
+  <dd>Years remaining on the term as at the income year.</dd>
+
+  <dt>statutory_myr</dt>
+  <dd>Minimum yearly repayment required for the loan to remain complying.</dd>
+
+  <dt>total_repayments</dt>
+  <dd>Sum of the repayments you supplied.</dd>
+
+  <dt>shortfall</dt>
+  <dd>The amount by which repayments fall short of the MYR. Zero when the MYR is met.</dd>
+
+  <dt>is_complying</dt>
+  <dd>Whether the loan remains complying for the income year.</dd>
+
+  <dt>deemed_dividend</dt>
+  <dd>The amount treated as a dividend where the MYR is not met.</dd>
+
+  <dt>interest_accrued</dt>
+  <dd>Interest accrued on the amalgamated base at the benchmark rate.</dd>
+</dl>
+
+<h2>Refusals</h2>
+
+<p>A loan balance of zero or less is not a loan, and returning a compliance verdict for one would be
+worse than returning nothing. Both layers refuse it independently — the gateway on the schema, the
+engine in its own right:</p>
+
+<pre><code>// at the gateway
+422  {"detail": [{"type": "greater_than", "loc": ["body", "amalgamated_base"],
+       "msg": "Input should be greater than 0", "input": -1000, "ctx": {"gt": 0.0}}]}
+
+// at the engine, for anything that reaches it directly
+400  {"detail": {"refusal_class": "non_positive_amalgamated_base", ...}}</code></pre>
+
+<div class="note">
+Until 5&nbsp;September&nbsp;2026 this calculator returned <code>200</code> with
+<code>is_complying: true</code> and a negative minimum repayment for a negative balance. If you
+tested it before that date, retest.
+</div>
+
+<h2>Notes for integrators</h2>
+
+<ul>
+  <li>Money and rates are returned as <strong>decimal strings</strong>. Parse accordingly.</li>
+  <li><code>manifest.rate_table_uris</code> is non-empty here and carries a content hash for the benchmark rate — you can pin against it and detect a rate-table change.</li>
+  <li>The period URN is load-bearing on this calculator. Do not reuse a depreciation-style <code>:unscoped</code> segment; it will 404.</li>
+  <li>The generic route <code>/v1/calculators/urn:sbrm:calculator:div7a:at/{period_uri}</code> reaches the same handler.</li>
+</ul>
+
+<footer class="site">
+  <p><a href="/">← Calculator Constellation</a> &nbsp;·&nbsp; Not advice. Consult a registered tax agent.</p>
+</footer>
+
+</div>
+</body>
+</html>
