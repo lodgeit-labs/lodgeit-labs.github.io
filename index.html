@@ -1,206 +1,385 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calculator Constellation — LodgeiT Labs</title>
-<meta name="description" content="Deterministic Australian tax and accounting calculators, available as a public HTTP API. Built for agents.">
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LodgeiT.org | Open Source Financial Infrastructure</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: {
+                            blue: '#0066FF',
+                            light: '#4D94FF',
+                            dark: '#004CCC',
+                        },
+                        obsidian: '#0a0f1a',
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#0b1120',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+    </style>
 </head>
-<body>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
 
-<header class="site">
-  <div class="wrap">
-    <a class="home" href="/">lodgeit labs / calculator constellation</a>
-    <nav>
-      <a href="/">Overview</a>
-      <a href="/depreciation.html">Depreciation</a>
-      <a href="/div7a.html">Division 7A</a>
-      <a href="/llms.txt">llms.txt</a>
-    </nav>
-  </div>
-</header>
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img src="assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
+                <a href="#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
 
-<div class="wrap">
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative pt-32 pb-24 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-lodgeit-blue/5 to-transparent z-0"></div>
+            
+            <div class="max-w-5xl mx-auto px-6 relative z-10 text-center">
+                <div class="inline-flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-full px-4 py-1.5 mb-8">
+                    <span class="flex w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-xs font-mono text-slate-300 uppercase tracking-wider">Open Source Foundation</span>
+                </div>
 
-<h1>Deterministic tax and accounting calculators, over HTTP</h1>
+                <h1 class="text-5xl md:text-7xl font-black tracking-tight text-white mb-6 gradient-text">
+                    The Operating System <br />for Financial Truth.
+                </h1>
+                
+                <p class="text-xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+                    LodgeiT Labs builds the open-source infrastructure bridging the gap between probabilistic AI and deterministic accounting. We empower developers to build zero-hallucination, cryptographically auditable financial systems.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <a href="#ecosystem" class="px-8 py-4 bg-lodgeit-blue hover:bg-lodgeit-light text-white font-bold rounded-lg transition-all shadow-neon">
+                        Explore the Ecosystem
+                    </a>
+                    <a href="https://github.com/lodgeit-labs" target="_blank" class="px-8 py-4 bg-transparent border border-slate-600 hover:border-lodgeit-light text-slate-300 hover:text-white font-bold rounded-lg transition-all flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+                        View Organization
+                    </a>
+                </div>
+            </div>
+        </section>
 
-<p class="lede">A small fleet of Australian tax and accounting calculators with a single public front door.
-No key, no signup, no client library. Built so an agent can call them without a human in the loop.</p>
+        <!-- Scene Protocol teaser -->
+        <section id="scene-protocol" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/50">
+            <a href="/scene-protocol/" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-lodgeit-light/50 card-hover overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-lodgeit-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute top-0 right-0 p-6 opacity-10 text-7xl group-hover:opacity-20 transition-opacity">🎭</div>
+                <div class="p-8 md:p-10 relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl md:text-3xl font-bold text-white group-hover:text-lodgeit-light transition-colors">The Scene Protocol</h2>
+                        <span class="text-lodgeit-light bg-lodgeit-blue/10 border border-lodgeit-light/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Specification &middot; In Progress</span>
+                    </div>
+                    <p class="text-slate-300 text-xl italic leading-relaxed mb-5">
+                        Ledgers are caches. Activity is the truth.
+                    </p>
+                    <p class="text-slate-400 text-lg leading-relaxed max-w-4xl">
+                        Every trade is one shared story &mdash; commitment, fulfilment, claim, settlement, receipt &mdash; and each party's accounting system holds only a cached projection of it. The Scene Protocol supplies the trust layer that turns projection into replay: one shared record of the scene, and any ledger derivable from it as a pure, verifiable function.
+                    </p>
+                    <p class="text-lodgeit-light/80 group-hover:text-lodgeit-light font-mono text-sm mt-6 transition-colors">
+                        Read the protocol &rarr;
+                    </p>
+                </div>
+            </a>
+        </section>
 
-<p>Each calculator is a deterministic engine — Prolog or Python, no model in the path — behind a
-gateway that validates your request, refuses the ones it cannot answer, and tells you which
-statutory rate tables it consumed to produce the number.</p>
+        <!-- The Discipline (keystone) -->
+        <section id="discipline" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/50">
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-white mb-4">The Discipline</h2>
+                <p class="text-slate-400 max-w-3xl text-lg leading-relaxed">
+                    The structural foundation of the LodgeiT Labs ecosystem. Every project below runs on a deterministic, self-policing narrative layer. This is the methodology that replaces hope with math.
+                </p>
+            </div>
 
-<h2>What's live</h2>
+            <!-- Keystone Card: Brain Pattern -->
+            <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-emerald-500/50 card-hover overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute top-0 right-0 p-6 opacity-10 text-7xl group-hover:opacity-20 transition-opacity">🧠</div>
+                <div class="p-8 md:p-10 relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors">Brain Pattern</h3>
+                        <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Memory Artifact</span>
+                    </div>
+                    <p class="text-slate-400 text-lg leading-relaxed max-w-4xl">
+                        A public blueprint for building a deterministic, self-policing narrative layer over complex codebases. Proofing 0 (cryptographic graph integrity) meets Proofing 1 (Prolog-based logical coherence) to guarantee Tri-State CI.
+                    </p>
+                </div>
+            </a>
+        </section>
 
-<table>
-<thead><tr><th>Calculator</th><th>Status</th><th>What it does</th></tr></thead>
-<tbody>
-<tr>
-  <td><a href="/depreciation.html"><strong>Depreciation</strong></a></td>
-  <td><span class="pill ok">available</span></td>
-  <td>Single-asset carrying amount under AASB&nbsp;116. Prime cost or diminishing value, at a date or over an arbitrary range.</td>
-</tr>
-<tr>
-  <td><a href="/div7a.html"><strong>Division 7A</strong></a></td>
-  <td><span class="pill ok">available</span></td>
-  <td>Minimum yearly repayment, shortfall and deemed dividend under ITAA&nbsp;1936 Div&nbsp;7A.</td>
-</tr>
-<tr>
-  <td><strong>Fringe Benefits Tax</strong></td>
-  <td><span class="pill no">not yet</span></td>
-  <td>Twenty-one benefit categories. Reachable, but with a known defect that makes cross-category totals wrong — see below.</td>
-</tr>
-</tbody>
-</table>
+        <!-- The Ecosystem (grouped by role: reasoning substrate / agent surface / integration kits) -->
+        <section id="ecosystem" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/50">
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-white mb-4">The Ecosystem</h2>
+                <p class="text-slate-400 max-w-3xl text-lg leading-relaxed">
+                    The sovereign infrastructure, declarative solvers, and logic engines built on top of the discipline.
+                </p>
+            </div>
 
-<div class="note stop">
-<strong>FBT is not ready and we would rather say so.</strong> The engine returns correct taxable
-values, but only three of nineteen benefit calculators currently emit the grossed-up figure and
-the FBT payable. The rest return <code>null</code> for those fields. Anything summing
-<code>fbt_payable</code> across benefit types will silently undercount. We are fixing it at the
-dispatch boundary rather than one calculator at a time. Until then, treat FBT as unavailable.
-</div>
+            <!-- Group: The reasoning substrate -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-300 uppercase tracking-wider font-mono mb-4">The reasoning substrate</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
 
-<h2>Working with an agent?</h2>
+                <!-- Logical English -->
+                <a href="https://github.com/lodgeit-labs/LogicalEnglish" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-purple-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">📜</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">Logical English</h3>
+                            <span class="text-purple-400 bg-purple-400/10 border border-purple-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Rules</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Executable statute: legal and domain rules written in controlled natural language that compile to deterministic constraint logic. One text a lawyer can read and a machine can run.
+                        </p>
+                        <p class="text-purple-400/80 group-hover:text-purple-400 font-mono text-xs mt-4 transition-colors">
+                            Staging fork: LogicalEnglish-LodgeiT
+                        </p>
+                    </div>
+                </a>
 
-<p>Give it this and stop reading:</p>
+                <!-- FOL_solvers -->
+                <a href="https://github.com/lodgeit-labs/FOL_solvers" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-indigo-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🔬</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">FOL_solvers</h3>
+                            <span class="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Research</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Research substrate: logic programming and knowledge-representation experiments underpinning the deterministic layer.
+                        </p>
+                    </div>
+                </a>
 
-<pre><code>https://lodgeit.org/llms.txt</code></pre>
+                <!-- brain-pattern -->
+                <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-emerald-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🧠</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">brain-pattern</h3>
+                            <span class="text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Methodology</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            The public methodology: how an AI agent's memory is kept honest with cryptographic integrity, append-only ledgers, coherence audits and receipts. The discipline behind everything else on this page.
+                        </p>
+                    </div>
+                </a>
 
-<p>That file is the entire API surface in plain text — every endpoint, every field, the day-count
-semantics, the error contract, the known limitations, and how the numbers are represented. An
-agent can read it once and call these calculators correctly without parsing a single HTML page.</p>
+            </div>
 
-<p>It is written to be read by a machine and understood by a person. If you are evaluating whether
-this is worth your time, that file will tell you faster than these pages will.</p>
+            <!-- Group: The agent surface -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-300 uppercase tracking-wider font-mono mb-4">The agent surface</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
 
-<h2>Base URL</h2>
+                <!-- clawdog -->
+                <a href="https://github.com/lodgeit-labs/clawdog" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-blue-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🐕</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">clawdog</h3>
+                            <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Engine</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            The neurosemantic accounting engine: LLM flexibility in front, SWI-Prolog rigor behind, zero-hallucination outputs where it counts.
+                        </p>
+                    </div>
+                </a>
 
-<pre><code>https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app</code></pre>
+                <!-- clawdog-mcp-server -->
+                <a href="https://github.com/lodgeit-labs/clawdog-mcp-server" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-cyan-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🔌</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">clawdog-mcp-server</h3>
+                            <span class="text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">MCP</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            MCP access to LodgeiT tools: point any MCP-capable agent at the calculator constellation.
+                        </p>
+                    </div>
+                </a>
 
-<p>The service name is historical — it fronts every calculator, not just FBT.</p>
+                <!-- clawdog-kit -->
+                <a href="https://github.com/lodgeit-labs/clawdog-kit" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-sky-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🧰</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-sky-400 transition-colors">clawdog-kit</h3>
+                            <span class="text-sky-400 bg-sky-400/10 border border-sky-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Kit</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Agent-driven AU tax and accounting calculator kit with CSV templates: the fastest way to run the calculators yourself.
+                        </p>
+                    </div>
+                </a>
 
-<div class="note warn">
-<strong>This host will change.</strong> A stable custom domain is coming; until then you are calling
-the underlying Cloud Run URL directly. Put the base URL in configuration rather than in your code,
-and re-check this page before assuming it still resolves.
-</div>
+            </div>
 
-<h2>Thirty seconds</h2>
+            <!-- Group: Integration kits -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-300 uppercase tracking-wider font-mono mb-4">Integration kits</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-<p>Written-down value of a $10,000 asset with a five-year life, one month after purchase:</p>
+                <!-- clawdog-calculator-api -->
+                <a href="https://github.com/lodgeit-labs/clawdog-calculator-api" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-teal-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🛠️</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">clawdog-calculator-api</h3>
+                            <span class="text-teal-400 bg-teal-400/10 border border-teal-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">REST API</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            The Calculator-Constellation REST API.
+                        </p>
+                    </div>
+                </a>
 
-<pre><code>curl -s -X POST \
-  "https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app/v1/calculators/depreciation/at/urn:sbrm:period:depreciation:unscoped" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "basis": "accounting",
-    "asset": {
-      "cost": 10000,
-      "acquisition_date": "2023-07-01",
-      "accounting_useful_life_years": 5,
-      "accounting_method": "prime_cost"
-    },
-    "at_date": "2023-07-31"
-  }'</code></pre>
+                <!-- clawdog-calculator-api-integration-kit -->
+                <a href="https://github.com/lodgeit-labs/clawdog-calculator-api-integration-kit" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-teal-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🔗</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">clawdog-calculator-api-integration-kit</h3>
+                            <span class="text-teal-400 bg-teal-400/10 border border-teal-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Client</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Client-side integration kit for the REST API.
+                        </p>
+                    </div>
+                </a>
 
-<pre><code>{
-  "basis": "accounting",
-  "at_date": "2023-07-31",
-  "wdv_at": "9830.60",
-  "period_dep_at": "169.40",
-  "day_count": "actual/actual",
-  "schedule_summary": { "opening_balance": "10000.00", "closing_balance_at": "9830.60", ... },
-  "manifest": { "rate_table_uris": [] },
-  "advisory": { ... }
-}</code></pre>
+                <!-- clawdog-widget-renderer -->
+                <a href="https://github.com/lodgeit-labs/clawdog-widget-renderer" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-rose-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🎨</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-rose-400 transition-colors">clawdog-widget-renderer</h3>
+                            <span class="text-rose-400 bg-rose-400/10 border border-rose-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Widgets</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Schema-driven HTML widget renderer for calculator surfaces.
+                        </p>
+                    </div>
+                </a>
 
-<h2>Discovery</h2>
+                <!-- fano-classifier-integration-kit -->
+                <a href="https://github.com/lodgeit-labs/fano-classifier-integration-kit" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-amber-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🧭</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">fano-classifier-integration-kit</h3>
+                            <span class="text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Classifier</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            Integration kit for the Fano classifier (account classification with a deterministic firewall).
+                        </p>
+                    </div>
+                </a>
 
-<p>The gateway describes itself. Point an agent at these before hardcoding anything:</p>
+                <!-- report-generator-frs-105 -->
+                <a href="https://github.com/lodgeit-labs/report-generator-frs-105" target="_blank" rel="noopener noreferrer" class="block group relative rounded-2xl bg-obsidian border border-slate-800 hover:border-orange-500/50 card-hover overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🇬🇧</div>
+                    <div class="p-8 relative">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">report-generator-frs-105</h3>
+                            <span class="text-orange-400 bg-orange-400/10 border border-orange-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">UK FRS 105</span>
+                        </div>
+                        <p class="text-slate-400 leading-relaxed">
+                            FRS 105 report generation kit (UK micro-entity accounts).
+                        </p>
+                    </div>
+                </a>
 
-<dl class="kv">
-  <dt>GET /v1/calculators</dt>
-  <dd>Every calculator, its URN, its input schema reference, and the period URNs it accepts.</dd>
-  <dt>GET /openapi.json</dt>
-  <dd>Full OpenAPI 3 document for every route.</dd>
-  <dt>GET /v1/rates/{period_uri}</dt>
-  <dd>The statutory rate tables registered for a period, each with a content hash.</dd>
-  <dt>GET /healthz</dt>
-  <dd>Liveness.</dd>
-</dl>
+            </div>
+        </section>
 
-<h2>How the responses are shaped</h2>
+    </main>
 
-<p>Every successful response carries two blocks beyond the calculation itself.</p>
+    <!-- Footer -->
+    <footer class="bg-obsidian py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                <img src="assets/lodgeit-logo.png" alt="LodgeiT" class="h-6 w-auto opacity-75">
+                <span class="text-slate-500 font-mono text-xs font-bold mt-0.5">Labs</span>
+            </div>
+            
+            <div class="flex space-x-6 text-sm">
+                <a href="https://github.com/lodgeit-labs" class="text-slate-500 hover:text-white transition">GitHub</a>
+                <a href="https://lodgeit.net.au" class="text-slate-500 hover:text-white transition">LodgeiT Commercial</a>
+            </div>
+        </div>
+    </footer>
 
-<p><strong><code>manifest.rate_table_uris</code></strong> lists the statutory rate tables the
-calculation actually consumed, each with a SHA-256 of its contents. An empty list means the figure
-was derived arithmetically from your inputs alone. This is emitted by the computation, not attached
-by hand — if the list changes, the arithmetic changed.</p>
-
-<p><strong><code>advisory</code></strong> states what kind of figure you have been given and what
-it is not. It varies by calculator: an AASB&nbsp;116 carrying amount carries a warning against
-using it in a tax return; a Division&nbsp;7A figure carries the tax-agent framing. Read it — the
-distinction is the point.</p>
-
-<h2>Errors</h2>
-
-<p>Status codes mean what they say. We treat this as a contract:</p>
-
-<table>
-<thead><tr><th>Code</th><th>Meaning</th></tr></thead>
-<tbody>
-<tr><td><code>422</code></td><td>Your request is malformed or incomplete. The body names the field. Do not retry unchanged.</td></tr>
-<tr><td><code>400</code></td><td>Your request is well-formed but outside what this calculator will answer. The body carries a <code>refusal_class</code>.</td></tr>
-<tr><td><code>404</code></td><td>Unknown calculator URN or a period URN this calculator does not accept. The body names what it does accept.</td></tr>
-<tr><td><code>5xx</code></td><td>Our fault. Retrying is reasonable.</td></tr>
-</tbody>
-</table>
-
-<p>A 4xx from the engine behind the gateway is never reported to you as a 5xx. If you get a 5xx,
-something is genuinely wrong on our side.</p>
-
-<h2>Refusals are a feature</h2>
-
-<p>These calculators refuse rather than guess. A Division&nbsp;7A loan with a zero or negative
-balance is not a loan, so it returns 400 instead of a compliance verdict. A pooled depreciating
-asset is out of scope, so it returns 400 with <code>pool_asset_out_of_t6_scope</code> instead of a
-number computed under the wrong rules.</p>
-
-<p>If you are used to APIs that return something for everything, this will occasionally be
-inconvenient. It is deliberate. A refusal you can see beats a plausible number you cannot check.</p>
-
-<h2>What this is not</h2>
-
-<ul>
-  <li><strong>Not advice.</strong> Every response says so, and names the statute it says so under.</li>
-  <li><strong>Not a replacement for judgement.</strong> A depreciation figure is only as sound as the useful life you assert. We compute; we do not assess whether your inputs are reasonable.</li>
-  <li><strong>Not stable yet.</strong> Response shapes may change. Nothing here is versioned for production integration.</li>
-</ul>
-
-<h2>Rate limits, cost, keys</h2>
-
-<p>None, none, and none. The services are capped at three instances each, so sustained heavy load
-will queue. If you need more than that, or you are building something that would break when we
-change a field name, get in touch first.</p>
-
-<h2>Telling us it's wrong</h2>
-
-<p>The most useful thing you can send us is a request and the response it produced, with the number
-you expected and where that expectation comes from. Two independent implementations disagreeing is
-how the last four defects in these calculators were found — including one where our engine was
-right and our own reasoning was wrong.</p>
-
-<p><a href="https://github.com/lodgeit-labs">github.com/lodgeit-labs</a></p>
-
-<footer class="site">
-  <p>LodgeiT Labs — open-source financial infrastructure.<br>
-  Calculators are deterministic engines. No language model is in the calculation path.</p>
-</footer>
-
-</div>
 </body>
 </html>
