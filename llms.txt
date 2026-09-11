@@ -7,15 +7,14 @@
 BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
 (The service name is historical — it fronts every calculator, not only FBT.)
 
-Last updated: 2026-09-05
+Last updated: 2026-09-11
 
 ## Status
 
 - depreciation — AVAILABLE. AASB 116 carrying amounts, at a date or over an arbitrary range.
 - div7a — AVAILABLE. ITAA 1936 Division 7A minimum yearly repayment and deemed dividend.
-- fbt — NOT AVAILABLE. Reachable but defective: 16 of 19 benefit calculators return null for
-  gross_up_factor, grossed_up_taxable_value and fbt_payable. Any sum of fbt_payable across
-  benefit categories will silently undercount. Do not integrate FBT yet.
+- fbt — AVAILABLE. FBTAA 1986 taxable value across nineteen benefit-category calculators; see
+  the Fringe Benefits Tax section and GET /v1/calculators for the full list.
 
 ## Discovery
 
@@ -100,6 +99,49 @@ Response: benchmark_rate, remaining_term_years, statutory_myr, total_repayments,
 manifest cites urn:sbrm:rate:div7a:{period}:benchmark-interest with a SHA-256 content hash.
 Pin against it to detect a rate-table change.
 
+## Fringe Benefits Tax
+
+POST /v1/calculators/{calculator_uri}/urn:sbrm:period:fbt:fy2026
+
+Period-scoped to the FBT year. Unlike depreciation and div7a, FBT is a family of
+per-benefit-category calculators rather than one endpoint: the calculator URN selects the
+benefit category and its input schema. Enumerate them from discovery rather than hardcoding.
+
+GET /v1/calculators   lists every FBT calculator URN, its input schema ref, and that it
+                      accepts urn:sbrm:period:fbt:fy2026.
+
+Benefit-category calculator URNs currently registered (nineteen):
+  urn:sbrm:calculator:fbt:board
+  urn:sbrm:calculator:fbt:car-operating-cost
+  urn:sbrm:calculator:fbt:car-parking-actual
+  urn:sbrm:calculator:fbt:car-parking-register-12wk
+  urn:sbrm:calculator:fbt:car-parking-statutory-228
+  urn:sbrm:calculator:fbt:car-statutory-formula
+  urn:sbrm:calculator:fbt:debt-waiver
+  urn:sbrm:calculator:fbt:expense-payment
+  urn:sbrm:calculator:fbt:expense-payment-in-house
+  urn:sbrm:calculator:fbt:housing
+  urn:sbrm:calculator:fbt:lafha
+  urn:sbrm:calculator:fbt:loan
+  urn:sbrm:calculator:fbt:meal-entertainment-50-50
+  urn:sbrm:calculator:fbt:meal-entertainment-register-12wk
+  urn:sbrm:calculator:fbt:property
+  urn:sbrm:calculator:fbt:property-in-house
+  urn:sbrm:calculator:fbt:residual
+  urn:sbrm:calculator:fbt:residual-in-house
+  urn:sbrm:calculator:fbt:tebe
+
+Each calculator's request body differs by benefit category; the input schema ref returned by
+GET /v1/calculators (and the full schema in /openapi.json) is authoritative. Do not assume a
+shared request shape across categories.
+
+Response: taxable_value, the grossed-up trio (gross_up_factor, grossed_up_taxable_value,
+fbt_payable), and the intermediate workings that produced them — the deemed and grossed-up
+figures, reductions, and employee contributions — are all top-level DECIMAL STRINGS, not JSON
+floats ("2978.47", "1.8868", "5619.78", not 2978.47). As with the other calculators, manifest
+cites the statutory rate tables the calculation consumed, each with a SHA-256 content hash, and
+advisory carries the tax-agent framing.
+
 ## Response envelope
 
 Every 200 carries two blocks beyond the calculation.
@@ -131,9 +173,6 @@ computed under the wrong rules.
 
 Money and rates are returned as DECIMAL STRINGS, not JSON floats — "9830.60", not 9830.6.
 Internal arithmetic is exact rational; only emitted values are quantised. Parse as decimal.
-
-(FBT responses currently return JSON floats. This inconsistency is known and will be resolved
-when FBT becomes available.)
 
 ## Limits
 
