@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fringe Benefits Tax — Calculator Constellation</title>
+<meta name="description" content="Taxable value of a fringe benefit under FBTAA 1986, across nineteen benefit-category calculators.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Fringe Benefits Tax <span class="pill ok">available</span></h1>
+
+<p class="lede">Taxable value of a fringe benefit under FBTAA&nbsp;1986, across nineteen
+benefit-category calculators — car, loan, debt waiver, expense payment, property, residual,
+housing, LAFHA, board, entertainment and car parking. Each returns the grossed-up figure and the
+FBT payable, with the intermediate workings that produced them.</p>
+
+<p>Unlike depreciation and div7a, FBT is not one endpoint. It is a family of per-benefit-category
+calculators: the calculator URN selects the benefit category and, with it, the input schema. You
+enumerate the family from discovery rather than hardcoding it, and you read each calculator's input
+schema before calling it — the request bodies are not interchangeable across categories.</p>
+
+<h2>Endpoint</h2>
+
+<pre><code>POST /v1/calculators/{calculator_uri}/urn:sbrm:period:fbt:fy2026</code></pre>
+
+<p>Period-scoped to the FBT year. The <code>{calculator_uri}</code> is one of the nineteen benefit
+categories below; the period URN selects the FY2026 statutory rate tables. Supplying a period the
+calculator does not accept returns 404, and the body names the periods it does accept.</p>
+
+<h2>The nineteen calculators</h2>
+
+<p>These are the calculator URNs currently registered. Read them from
+<code>GET /v1/calculators</code> rather than pasting this list — it is authoritative, this page is
+a snapshot.</p>
+
+<pre><code>urn:sbrm:calculator:fbt:board
+urn:sbrm:calculator:fbt:car-operating-cost
+urn:sbrm:calculator:fbt:car-parking-actual
+urn:sbrm:calculator:fbt:car-parking-register-12wk
+urn:sbrm:calculator:fbt:car-parking-statutory-228
+urn:sbrm:calculator:fbt:car-statutory-formula
+urn:sbrm:calculator:fbt:debt-waiver
+urn:sbrm:calculator:fbt:expense-payment
+urn:sbrm:calculator:fbt:expense-payment-in-house
+urn:sbrm:calculator:fbt:housing
+urn:sbrm:calculator:fbt:lafha
+urn:sbrm:calculator:fbt:loan
+urn:sbrm:calculator:fbt:meal-entertainment-50-50
+urn:sbrm:calculator:fbt:meal-entertainment-register-12wk
+urn:sbrm:calculator:fbt:property
+urn:sbrm:calculator:fbt:property-in-house
+urn:sbrm:calculator:fbt:residual
+urn:sbrm:calculator:fbt:residual-in-house
+urn:sbrm:calculator:fbt:tebe</code></pre>
+
+<h2>Input</h2>
+
+<p>Each calculator's request body differs by benefit category. The input schema reference returned
+by <code>GET /v1/calculators</code> — and the full schema in <code>/openapi.json</code> — is
+authoritative for the calculator you are calling. Do not assume a shared request shape across
+categories.</p>
+
+<div class="note">
+<strong>Read the schema before you call.</strong> A car operating-cost benefit takes
+<code>businessUsePercentage</code>, <code>formOfFinance</code> and the vehicle's cost and dates; a
+loan takes <code>interestChargedByEmployer</code> and <code>otherwiseDeductiblePercentage</code>; a
+12-week register meal-entertainment benefit takes <code>registerPercentage</code>. They are not
+interchangeable.
+</div>
+
+<h2>Worked example</h2>
+
+<p>A car fringe benefit under the operating-cost method: 75% business use, owned vehicle costing
+$40,000 acquired 1&nbsp;July&nbsp;2023, held the full FBT year (365 days), $3,000
+fuel/repairs/servicing, $1,500 registration/insurance, $200 employee contribution:</p>
+
+<pre><code>curl -s -X POST \
+  "$BASE/v1/calculators/urn:sbrm:calculator:fbt:car-operating-cost/urn:sbrm:period:fbt:fy2026" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "businessUsePercentage": 75,
+    "formOfFinance": "owned",
+    "acquisitionCost": 40000,
+    "acquisitionDate": "2023-07-01",
+    "daysHeldInFBTYear": 365,
+    "fuelRepairsServicing": 3000,
+    "registrationInsurance": 1500,
+    "employeeContribution": 200
+  }'</code></pre>
+
+<pre><code>{
+  "taxable_value": "2972.86",
+  "fbt_type": "Type 2",
+  "gross_up_factor": "1.8868",
+  "grossed_up_taxable_value": "5609.19",
+  "fbt_payable": "2636.32",
+  "business_use_percentage_clamped": "75",
+  "business_use_reduction": "9518.57",
+  "deemed_total": "8191.43",
+  "employee_contribution": "200.00",
+  "operating_expenses_total": "12691.43",
+  "no_private_use_reduction": "0.00",
+  "taxable_value_before_operating": "3172.86",
+  "taxable_value_net_operating_pre_clamp": "2972.86",
+  "counts_towards_fbt_cap": true,
+  "trace": { "deemed_depreciation": "6091.19", "deemed_interest": "2100.24", "deemed_total": "8191.43", ... },
+  "manifest": {
+    "rate_table_uris": [{
+      "uri": "urn:sbrm:rate:fbt:fy2026:deemed-depreciation-rates",
+      "content_hash": "4d3a9e54d740de8df7961758d8f588cf76d3a37a638075b82b2811ddb3ad95df",
+      "hash_algorithm": "sha256"
+    }, ... ]
+  },
+  "advisory": { ... }
+}</code></pre>
+
+<p>Reading it back: the deemed running cost ($8,191.43) plus the actual operating costs bring the
+operating-expenses total to $12,691.43; the 75% business-use reduction ($9,518.57) and the $200
+employee contribution reduce it to a taxable value of $2,972.86; grossed up at the Type&nbsp;2
+factor of 1.8868 that is $5,609.19, and FBT payable at the 47% rate is $2,636.32.</p>
+
+<h2>Output fields</h2>
+
+<dl class="kv">
+  <dt>taxable_value</dt>
+  <dd>The taxable value of the benefit, before gross-up.</dd>
+
+  <dt>fbt_type</dt>
+  <dd><code>Type 1</code> (employer entitled to a GST input tax credit) or <code>Type 2</code>. Selects the gross-up factor.</dd>
+
+  <dt>gross_up_factor</dt>
+  <dd>The statutory gross-up factor applied — 2.0802 for Type&nbsp;1, 1.8868 for Type&nbsp;2 in FY2026.</dd>
+
+  <dt>grossed_up_taxable_value</dt>
+  <dd>The taxable value grossed up by the factor.</dd>
+
+  <dt>fbt_payable</dt>
+  <dd>The FBT payable on the grossed-up value at the FBT rate.</dd>
+
+  <dt>the workings</dt>
+  <dd>The intermediate figures that produced the result — for this calculator, <code>deemed_total</code>, <code>business_use_reduction</code>, <code>operating_expenses_total</code>, <code>employee_contribution</code> and the deemed depreciation and interest under <code>trace</code>. They vary by benefit category.</dd>
+</dl>
+
+<h2>Refusals</h2>
+
+<p>A request that is malformed or incomplete is refused at the gateway on the schema; a request that
+names a period the calculator does not accept is refused with the periods it does accept. The body
+names the field or the reason:</p>
+
+<pre><code>// a required field for this calculator omitted (formOfFinance)
+422  {"detail":[{"type":"missing","loc":["formOfFinance"],"msg":"Field required"}]}
+
+// a period this calculator does not accept
+404  {"detail":"period_uri='urn:sbrm:period:div7a:fy2026' is not supported by calculator 'urn:sbrm:calculator:fbt:car-operating-cost'. Supported: ['urn:sbrm:period:fbt:fy2026']"}</code></pre>
+
+<h2>Notes for integrators</h2>
+
+<ul>
+  <li>Money, rates and the percentage echoes are returned as <strong>decimal strings</strong>, not JSON floats — <code>"2972.86"</code>, <code>"1.8868"</code>, not <code>2972.86</code>. Parse accordingly.</li>
+  <li>The grossed-up trio and the intermediate workings are surfaced at the top level of the response, alongside <code>taxable_value</code>; the per-benefit deemed figures sit under <code>trace</code>.</li>
+  <li><code>manifest.rate_table_uris</code> is non-empty here and carries a content hash for each FY2026 rate table the calculation consumed — you can pin against them and detect a rate-table change.</li>
+  <li>Enumerate the calculators from <code>GET /v1/calculators</code>; do not assume a shared request shape across benefit categories.</li>
+</ul>
+
+<footer class="site">
+  <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; Not advice. Consult a registered tax agent.</p>
+</footer>
+
+</div>
+</body>
+</html>
