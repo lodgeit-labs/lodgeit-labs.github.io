@@ -49,19 +49,11 @@ statutory rate tables it consumed to produce the number.</p>
 </tr>
 <tr>
   <td><strong>Fringe Benefits Tax</strong></td>
-  <td><span class="pill no">not yet</span></td>
-  <td>Twenty-one benefit categories. Reachable, but with a known defect that makes cross-category totals wrong — see below.</td>
+  <td><span class="pill ok">available</span></td>
+  <td>Taxable value of a fringe benefit under FBTAA&nbsp;1986, across nineteen benefit-category calculators — car (statutory formula and operating cost), loan, debt waiver, expense payment, property, residual, housing, LAFHA, board, entertainment and car parking. Full list via discovery.</td>
 </tr>
 </tbody>
 </table>
-
-<div class="note stop">
-<strong>FBT is not ready and we would rather say so.</strong> The engine returns correct taxable
-values, but only three of nineteen benefit calculators currently emit the grossed-up figure and
-the FBT payable. The rest return <code>null</code> for those fields. Anything summing
-<code>fbt_payable</code> across benefit types will silently undercount. We are fixing it at the
-dispatch boundary rather than one calculator at a time. Until then, treat FBT as unavailable.
-</div>
 
 <h2>Working with an agent?</h2>
 
