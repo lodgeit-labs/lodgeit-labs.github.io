@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fano classifier — Calculator Constellation</title>
+<meta name="description" content="Trial-balance line classifier for the LodgeiT chart of accounts. Rules first, model second; a draft is the engine refusing to guess.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/fano.html">Fano</a>
+      <a href="/publish.html">Publish</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Fano classifier <span class="pill ok">available</span></h1>
+
+<p class="lede">A trial-balance line classifier for the LodgeiT chart of accounts. Send ledger
+lines with an entity type and a section; get back an SBRM code with a status of
+<code>accepted_fact</code> or <code>draft_fact</code>. Rules run first, the model second — and a
+draft is the engine refusing to guess.</p>
+
+<p>Unlike the deterministic calculators, Fano has a model in the path. It is not there to be
+trusted blindly: a small language-free classifier proposes a code, a layer of hand-authored
+LodgeiT word rules and structural firewalls check that proposal against the section and entity you
+declared, and anything the two do not agree on is returned as a <strong>draft</strong> for a human
+to confirm in one click — never silently accepted. The classifier is diagnostic; the rules and the
+refusals are the contract.</p>
+
+<h2>Where it runs</h2>
+
+<pre><code>https://fano-engine-79859053141.australia-southeast1.run.app</code></pre>
+
+<div class="note warn">
+<strong>This host will change.</strong> A stable custom domain is coming; until then you are calling
+the underlying Cloud Run URL directly. Put the base URL in configuration rather than in your code,
+and re-check this page before assuming it still resolves.
+</div>
+
+<h2>Endpoint</h2>
+
+<pre><code>POST /ingest/trial_balance
+GET  /v1/info
+GET  /openapi.json</code></pre>
+
+<p>Post a whole trial balance in one call: an <code>entity_structure</code> for the payload and a
+list of lines. Each line carries its <code>description</code>, the <code>source_topology</code>
+(the ledger section you are filing it under), and an upstream prediction
+(<code>predicted_code</code>, <code>confidence</code>) plus an <code>amount</code>. The declared
+entity and section are <strong>inputs, not decoration</strong> — the model is masked to leaves
+within the section you declared, and the firewall checks the returned code against that section and
+entity. <code>GET /v1/info</code> returns the version, the access mode, the limits, and the reason
+codes; <code>GET /openapi.json</code> is the full schema.</p>
+
+<h2>Input</h2>
+
+<dl class="kv">
+  <dt>entity_structure</dt>
+  <dd>One of <code>company</code>, <code>trust</code>, <code>partnership</code>, <code>sole_trader</code>, <code>super_fund</code>. Declared once for the whole payload.</dd>
+  <dt>lines[].description</dt>
+  <dd>The ledger line description, as it reads on the trial balance.</dd>
+  <dt>lines[].source_topology</dt>
+  <dd>The section you are filing the line under: <code>current_assets</code>, <code>non_current_assets</code>, <code>current_liabilities</code>, <code>non_current_liabilities</code>, <code>equity</code>, <code>revenue</code>, <code>expenses</code>. The model is masked to leaves within it.</dd>
+  <dt>lines[].predicted_code</dt>
+  <dd>The upstream / prior code for the line as <code>sbrm_&lt;n&gt;</code> (use <code>sbrm_0000</code> if you have none). Echoed back as <code>operator_hint_predicted_code</code>; it does not steer the classification.</dd>
+  <dt>lines[].confidence</dt>
+  <dd>The upstream confidence, 0–1. Echoed as <code>operator_hint_confidence</code>.</dd>
+  <dt>lines[].amount</dt>
+  <dd>Signed amount. The payload must net to zero (assets/expenses positive, liabilities/equity/revenue negative) or the gateway returns 400 on the equilibrium check.</dd>
+</dl>
+
+<h2>Try two calls</h2>
+
+<p>One sole-trader line that accepts, one that drafts — both from a single balanced payload. These
+are live responses from the service above.</p>
+
+<pre><code>curl -s -X POST \
+  "https://fano-engine-79859053141.australia-southeast1.run.app/ingest/trial_balance" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_structure": "sole_trader",
+    "lines": [
+      { "description": "Business Cheque Account", "predicted_code": "sbrm_0000",
+        "source_topology": "current_assets", "confidence": 0.5, "amount": 5000.0 },
+      { "description": "Owner Capital", "predicted_code": "sbrm_3100",
+        "source_topology": "equity", "confidence": 0.5, "amount": -5000.0 }
+    ]
+  }'</code></pre>
+
+<pre><code>{
+  "status": "success",
+  "equilibrium_valid": true,
+  "results": [
+    {
+      "description": "Business Cheque Account",
+      "predicted_code": "sbrm_1137",
+      "confidence": 1.0,
+      "cascade_topology": "current_assets",
+      "operator_hint_predicted_code": "sbrm_0000",
+      "operator_hint_source_topology": "current_assets",
+      "operator_hint_confidence": 0.5,
+      "fano_status": "accepted_fact",
+      "quarantine_reason": "keyword_rule:sbrm_1137"
+    },
+    {
+      "description": "Owner Capital",
+      "predicted_code": "sbrm_3130",
+      "confidence": "0.97",
+      "cascade_topology": "equity",
+      "operator_hint_predicted_code": "sbrm_3100",
+      "operator_hint_source_topology": "equity",
+      "operator_hint_confidence": 0.5,
+      "fano_status": "draft_fact",
+      "quarantine_reason": "rule_model_disagreement (rule=sbrm_3130, model=sbrm_3121)"
+    }
+  ]
+}</code></pre>
+
+<p>Reading it back: <strong>Business Cheque Account</strong> is an
+<code>accepted_fact</code> — a LodgeiT word rule owned the line and returned
+<code>sbrm_1137</code> (Cash&nbsp;&gt;&nbsp;Bank Accounts), reason
+<code>keyword_rule:sbrm_1137</code>; you can post it. <strong>Owner Capital</strong> is a
+<code>draft_fact</code> — the rule leaf (<code>sbrm_3130</code>, Sole Trader – Capital Introduced)
+and the model leaf (<code>sbrm_3121</code>) disagree, so the engine shows the rule candidate, names
+the disagreement in <code>quarantine_reason</code>, and hands the line to an operator rather than
+guess between two plausible equity leaves. Both outcomes are correct behaviour; the draft is the
+point.</p>
+
+<h2>Reason codes</h2>
+
+<p>Every line carries a <code>fano_status</code> of <code>accepted_fact</code> or
+<code>draft_fact</code>, and a <code>quarantine_reason</code> that names why. The reasons are a
+fixed set — an agent can branch on the prefix:</p>
+
+<dl class="kv">
+  <dt>keyword_rule:&lt;code&gt;</dt>
+  <dd>A LodgeiT word rule owned the line and returned this leaf. Accepted.</dd>
+  <dt>twin_leaf (rule=&lt;code&gt;)</dt>
+  <dd>The rule leaf is the Direct/Indirect twin of the model leaf; the model leaf is accepted.</dd>
+  <dt>rule_model_disagreement (rule=&lt;code&gt;, model=&lt;code&gt;)</dt>
+  <dd>A weak rule hit disagrees with the model; the rule leaf is shown and the line is drafted.</dd>
+  <dt>non_leaf_prediction (…)</dt>
+  <dd>The model landed on a non-postable structural node; the rule leaf is taken and the line is drafted.</dd>
+  <dt>Sub-floor model confidence (&lt;x&gt;)</dt>
+  <dd>The model's top code is below the 0.50 floor; the line is drafted for review.</dd>
+</dl>
+
+<h2>What it will not do</h2>
+
+<ul>
+  <li><strong>It will not guess.</strong> When the rules and the model disagree, or the model is below the confidence floor, or the model lands on a non-postable node, the line comes back as a <code>draft_fact</code> with both candidates shown. Drafts are contractual — treat them as review work, not as failures, and never post a draft unreviewed.</li>
+  <li><strong>It is not advice, and not a lodgement.</strong> A code is a classification proposal for the LodgeiT chart of accounts, checked against the section and entity you declared. It does not assess whether your ledger is right.</li>
+  <li><strong>It does not need a key.</strong> No authentication, no signup. Access is open; the service is rate-limited instead (see below).</li>
+  <li><strong>It is not stable yet.</strong> Response shapes may change; nothing here is versioned for production integration.</li>
+</ul>
+
+<h2>Limits</h2>
+
+<p>Open access — no key, no signup — bounded by request guards rather than authentication:</p>
+
+<table>
+<thead><tr><th>Guard</th><th>Value</th><th>On breach</th></tr></thead>
+<tbody>
+<tr><td>Lines per request</td><td>500</td><td><code>413</code> — payload too large; split the trial balance.</td></tr>
+<tr><td>Body size</td><td>512&nbsp;KB</td><td><code>413</code> — payload too large.</td></tr>
+<tr><td>Rate</td><td>60 / minute / IP</td><td><code>429</code> — back off and retry after the window.</td></tr>
+<tr><td>Malformed request</td><td>—</td><td><code>422</code> — the body names the field. Do not retry unchanged.</td></tr>
+<tr><td>Unbalanced payload</td><td>net ≠ 0</td><td><code>400</code> — the lines do not net to zero.</td></tr>
+</tbody>
+</table>
+
+<p>The service is capped at three instances, so sustained heavy load will queue. A <code>413</code>
+means the request was too big to accept; a <code>429</code> means you were too fast. Both are the
+engine holding a boundary, not a fault on your side.</p>
+
+<h2>Integration kit</h2>
+
+<p>An Apache-2.0 kit with the pinned OpenAPI snapshot, the SBRM lexicon, canonical fixtures, and
+CI that fails when the live contract drifts from the snapshot:</p>
+
+<p><a href="https://github.com/lodgeit-labs/fano-classifier-integration-kit">github.com/lodgeit-labs/fano-classifier-integration-kit</a></p>
+
+<footer class="site">
+  <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; A classification aid. Not advice. Consult a registered tax agent.</p>
+</footer>
+
+</div>
+</body>
+</html>

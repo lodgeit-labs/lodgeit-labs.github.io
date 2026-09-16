@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publishing a calculator to the constellation — LodgeiT Labs</title>
+<meta name="description" content="An invitation and a standard — what it means to publish a deterministic tax or accounting calculator into the LodgeiT Labs constellation.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/fano.html">Fano</a>
+      <a href="/publish.html">Publish</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Publishing a calculator to the LodgeiT Labs constellation</h1>
+
+<p class="lede"><em>An invitation and a standard — for Ryan Duguid, and for anyone building bounded
+tax and accounting tools.</em><br>
+<em>LodgeiT Labs · September 2026 · draft v1</em></p>
+
+<h2>Why we're writing to you</h2>
+
+<p>We run a small fleet of deterministic Australian tax and accounting calculators behind one public
+front door — no key, no signup, built so an agent can call them without a human in the loop (see
+<a href="https://lodgeit.org/calculators.html">lodgeit.org/calculators.html</a> and
+<a href="https://lodgeit.org/llms.txt">lodgeit.org/llms.txt</a>). Depreciation, Division 7A and
+nineteen FBT benefit categories are live, and a trial-balance classifier (Fano) joined them this
+week.</p>
+
+<p>We are not going to build the rest of the world's tax and accounting algorithms ourselves. There
+are a million of them across jurisdictions and we'd like to point at other people's — provided they
+meet a standard an agent can rely on. Your published work already meets most of it. "Show the
+branch, formula, evidence state and rounding; refuse when the supplied facts do not settle the test;
+automate calculation and validation, not judgement or lodgement" is our philosophy in your words.
+Your Coal LSL levy calculator is a natural first candidate.</p>
+
+<p>This document sets out what "meeting the standard" means today, what we'd do with a calculator
+that meets it, and how we intend to help you earn from it as the platform matures. We are candid
+throughout about what exists now and what is still planned.</p>
+
+<h2>The standard, in one paragraph</h2>
+
+<p>A constellation calculator is a deterministic engine — no model in the path — behind an HTTP
+surface that <strong>describes itself</strong>, <strong>validates the request and refuses what it
+cannot answer</strong>, <strong>names every statutory input it consumed</strong>, and
+<strong>returns money as exact decimals</strong>. Everything below is an elaboration of those four
+properties.</p>
+
+<h2>1. Describe yourself</h2>
+
+<p>An agent should be able to go from your base URL to a correct first call without reading prose.</p>
+
+<dl class="kv">
+  <dt>GET /v1/calculators</dt>
+  <dd>lists every calculator you serve: a stable URN, a JSON Schema reference for its input, and the period URNs it accepts.</dd>
+  <dt>GET /openapi.json</dt>
+  <dd>a complete OpenAPI 3 document for the surface.</dd>
+  <dt>GET /healthz</dt>
+  <dd>liveness.</dd>
+  <dt>GET /v1/rates/{period_uri}</dt>
+  <dd>the rate tables for a period, each with a SHA-256 content hash (see §3).</dd>
+</dl>
+
+<p>Naming conventions we use, and would ask you to follow so the registry can index by them:</p>
+
+<table>
+<thead><tr><th>Thing</th><th>Pattern</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>Calculator</td><td><code>urn:sbrm:calc:{name}</code></td><td><code>urn:sbrm:calc:coal-lsl-levy</code></td></tr>
+<tr><td>Period</td><td><code>urn:sbrm:period:{calculator}:{scope}</code></td><td><code>urn:sbrm:period:coal-lsl-levy:fy2026</code></td></tr>
+<tr><td>Rate table</td><td><code>urn:sbrm:rate:{calculator}:{period}:{rate-type}</code></td><td><code>urn:sbrm:rate:coal-lsl-levy:fy2026:levy-rate</code></td></tr>
+</tbody>
+</table>
+
+<p>If a calculator has no period dependence, use the scope <code>unscoped</code>.</p>
+
+<h2>2. Validate, then refuse honestly</h2>
+
+<p>Refusals are a feature. The status code is a contractual signal, not an error to hide:</p>
+
+<table>
+<thead><tr><th>Code</th><th>Meaning</th><th>Body must include</th></tr></thead>
+<tbody>
+<tr><td><code>200</code></td><td>Computed</td><td>results + <code>manifest</code> + <code>advisory</code></td></tr>
+<tr><td><code>422</code></td><td>Malformed or incomplete request</td><td>the field that failed</td></tr>
+<tr><td><code>400</code></td><td>Well-formed but outside what the calculator can answer</td><td><code>refusal_class</code> and a one-line reason</td></tr>
+<tr><td><code>404</code></td><td>Unknown calculator URN or unsupported period URN</td><td>which one</td></tr>
+<tr><td><code>5xx</code></td><td>Service fault; the caller may retry</td><td>nothing sensitive</td></tr>
+</tbody>
+</table>
+
+<p>A <code>400</code> is exactly your "supplied facts do not settle the test" case. Give it a stable
+<code>refusal_class</code> string an agent can branch on (<code>out_of_scope_period</code>,
+<code>insufficient_facts</code>, <code>unsupported_entity</code>, and so on — publish your own list
+in the OpenAPI document).</p>
+
+<h2>3. Name what you consumed</h2>
+
+<p>Every <code>200</code> carries a <strong>manifest</strong>: the rate tables and statutory
+parameters the calculation actually used, each with a SHA-256 of the table's content as served by
+<code>/v1/rates/{period_uri}</code>. This is what lets a caller detect that a rate changed between
+two calls months apart, and it is what our bounty reviewers check against the legislation.</p>
+
+<pre><code>"manifest": {
+  "calculator": "urn:sbrm:calc:coal-lsl-levy",
+  "period": "urn:sbrm:period:coal-lsl-levy:fy2026",
+  "rate_table_uris": [
+    { "uri": "urn:sbrm:rate:coal-lsl-levy:fy2026:levy-rate", "sha256": "…" }
+  ],
+  "engine": "coal-lsl-levy/1.2.0",
+  "citation": "Coal Mining Industry (Long Service Leave) Payroll Levy Collection Act 1992, s 3B"
+}</code></pre>
+
+<p>Alongside it, an <strong>advisory</strong> block: what kind of figure this is and what it is not
+— your "review aid, not a compliance determination" language belongs here, as structured text the
+agent will pass to the human.</p>
+
+<pre><code>"advisory": {
+  "figure_type": "payroll_levy_estimate",
+  "notes": [
+    "Review aid for a qualified professional; not a lodgement figure.",
+    "Assumes eligible wages as supplied; eligibility under s 3B is not tested here."
+  ]
+}</code></pre>
+
+<h2>4. Numbers are decimal strings</h2>
+
+<p>Money and rates are returned as <strong>decimal strings, never JSON floats</strong>:
+<code>"9830.60"</code>, not <code>9830.6</code>. State the rounding rule you applied in the advisory
+or in the OpenAPI description. This is the single most common way an otherwise-correct calculator
+fails a review.</p>
+
+<h2>5. Determinism and reproducibility</h2>
+
+<p>Same request, same period, same rate-table hashes → byte-identical result. No model, no external
+lookup at call time other than your own rate tables, no clock dependence except through the period
+URN. Publish a small fixture — a handful of requests with expected responses — in your repository;
+we will run it against your live endpoint as part of listing, and again whenever you tell us you've
+changed something.</p>
+
+<h2>6. Access and cost</h2>
+
+<p>The constellation model is open access: no key, no signup. Bound your own cost the way we do — a
+small instance cap on whatever you host on, and request guards (body size, a per-IP rate limit
+returning <code>429</code> with <code>Retry-After</code>). Tell callers the limits in your discovery
+response. You host it; we point at it. Cloud Run, a VPS, or a browser-side calculator with a thin
+HTTP wrapper are all fine, so long as the URL is stable and the surface above is present.</p>
+
+<h2>What we'll do with a calculator that meets the standard</h2>
+
+<p><strong>Today</strong> (manual, but real):</p>
+
+<ol>
+  <li>We run your fixture and a conformance pass against the six sections above and tell you what, if anything, is short.</li>
+  <li>We list it on <a href="https://lodgeit.org/calculators.html">calculators.html</a> and in <code>llms.txt</code> as an external entry with your name on it, status <code>available</code>, linking to your repository and base URL. Agents that already read our <code>llms.txt</code> will find it the same day.</li>
+  <li>We expose it through the same discovery your calculators already understand, so a caller enumerating the constellation sees yours next to ours.</li>
+</ol>
+
+<p><strong>Planned</strong> (the parts that make this scale, in the order we'll build them):</p>
+
+<ul>
+  <li><strong>A published contract and conformance suite</strong> — the standard above as a versioned spec with a runner you can point at your own endpoint before you ask us to look. Until then, this document is the spec.</li>
+  <li><strong>A signed registry</strong> — <code>llms.txt</code> grown up: one index entry per calculator carrying base URL, manifest schema, jurisdiction, conformance result and <em>attestation tier</em>. Tiers are how a million entries stay usable: <code>unattested</code> → <code>conformance-passed</code> → <code>practitioner-attested</code> → <code>jurisdiction-owned</code>. An agent reads the tier before it calls.</li>
+  <li><strong>Attestation through bounties</strong> — our existing mechanism, where paid practitioner reviewers try to break a bounded statutory question and their <code>ACCEPT / REJECT / FIX</code> verdicts become public, hash-receipted records. Your calculator would be eligible for the same review, and a practitioner-attested tier is what a conservative accountant will trust: not because a model said so, but because a named peer tried to break the deterministic engine and couldn't.</li>
+</ul>
+
+<h2>How you'd earn from it — the future state, stated plainly</h2>
+
+<p>None of this is live yet, and we'd rather say so than imply otherwise. The design is:</p>
+
+<p><strong>L402 at your endpoint.</strong> L402 is the Lightning-native HTTP payment flow: a call
+without payment returns <code>402</code> with an invoice; the caller (typically an agent) pays a few
+satoshis and retries with the proof. It is machine-native and needs no signup, which is the same "no
+key" philosophy applied to money. Because it lives at <em>your</em> endpoint, payment goes to
+<em>you</em> directly; there is no intermediary holding your revenue.</p>
+
+<p><strong>What LodgeiT earns, and from what.</strong> We charge for what we actually provide —
+discovery and attestation — as a routing fee on calls that come through our gateway or MCP surface,
+and nothing on calls that reach you directly. A listing in the registry is free; a practitioner
+attestation, once you've earned it, is what drives traffic to you, and that traffic is what you're
+paid on.</p>
+
+<p><strong>Order of operations.</strong> Contract and conformance first (nothing to pay for until a
+caller can trust the thing it's paying for), registry and tiers second, L402 third. We expect the
+first two within the next quarter; the third depends on them. If you'd rather not touch Lightning,
+an unpaid listing is still worth having — the agents are already reading <code>llms.txt</code>.</p>
+
+<h2>A concrete first step</h2>
+
+<p>Take the Coal LSL levy calculator and put it behind the surface in §1–§4: discovery,
+<code>422/400/404</code> refusals with a <code>refusal_class</code>, a manifest naming the levy rate
+table with its hash and the s 3B citation, decimal-string money, and a five-case fixture in the
+repo. Send us the base URL. We'll run the fixture and the conformance pass, and if it clears, it is
+on the page and in <code>llms.txt</code> the same week — the first calculator in the constellation
+that we didn't write.</p>
+
+<p>If something in the standard doesn't fit your tool, say so; the spec is young and you are the kind
+of author it's meant to serve.</p>
+
+<p>— Andrew Noble, LodgeiT Labs<br>
+<em><a href="mailto:andrew@lodgeit.net.au">andrew@lodgeit.net.au</a></em></p>
+
+<h2>Reference</h2>
+
+<ul>
+  <li>Live surface and philosophy: <a href="https://lodgeit.org/calculators.html">https://lodgeit.org/calculators.html</a></li>
+  <li>Agent-readable summary of the API: <a href="https://lodgeit.org/llms.txt">https://lodgeit.org/llms.txt</a></li>
+  <li>Partner integration kit (Apache-2.0; pinned OpenAPI snapshot, Python and .NET examples, CI that fails when the live contract drifts from the snapshot): <a href="https://github.com/lodgeit-labs/clawdog-calculator-api-integration-kit">https://github.com/lodgeit-labs/clawdog-calculator-api-integration-kit</a></li>
+  <li>Fano classifier integration kit: <a href="https://github.com/lodgeit-labs/fano-classifier-integration-kit">https://github.com/lodgeit-labs/fano-classifier-integration-kit</a></li>
+</ul>
+
+<footer class="site">
+  <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; LodgeiT Labs — open-source financial infrastructure.</p>
+</footer>
+
+</div>
+</body>
+</html>

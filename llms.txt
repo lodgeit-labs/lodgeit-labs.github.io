@@ -7,7 +7,7 @@
 BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
 (The service name is historical — it fronts every calculator, not only FBT.)
 
-Last updated: 2026-09-11
+Last updated: 2026-09-16
 
 ## Status
 
@@ -15,6 +15,9 @@ Last updated: 2026-09-11
 - div7a — AVAILABLE. ITAA 1936 Division 7A minimum yearly repayment and deemed dividend.
 - fbt — AVAILABLE. FBTAA 1986 taxable value across nineteen benefit-category calculators; see
   the Fringe Benefits Tax section and GET /v1/calculators for the full list.
+- fano — AVAILABLE. Trial-balance line classifier for the LodgeiT chart of accounts. Rules first,
+  model second; a draft is the engine refusing to guess. Different base URL and shape from the
+  calculators; see the Fano classifier section.
 
 ## Discovery
 
@@ -142,6 +145,61 @@ floats ("2978.47", "1.8868", "5619.78", not 2978.47). As with the other calculat
 cites the statutory rate tables the calculation consumed, each with a SHA-256 content hash, and
 advisory carries the tax-agent framing.
 
+## Fano classifier
+
+A trial-balance line classifier for the LodgeiT chart of accounts. UNLIKE the calculators, Fano
+has a model in the path and lives on a DIFFERENT base URL with a different request/response shape.
+Rules run first, the model second; a draft_fact is the engine refusing to guess (both candidates
+shown), not a failure. Open access, no key; rate-limited.
+
+BASE: https://fano-engine-79859053141.australia-southeast1.run.app
+(Historical Cloud Run URL; will change. Put it in configuration, not code.)
+
+GET  /v1/info               version, access mode, limits, reason-code glossary
+GET  /openapi.json          full OpenAPI 3 document
+POST /ingest/trial_balance  classify a whole trial balance in one call
+
+Request (TrialBalancePayload):
+  entity_structure   "company" | "trust" | "partnership" | "sole_trader" | "super_fund"
+  lines[]            array of line items, each:
+    description      string, the ledger line description
+    source_topology  "current_assets" | "non_current_assets" | "current_liabilities" |
+                     "non_current_liabilities" | "equity" | "revenue" | "expenses"
+                     (the section you file it under; the model is masked to leaves within it)
+    predicted_code   the upstream/prior code as sbrm_<n> (use sbrm_0000 if none)
+    confidence       upstream confidence, 0-1
+    amount           signed number; the payload must net to zero or 400 on equilibrium
+
+The declared entity_structure and per-line source_topology are INPUTS, not decoration: the model
+is masked to leaves within the declared section and the L3 firewall checks the returned code
+against the declared entity + topology. predicted_code/confidence are echoed as operator_hint_*
+and do not steer the classification.
+
+Response:
+  status, equilibrium_valid, and results[] — per line:
+    description, predicted_code (the code Fano returns), confidence, cascade_topology,
+    model_architecture, operator_hint_predicted_code, operator_hint_source_topology,
+    operator_hint_confidence, fano_status ("accepted_fact" | "draft_fact"), quarantine_reason.
+
+Reason codes (quarantine_reason; branch on the prefix):
+  keyword_rule:<code>                                  a LodgeiT word rule owned the line; accepted.
+  twin_leaf (rule=<code>)                              rule leaf is the Direct/Indirect twin of the
+                                                       model leaf; model leaf accepted.
+  rule_model_disagreement (rule=<code>, model=<code>)  weak rule hit disagrees with the model; the
+                                                       rule leaf is shown; drafted.
+  non_leaf_prediction (...)                            model landed on a non-postable structural
+                                                       node; rule leaf taken; drafted.
+  Sub-floor model confidence (<x>)                     model top-1 below the 0.50 floor; drafted.
+
+Limits (open access; guards, not authentication):
+  500 lines per request  -> 413    512 KB body -> 413    60 requests / minute / IP -> 429
+  malformed request -> 422 (names the field)    payload net != 0 -> 400 (equilibrium)
+Capped at three instances; sustained load queues. A draft_fact is contractual review work —
+never post it unreviewed. Not advice, not a lodgement. Response shapes may change.
+
+Integration kit: https://github.com/lodgeit-labs/fano-classifier-integration-kit
+Page: https://lodgeit.org/fano.html
+
 ## Response envelope
 
 Every 200 carries two blocks beyond the calculation.
@@ -187,3 +245,9 @@ comes from. Independent implementations disagreeing is how the last several defe
 found — including one where the engine was right and our own reasoning was wrong.
 
 https://github.com/lodgeit-labs
+
+## Publishing a calculator
+
+Build a bounded, deterministic tax or accounting calculator? Publish it into the constellation:
+you host it, we point at it, and it lands on calculators.html and in this file the same week it
+clears conformance. The standard and the invitation: https://lodgeit.org/publish.html
