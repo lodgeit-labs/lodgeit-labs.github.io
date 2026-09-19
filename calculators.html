@@ -132,6 +132,8 @@ and re-check this page before assuming it still resolves.
 <dl class="kv">
   <dt>GET /v1/calculators</dt>
   <dd>Every calculator, its URN, its input schema reference, and the period URNs it accepts.</dd>
+  <dt>GET /v1/modules</dt>
+  <dd>The modules (fbt, div7a, depreciation), each with its statutes, election groups, and its calculators in registry order. Filter the calculator listing to one with <code>GET /v1/calculators?module=</code>.</dd>
   <dt>GET /openapi.json</dt>
   <dd>Full OpenAPI 3 document for every route.</dd>
   <dt>GET /v1/rates/{period_uri}</dt>
