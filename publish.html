@@ -80,13 +80,15 @@ properties.</p>
 <table>
 <thead><tr><th>Thing</th><th>Pattern</th><th>Example</th></tr></thead>
 <tbody>
-<tr><td>Calculator</td><td><code>urn:sbrm:calc:{name}</code></td><td><code>urn:sbrm:calc:coal-lsl-levy</code></td></tr>
+<tr><td>Calculator</td><td><code>urn:sbrm:calculator:{module}:{name}</code></td><td><code>urn:sbrm:calculator:fbt:car-operating-cost</code></td></tr>
 <tr><td>Period</td><td><code>urn:sbrm:period:{calculator}:{scope}</code></td><td><code>urn:sbrm:period:coal-lsl-levy:fy2026</code></td></tr>
 <tr><td>Rate table</td><td><code>urn:sbrm:rate:{calculator}:{period}:{rate-type}</code></td><td><code>urn:sbrm:rate:coal-lsl-levy:fy2026:levy-rate</code></td></tr>
 </tbody>
 </table>
 
 <p>If a calculator has no period dependence, use the scope <code>unscoped</code>.</p>
+
+<p>Every calculator declares a <code>module</code> (the URN’s second-last segment, e.g. <code>urn:sbrm:module:fbt</code>) and a short <code>description</code> of when to use it and when not to. Where a benefit type is served by more than one valuation method, each calculator also declares a <code>selection.kind</code> — <code>fact</code>, <code>election</code> or <code>statutory_default</code> — so an agent computes every method the records support and lets the client elect, rather than choosing one. <code>GET /v1/modules</code> lists the modules and their calculators; <code>GET /v1/calculators?module=</code> filters to one.</p>
 
 <h2>2. Validate, then refuse honestly</h2>
 
