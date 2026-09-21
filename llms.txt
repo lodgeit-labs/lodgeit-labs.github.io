@@ -7,7 +7,7 @@
 BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
 (The service name is historical — it fronts every calculator, not only FBT.)
 
-Last updated: 2026-09-19
+Last updated: 2026-09-21
 
 ## Status
 
@@ -18,6 +18,8 @@ Last updated: 2026-09-19
 - fano — AVAILABLE. Trial-balance line classifier for the LodgeiT chart of accounts. Rules first,
   model second; a draft is the engine refusing to guess. Different base URL and shape from the
   calculators; see the Fano classifier section.
+- hp — AVAILABLE. Amortisation schedule for a hire purchase, chattel mortgage or equipment loan;
+  see the Hire purchase section.
 
 ## Discovery
 
@@ -175,6 +177,38 @@ figures, reductions, and employee contributions — are all top-level DECIMAL ST
 floats ("2978.47", "1.8868", "5619.78", not 2978.47). As with the other calculators, manifest
 cites the statutory rate tables the calculation consumed, each with a SHA-256 content hash, and
 advisory carries the tax-agent framing.
+
+## Hire purchase
+
+POST /v1/calculators/hp/schedule
+
+Not period-scoped. URN urn:sbrm:calculator:hp:schedule; selection.kind fact. Module
+urn:sbrm:module:hp. Amortisation schedule for a hire purchase, chattel mortgage or equipment
+loan: nominal monthly period basis, in arrears or in advance, monthly frequency, with an optional
+balloon that replaces or adds to the instalment on its row. Internal balances are unrounded;
+output rounds to cents. The residual is reported against the stated rate and never forced to zero.
+Monthly frequency only; other frequencies are refused.
+
+Request:
+  amount_financed           decimal string
+  annual_rate_pct           decimal string
+  term_regular_instalments  integer >= 1
+  instalment                decimal string
+  timing                    "in_arrears" | "in_advance"
+  frequency                 string; v1 supports "monthly" only
+  begin_date                ISO date (YYYY-MM-DD)
+  contract_form             "hire_purchase" | "chattel_mortgage" | "equipment_loan"
+  balloon                   object, or null. When present: amount (decimal string),
+                            instalment_number (integer >= 1), mode ("replace" | "add"). mode is
+                            required whenever a balloon is present; there is no default.
+  fy_end_month              integer 1-12, optional, default 6
+
+Response: rows, totals, final_balance, rate_precision_residual, fy_interest, fy_position,
+manifest, advisory.
+
+The residual (rate_precision_residual) is a stated-rate artefact; it is reported, never forced to
+zero. The lender's total amount repayable governs; a non-zero residual reflects the stated rate's
+display precision. contract_form affects GST and title treatment, not the amortisation.
 
 ## Fano classifier
 

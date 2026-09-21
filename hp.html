@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hire Purchase — Calculator Constellation</title>
+<meta name="description" content="Amortisation schedule for a hire purchase, chattel mortgage or equipment loan, available as a public HTTP API.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/fano.html">Fano</a>
+      <a href="/publish.html">Publish</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Hire Purchase <span class="pill ok">available</span></h1>
+
+<p class="lede">Amortisation schedule for a hire purchase, chattel mortgage or equipment loan:
+nominal monthly period basis, in arrears or in advance, monthly frequency, with an optional balloon
+that replaces or adds to the instalment on its row. Internal balances are unrounded; output rounds
+to cents. The residual is reported against the stated rate and never forced to zero. Monthly
+frequency only; other frequencies are refused.</p>
+
+<h2>Endpoint</h2>
+
+<pre><code>POST /v1/calculators/hp/schedule</code></pre>
+
+<p>URN <code>urn:sbrm:calculator:hp:schedule</code>. <code>selection.kind</code>: <code>fact</code>.
+Not period-scoped. Read the input schema from <code>/openapi.json</code> before calling.</p>
+
+<h2>Inputs</h2>
+
+<table>
+<thead><tr><th>Field</th><th>Required</th><th>Allowed values</th></tr></thead>
+<tbody>
+<tr><td><code>amount_financed</code></td><td>required</td><td>decimal string</td></tr>
+<tr><td><code>annual_rate_pct</code></td><td>required</td><td>decimal string</td></tr>
+<tr><td><code>term_regular_instalments</code></td><td>required</td><td>integer &ge; 1</td></tr>
+<tr><td><code>instalment</code></td><td>required</td><td>decimal string</td></tr>
+<tr><td><code>timing</code></td><td>required</td><td><code>in_arrears</code> | <code>in_advance</code></td></tr>
+<tr><td><code>frequency</code></td><td>required</td><td>string; v1 supports <code>monthly</code> only</td></tr>
+<tr><td><code>begin_date</code></td><td>required</td><td>ISO date (YYYY-MM-DD)</td></tr>
+<tr><td><code>contract_form</code></td><td>required</td><td><code>hire_purchase</code> | <code>chattel_mortgage</code> | <code>equipment_loan</code></td></tr>
+<tr><td><code>balloon</code></td><td>optional</td><td>object, or null</td></tr>
+<tr><td><code>balloon.amount</code></td><td>required when balloon present</td><td>decimal string</td></tr>
+<tr><td><code>balloon.instalment_number</code></td><td>required when balloon present</td><td>integer &ge; 1</td></tr>
+<tr><td><code>balloon.mode</code></td><td>required when balloon present</td><td><code>replace</code> | <code>add</code></td></tr>
+<tr><td><code>fy_end_month</code></td><td>optional</td><td>integer 1&ndash;12, default 6</td></tr>
+</tbody>
+</table>
+
+<h2>What the figures are</h2>
+
+<ul>
+<li>The residual (rate_precision_residual) is a stated-rate artefact; it is reported, never forced to zero.</li>
+<li>The lender's total amount repayable governs; a non-zero residual reflects the stated rate's display precision.</li>
+<li>contract_form affects GST and title treatment, not the amortisation.</li>
+<li>Date convention: period_start = begin_date + k months; period_end = next period_start minus one day; payment_date = period_start for in_advance, period_end for in_arrears. LodgeiT labels rows by period month only.</li>
+</ul>
+
+<h2>Worked example</h2>
+
+<p>A Scania prime mover on a chattel mortgage, in arrears, with a balloon that replaces the final
+instalment:</p>
+
+<pre><code>curl -s -X POST \
+  "$BASE/v1/calculators/hp/schedule" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount_financed": "273269.35",
+    "annual_rate_pct": "3.84",
+    "term_regular_instalments": 59,
+    "instalment": "4180.02",
+    "timing": "in_arrears",
+    "frequency": "monthly",
+    "begin_date": "2021-08-30",
+    "contract_form": "chattel_mortgage",
+    "balloon": {
+      "amount": "59180.02",
+      "instalment_number": 60,
+      "mode": "replace"
+    },
+    "fy_end_month": 6
+  }'</code></pre>
+
+<p>From the live response:</p>
+
+<pre><code>totals.interest          "32531.96"
+final_balance            "0.11"
+rate_precision_residual  "0.11"
+
+fy_position["2025-06-30"] = {
+  "principal": "105904.81",
+  "current_gross": "50160.24",
+  "current_unexpired": "3246.78",
+  "current_net": "46913.46",
+  "non_current_gross": "59180.02",
+  "non_current_unexpired": "188.77",
+  "non_current_net": "58991.25"
+}</code></pre>
+
+<footer class="site">
+  <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; Not advice. Consult a registered tax agent.</p>
+</footer>
+
+</div>
+</body>
+</html>
