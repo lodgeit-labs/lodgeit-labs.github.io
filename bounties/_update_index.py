@@ -46,15 +46,23 @@ def main():
     registry = load_registry()
     html = INDEX.read_text(encoding="utf-8")
 
-    # Update intro line (per PR-B directive)
-    old_intro = "Ranked by effort and prize. Bounty #1 is live and dispatched. Bounties #2&ndash;#10 open for applications from today."
+    # Update intro line (per PR-B directive). Migrate whichever prior variant is live.
+    old_intros = [
+        "Ranked by effort and prize. Bounty #1 is live and dispatched. Bounties #2&ndash;#10 open for applications from today.",
+        (
+            "Reviews are published in full, with hash receipts. "
+            "See the <a href=\"/bounties/registry/index.yml\" class=\"text-lodgeit-light hover:text-white underline font-mono\">registry index</a> "
+            "for the append-only ledger. Two bounties (#3 IAWO, #8 CGT SB 15-year) remain open for reviewers."
+        ),
+    ]
     new_intro = (
         "Reviews are published in full, with hash receipts. "
         "See the <a href=\"/bounties/registry/index.yml\" class=\"text-lodgeit-light hover:text-white underline font-mono\">registry index</a> "
-        "for the append-only ledger. Two bounties (#3 IAWO, #8 CGT SB 15-year) remain open for reviewers."
+        "for the append-only ledger. One bounty (#3 IAWO) remains open for reviewers."
     )
-    if old_intro in html:
-        html = html.replace(old_intro, new_intro)
+    for old_intro in old_intros:
+        if old_intro in html:
+            html = html.replace(old_intro, new_intro)
 
     # For each bounty, inject a status pill after the BOUNTY #NN span.
     # The pattern in each card is:
