@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Division 36 loss sequencing, revision 2 | LodgeiT Bounties</title>
+    <meta name="description" content="Review revision 2 of a Logical English statement of Division 36 loss sequencing (ITAA 1997). Invitation-only. $1,000 ex GST.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit h4 { font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit blockquote { border-left: 3px solid #4D94FF; padding-left: 1rem; margin: 1.5rem 0; color: #94a3b8; font-style: italic; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; Bounty #12
+            </p>
+        </div>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-lodgeit-light font-mono text-xs uppercase tracking-widest">Bounty #12 &middot; Rule-ratification &middot; INVITATION-ONLY &middot; IN REVIEW (verdicts due 10 Oct 2026) &middot; $1,000 ex GST</span>
+                <span class="text-white bg-lodgeit-blue px-4 py-2 rounded-full text-sm font-mono font-bold">$1,000 ex GST</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Division 36 loss sequencing, revision 2</span>
+            </h1>
+            <p class="text-slate-300 text-lg leading-relaxed mb-6">
+                Revision 2 of the Division 36 rules, rebuilt after round one (Bounty #11): 51 rules, each with a plain-English note, and 36 worked scenarios carrying 205 test cases. Invitation-only; the review pack goes to reviewers by email.
+            </p>
+            <div class="flex flex-wrap gap-3 text-xs font-mono">
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">s 26-55 &middot; 36-10 &middot; 36-15 &middot; 36-20 &middot; 4-15 ITAA 1997</span>
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">51 rules &middot; 36 scenarios</span>
+                <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">Rules, not a calculator</span>
+            </div>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 prose-lodgeit">
+
+            <h3>What changed since round one</h3>
+            <p>
+                Round one&rsquo;s file applied brought-forward losses only against net exempt income, never against assessable income; four of five reviewers said FIX; revision 2 is a different file. See <a href="/bounties/bounty-11-div36-loss-sequencing-le-rules/" class="text-lodgeit-light hover:text-white underline">Bounty #11</a> for the story and the round-one findings.
+            </p>
+
+            <h3>Scope</h3>
+            <p>
+                A single non-corporate Australian-resident individual; ITAA 1997 s 26-55, 36-10, 36-15, 36-20 and 4-15. Where residency, corporate status or a receipt&rsquo;s character is not given, the rules answer &ldquo;unknown&rdquo; rather than a figure.
+            </p>
+
+            <h3>The file</h3>
+            <p class="text-slate-400 text-sm">
+                Revision 2: div36_rev2.le, SHA-256 aa97844c777b9b46b38aa69b83fe5a6f151f13ac303b2bea3883ae20a5bc6b8d, 51 rules, 36 scenarios, 205 test cases, measured on LogicalEnglish2 @ 445b4da, SWI-Prolog 9.0.4.
+            </p>
+            <p>
+                Published here when the revision 2 verdicts are in.
+            </p>
+
+            <h3>A REJECT is worth the same as an ACCEPT</h3>
+            <p>
+                We want to be unambiguous about this because the incentive matters. Phase 1&rsquo;s most valuable finding by information-per-dollar was a reviewer who rejected our brief outright &mdash; the question itself was defective. He was paid in full and it changed how we write briefs.
+            </p>
+            <p>
+                If this file is sound, say so and take the fee. If it&rsquo;s rotten, say that and take the same fee. <strong>A polite approval of something wrong is the one outcome we can&rsquo;t use.</strong> The fee is <strong>$1,000 ex GST</strong>, whichever way your verdict lands.
+            </p>
+
+            <h3>Timeline</h3>
+            <p>
+                <strong>25 September 2026:</strong> revision 2 issued to reviewers.
+            </p>
+            <p>
+                <strong>10 October 2026:</strong> verdicts due.
+            </p>
+
+            <h3>Reviewers, revision 2</h3>
+            <p>
+                Verdicts due 10 October 2026.
+            </p>
+
+            <h3>Send your verdict</h3>
+            <p>
+                Email your verdict &mdash; on the form or as free-form prose &mdash; to <a href="mailto:support@lodgeit.net.au?subject=Bounty%20%2312%20verdict%20-%20Div%2036%20LE%20rules%20revision%202" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a>, subject &ldquo;Bounty #12 verdict - Div 36 LE rules revision 2&rdquo;. Questions welcome at any stage.
+            </p>
+
+        </article>
+
+        <!-- Nav to next / index -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <div class="flex justify-between items-center">
+                <a href="/bounties/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">
+                    &larr; All bounties
+                </a>
+                <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
