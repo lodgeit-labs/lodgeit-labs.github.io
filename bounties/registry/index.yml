@@ -9,9 +9,9 @@
 # Source of truth for build-time rendering of Reviewed blocks + status badges.
 
 schema_version: 1
-programme_total_paid_aud: 6650
-programme_unfulfilled_prize_aud: 1350
-verdict_count: 10
+programme_total_paid_aud: 7550
+programme_unfulfilled_prize_aud: 450
+verdict_count: 11
 
 entries:
   - bounty: bounty-01-div7a-minimum-yearly-repayment
@@ -93,6 +93,16 @@ entries:
     status: paid_reviewed
     yaml_path: bounties/registry/bounty-07-hire-purchase-interest-apportionment/leanne-williamson.yml
     sha256: 37784a6c962d667849c300b82a614725f6567b689bacdfff153e5eb081caf048
+  - bounty: bounty-08-cgt-sb-15-year-exemption
+    reviewer: 'Dev Magoon'
+    credential: 'CPA'
+    consent: initialled
+    reward_aud: 900
+    verdict: FIX
+    date: '2026-09-14'
+    status: paid_reviewed
+    yaml_path: bounties/registry/bounty-08-cgt-sb-15-year-exemption/dev-magoon.yml
+    sha256: ad9574c025135438c55b8fb2c16817e874769988a7a13e5d0edae06eb5e79b47
   - bounty: bounty-09-cgt-active-asset-test
     reviewer: 'Harley Dickfos'
     credential: 'Tax Agent (TPB 26334789)'
@@ -139,5 +149,3 @@ entries:
 in_progress:
   - bounty: bounty-03-instant-asset-write-off
     prize_aud: 450
-  - bounty: bounty-08-cgt-sb-15-year-exemption
-    prize_aud: 900

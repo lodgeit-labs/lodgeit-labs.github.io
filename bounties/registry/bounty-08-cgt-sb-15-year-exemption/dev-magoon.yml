@@ -1,0 +1,420 @@
+# Reviewer verdict — bounty-08-cgt-sb-15-year-exemption
+
+> **Reviewer:** Dev Magoon, CPA
+> **Consent posture:** initialled
+> **Reward paid (AUD):** $900
+> **Verdict outcome (from reviewer's frontmatter):** FIX
+> **Verdict date:** 2026-09-14
+> **PII sweep:** applied (no email/phone/registration PII in body); receipts logged in this PR body.
+
+---
+
+\---
+
+brief\_id: bounty-08-cgt-sb-15-year-exemption
+bounty\_title: "CGT small business 15-year exemption"
+statutory\_anchors: "Subdiv 152-B ITAA 1997; s 152-105, s 152-110"
+reviewer:
+name: "Dev Magoon"
+credential\_class: "CPA"        # CA / CTA / CPA / FIPA / MIPA / TPB
+registration\_status: "active"     # active / lapsed / retired
+jurisdiction: "Australia"
+attribution\_posture: "intialled"  # named | initialled | anonymous
+reviewed\_calculator\_version: "n/a — spec-first bounty (no existing calculator)"
+submission\_date: "2026-09-14"              # YYYY-MM-DD
+top\_level\_verdict: "FIX"         # ACCEPT / REJECT / FIX
+verdict\_hash: ""                 # (we compute this on receipt)
+---
+
+# Reviewer Verdict — CGT small business 15-year exemption
+
+**Bounty:** bounty-08-cgt-sb-15-year-exemption
+
+## 1\. Top-level verdict
+
+*Choose one: **ACCEPT** / <b>REJECT</b> / <b>FIX</b>.*
+
+* **ACCEPT** — the calculator's statute-to-predicate translation is correct on the facts of the brief. Minor stylistic comments allowed.
+* **REJECT** — the calculator's translation is materially wrong. State the section/case-law authority you rely on.
+* **FIX** — the translation is mostly correct but has a specific error that can be fixed with a targeted change. Describe the fix.
+
+**Your top-level verdict: FIX**
+
+Three things need fixing.
+
+**1. Add s 152-10(2).** The asset is shares, and the brief never mentions this subsection. Since 8 February 2018 it adds three basic conditions for share sales: a modified active asset test on the s 152-10(2A)/(2B) assumptions; the object entity must be a CGT SBE or satisfy MNAV (each 40% in s 328-125 read as 20%); and the stakeholder / 90% test. It is the biggest gap, and it fails quietly.
+
+**2. s 152-110(1)(c) is cumulative, not continuous.** The brief says a significant individual is needed "at all times". The section says a total of at least 15 years, and expressly that the years need not be continuous or the same person.
+
+**3. s 152-35 is 7.5 years, not "the majority of ownership".** For an asset owned over 15 years the section asks for a total of 7.5 years. The worked example also merges this with the separate 80% composition test in s 152-40(3).
+
+The predicted verdict doesn't follow either. MNAV, the 80% test, the s 152-110(1)(c) count, s 152-110(1)(d) and all of s 152-10(2) are unresolved on the facts given, so eligibility isn't established.
+
+Predicate list at Appendix A, per brief section 3.
+
+\---
+
+## 2\. Per-question verdicts
+
+```yaml
+per\_question\_verdicts:
+  - question\_number: 1
+    verdict: "ACCEPT"
+    citation\_authority: "s 152-105; s 152-110; s 152-80"
+    reasoning: |
+      s 152-110 applies. s 152-105 only covers individuals and the taxpayer is
+      the trustee. That the trust is discretionary doesn't change which section initially
+     though it changes nearly everything after that.
+
+      Choosing the section doesn't close out the conditions. The asset is a
+      share, so s 152-10(1) isn't the whole of the basic conditions.
+    edge\_case\_notes: |
+      No death branch in the brief. s 152-80 carries the concessions to an LPR or
+      beneficiary where the event is within two years of death.
+
+  - question\_number: 2
+    verdict: "ACCEPT"
+    citation\_authority: "s 152-110(1)(b), (1)(c); s 152-115; s 104-10(3)"
+    reasoning: |
+      July 2008, when the trust acquired the shares — not when Bob or the company
+      started trading. The far end is fixed by s 104-10(3), since A1 happens at
+      contract, so the period closes just before 15 September 2024, in FY2025.
+
+      The brief runs two clocks together and they need separating.
+      s 152-110(1)(b) wants continuous ownership across the 15 years ending just
+      before the event. s 152-110(1)(c) wants a significant individual for a
+      total of 15 years, which can be broken up and can be different people.
+    edge\_case\_notes: |
+      s 152-115 only continues the period through Subdiv 124-B and 126-A
+      rollovers. A Subdiv 122-A incorporation restarts it, because the shares are
+      acquired on issue. The predicate needs how the asset was acquired, not just
+      when.
+
+  - question\_number: 3
+    verdict: "FIX"
+    citation\_authority: "s 152-55, s 152-65, s 152-70(1) item 3, s 152-75; cf s 328-125(4); ATO ID 2012/99"
+    reasoning: |
+      Control over the trustee is irrelevant to s 152-55, and the question
+      invites the wrong answer by offering it.
+
+      s 152-55 is a percentage test: SBPP of at least 20%, direct under s 152-70
+      plus indirect under s 152-75. For a discretionary trust you use item 3 of
+      the s 152-70(1) table, which takes the smaller of the income-distribution
+      and capital-distribution percentages for that year. Control sits in
+      s 328-125(4) and feeds MNAV and turnover instead.
+
+      Two things follow. The item 3 percentage is worked out from distributions
+      made during the income year and applies across that year, so Bob's status
+      "just before" 15 September 2024 is set by resolutions the trustee makes up
+      to nine months afterwards. And on the smaller-of mechanic, ATO ID 2012/99
+      Note 1: distribute a gain as capital with no matching income distribution
+      and the beneficiary comes out at nil. That's the risk.
+
+      "Salary and franked distributions for 16 years" doesn't establish any of
+      it. Salary isn't a trust distribution, franked distributions only touch the
+      income limb, and the brief says nothing about capital distributions.
+    edge\_case\_notes: |
+      No-distribution years aren't uniform. Where the trust had no net income or
+      a tax loss AND made no distribution, you look back to the last year a
+      distribution was made. Where it had net income, no loss, and the trustee
+      chose not to distribute, the percentage is nil and the year is lost off the
+      s 152-110(1)(c) count. The spec needs both.
+
+  - question\_number: 4
+    verdict: "FIX"
+    citation\_authority: "s 152-40(3), (3A), (4); s 152-35(1)(b), (2); s 152-10(2)(a), (2A), (2B); TD 2006/65; Eichmann v FCT \[2020] FCAFC 155"
+    reasoning: |
+      Before answering, the parenthetical in the question is itself wrong on two
+      counts.
+
+      It states the test as market value of active assets being at least 80% of
+      total market value. That is only the first of three limbs in the numerator.
+      s 152-40(3)(b) also counts financial instruments of the company inherently
+      connected with a business it carries on, and cash inherently connected with
+      such a business. Drop those and the numerator is understated, which can
+      push the answer either way depending on the company's asset mix.
+
+      It also directs the reviewer to "Wilson Trading's balance sheet". The test
+      is market value on both sides of the ratio, not book value. Goodwill is the
+      clearest illustration — an active asset at market value, appearing nowhere
+      in the accounts, and on a mature trading business frequently the item that
+      carries the ratio over 80%. Anyone answering from the balance sheet is
+      answering a different question.
+
+      On the question itself, there are three thresholds rather than one.
+
+      Composition, s 152-40(3). The share is active at a time if the company is
+      then an Australian resident and the three limbs above come to 80% or more
+      of the market value of everything it owns. Cash and financial instruments
+      aren't active assets themselves but count in the numerator where inherently
+      connected; surplus cash, investments, a rental property or a shareholder
+      loan is denominator only. Sixteen years of retained profits is a realistic
+      way to fail this. See also TD 2006/65 (the test applies successively
+      through a chain), s 152-40(3A), s 152-40(4)(e), and Eichmann, where the
+      Full Court took a broader view of "in the course of carrying on a business"
+      than the primary judge had.
+
+      Duration, s 152-35. Owned over 15 years, so a total of at least 7.5 years
+      across a period from acquisition to the earlier of the event and cessation
+      of business, and the periods needn't be contiguous. A cumulative count:
+      test the 80% composition at points across the 16.5 years and add the
+      qualifying days.
+
+      Then s 152-10(2)(a), which the brief omits altogether. The asset must still
+      satisfy the test on the s 152-10(2A) assumptions, which strip out cash and
+      financial instruments acquired to help pass it and disregard later-entity
+      shares unless s 152-10(2B) is met. Harder than s 152-40(3) alone, and it
+      runs across the ownership period.
+
+      There's no balance sheet for Wilson Trading in the bundle, so I can't
+      resolve this one either way.
+    edge\_case\_notes: |
+      The 2018 amendments restructured s 152-10(2), and material still in
+      circulation (ATO ID 2012/99, TD 2006/65) cites "152-10(2)(b)" for the 90%
+      test, which has moved. Take paragraph references from a current
+      compilation.
+
+  - question\_number: 5
+    verdict: "FIX"
+    citation\_authority: "s 152-110(1)(d)(i); ATO 'Small business 15-year exemption' guide"
+    reasoning: |
+      Intention alone won't do it. The event has to happen in connection with the
+      individual's retirement.
+      The phrase isn't defined in the Act, and I could not locate a public
+      ruling, determination or judicial consideration of it. The Commissioner's
+      guidance appears to be the only source. It looks for at least a significant
+      reduction in hours, or a significant change in the nature of present
+      activities, and doesn't require permanent retirement. Its examples bracket
+      the range: sell up and then work a few hours a week for the buyer and
+      you've retired; go from 60 hours to 45 and you haven't.
+
+      Bob stepping down as MD and staying on at $1,000 a year as a non-executive
+      advisor is both a change in the nature of the role and a large cut in
+      hours, so I'd accept it — unless the role is cover for continuing to run
+      the place, or the same work moves to another entity.
+
+      Two framing problems. "Bob is 68, retiring — YES" treats age plus assertion
+      as the answer, when the nexus is a separate limb with no evidence behind
+      it. And it's Bob's retirement, so he must be a significant individual
+      first: Q5 can't be answered ahead of Q3.
+
+      Not determinable from documents. I'd express it as a judgement call against
+      a stated evidence set: hours before and after, change in the role,
+      remuneration, directorships kept, and whether the sale forms part of a
+      documented retirement plan.
+    edge\_case\_notes: |
+      s 152-110(1)(d)(ii), permanent incapacity, has no age threshold. The brief
+      mentions it once and never returns to it.
+
+  - question\_number: 6
+    verdict: "FIX"
+    citation\_authority: "s 152-125(1), (2); s 152-60; s 152-70(1); s 104-70; s 152-110(2); Subdiv 118-I; s 292-100"
+    reasoning: |
+      On whether the distribution is a further CGT event, my view is no, though I
+      would put that as the orthodox position rather than a settled one. The
+      candidate is E4 under
+      s 104-70, aimed at a unit or interest with a cost base to adjust, and a
+      discretionary object holds a mere expectancy. I haven't found authority
+      squarely on point. Note s 152-110(2) as well: income the trust derives from
+      the event is neither assessable nor exempt, so it never reaches s 95 net
+      income.
+
+      s 152-125 is the operative provision, and the brief misses four points:
+
+      - Exempt amount is the gain disregarded, so $4.15M, not the $4.2M of
+        proceeds; the $50,000 cost-base return is trust capital.
+      - The payee must have been a CGT concession stakeholder just before the
+        event, so Maree may come in on the spouse limb and change the caps.
+      - Time limit is the later of two years after the event and six months after
+        the last possible earnout benefit. No earnout here, so 15 September 2026,
+        from contract date, with no discretion to extend.
+      - s 152-125(2) caps the disregarded amount by the stakeholder's
+        participation percentage, so paying Bob the whole $4.2M isn't
+        automatically protected. Confirm which limb applies to a discretionary
+        trust — s 152-125(2)(a) refers to item 2 of the s 152-70(1) table, which
+        is fixed interests.
+
+      The point that matters most, and why this can't be separated from Q3. Bob
+      needs 20% under item 3 for FY2025, being the smaller of his income and
+      capital percentages. To get him the money the trustee wants to push the
+      disregarded gain out as capital, and it isn't s 95 income. Unmatched by a
+      sufficient income distribution, the income limb sets his percentage and it
+      can be nil. One trustee resolution decides both whether s 152-110(1)(d) is
+      satisfied and whether s 152-125 protects the payment, so the two can't be
+      tested independently.
+    edge\_case\_notes: |
+      Downstream and out of scope, but flagging it: the 15-year limb of s 292-100
+      allows the whole capital proceeds, not just the gain, to be excluded from
+      the non-concessional cap up to the lifetime CGT cap ($1.78M for 2024-25).
+      The election must be in the approved form and given to the fund on or
+      before the contribution.
+
+  - question\_number: 7
+    verdict: "ACCEPT"
+    citation\_authority: "see section 4"
+    reasoning: |
+      All four listed candidates are worth testing and I've taken each at section
+      4. The find I'd put forward is item 1 there, on s 152-10(2).
+    edge\_case\_notes: |
+      See section 4.
+```
+
+\---
+
+## 3\. Citation audit
+
+|#|Authority as cited|Your assessment|Notes|
+|-|-|-|-|
+|1|Subdiv 152-B; s 152-105; s 152-110|✓ / ⚠|Routing right; (1)(c) misstated as "at all times".|
+|2|s 152-10|⚠|(2), (2A), (2B) omitted though the asset is a share; (4) omitted.|
+|3|"SBE < $2M" / "MNAV $6M"|✓ / ⚠|Thresholds right; no cite to s 152-15 or s 152-20; "likely PASS" unsupported.|
+|4|s 152-35 to s 152-40|⚠|"Majority of ownership" should be a total of 7.5 years.|
+|5|s 152-40(3)|⚠|Numerator stated as one limb of three; balance sheet cited where market value applies.|
+|6|s 152-55|⚠|Q3 offers control over the trustee, which is s 328-125(4).|
+|7|s 152-125|✓|Identified; time limit, stakeholder definition and cap not surfaced.|
+|8|s 152-60; s 152-65/70/75|✗|Absent. Item 3 of the s 152-70(1) table is the only route to the test for a discretionary trust.|
+|9|s 328-125 / s 328-130|✗|Absent. Needed for MNAV, turnover and s 152-10(2).|
+|10|s 104-10(3); s 152-115; s 152-80|✗|Absent. Period ends, rollover continuity, death branch.|
+|11|s 152-215 / 152-330 / 152-430|✗|Absent. Brief section 5 treats the concessions as independent.|
+|12|Subdiv 118-I|✗|Absent. Moves the s 152-125 deadline.|
+|13|TD 2006/65; *Eichmann v FCT* \[2020] FCAFC 155|✗|Absent. Chain testing; carrying on a business.|
+
+\---
+
+## 4\. Edge cases surfaced
+
+Item 1 is my answer to Q7. Items 2 to 8 cover the brief's listed candidates and the smaller points.
+
+1. **s 152-10(2) is absent from the spec entirely.** Not on the candidate list, not tested by any of Q1 to Q6, and capable of changing the answer on its own. Since 8 February 2018 the basic conditions for a share sale also require a modified active asset test on the s 152-10(2A)/(2B) assumptions, the object entity to be a CGT SBE or satisfy MNAV with each 40% in s 328-125 read as 20%, and the CGT concession stakeholder / 90% test. Two consequences worth separating. A calculator built to the brief returns eligible on share sales that fail these conditions, and the failure is silent because nothing in the condition set is looking. And the s 152-10(2A) test is materially harder than s 152-40(3) alone and applies across the ownership period, so it isn't one extra check at the end. Needs a test case per limb.
+2. **MNAV probably fails.** Wilson Trading is wholly owned, so its value counts, and the $4.2M price is evidence of it. Add Bob's and Maree's assets and $6M is close. Turnover under $2M may fail too. Worth a case where both fail.
+3. **Trustee change vs resettlement.** Changing trustee doesn't change the owner. A resettlement does (TD 2012/21, with *Clark* \[2011] FCAFC 5 and *Commercial Nominees* \[2001] HCA 33). Test whether the trust estate continued.
+4. **Changing distribution patterns.** These move item 3 year by year. 100% to Bob for ten years then split five ways for six can leave fewer than 15 qualifying years with no structural change at all.
+5. **Rollovers.** Only Subdiv 124-B and 126-A continue the period. Subdiv 122-A and scrip-for-scrip under Subdiv 124-M restart it.
+6. **Partial disposal.** Ownership and the active asset test hold on the shares sold. The retirement nexus is what fails — keeping 40% is hard to square with a significant reduction in hours.
+7. **Ordering.** Subdiv 152-B sits outside the s 102-5 method statement: gain goes entirely, no capital losses applied, Div 115 never reached. No election, and s 152-215, s 152-330 and s 152-430 shut out the other three concessions where it applies. Test it first, treat it as dispositive.
+8. **Three small ones.** Earnouts (Subdiv 118-I shifts proceeds, income year and the s 152-125 deadline); a June contract with July settlement; and residency under s 152-40(3)(a).
+
+\---
+
+## 5\. TaxGenii appendix coverage feedback
+
+The appendix supplies four database links and the three anchors. Two of the links — ITAA 1936 and FBTAA 1986 — have no bearing on a Subdiv 152-B bounty, so the block reads as standing boilerplate rather than anything pre-cached for this question. The sections, rulings and case law are all placeholders inviting the reviewer to go and find them, which sits against the undertaking at the top that the load-bearing citations are already here. I sourced everything myself.
+
+The anchors are too narrow as well. What decides this one is s 152-10(2), s 152-40(3), s 152-55 to s 152-75 and s 152-125, none of which are listed.
+
+\---
+
+## Appendix - For reference and ease
+
+Predicates in plain English, in test-precedence order, with authority.
+
+```
+1  a CGT event happens to a CGT asset      \[s 108-5; s 152-10(1)(a); s 104-10(3)]
+2  the event is not J2, J5 or J6           \[s 152-10(4)]
+3  it would give a capital gain apart from Div 152   \[s 152-10(1)(b)]
+4  owner is an individual, or a company or trust     \[s 152-105 / s 152-110]
+5  asset is, or is not, a share or trust interest — gates 14-17
+```
+
+**Threshold entity tests, any one limb (s 152-10(1)(c))**
+
+```
+6  taxpayer is a CGT small business entity  \[s 152-10(1AA) — $2M turnover]
+7  or satisfies MNAV, $6M just before the event      \[s 152-15; s 152-20]
+     aggregating connected entities \[s 328-125] and affiliates \[s 328-130]
+8  or a partner / passively-held limb       \[s 152-10(1)(c)(iii); (1A), (1B); s 152-47]
+```
+
+**Active asset test (s 152-10(1)(d))**
+
+```
+9  the asset is active at a given time      \[s 152-40(1)]
+10 and not caught by the rent / interest / royalty exclusions  \[s 152-40(4)]
+11 for shares, the 80% composition test at market value        \[s 152-40(3)]
+     numerator = active assets + financial instruments + cash, inherently connected
+     applied successively through a chain \[TD 2006/65]; later time \[s 152-40(3A)];
+     company Australian-resident \[s 152-40(3)(a)]
+12 test period: acquisition to the earlier of the event and cessation  \[s 152-35(2)]
+13 owned <=15y, active half the period; owned >15y, active a total 7.5y \[s 152-35(1)]
+```
+
+**Additional conditions for a share or interest (events from 8 Feb 2018)**
+
+```
+14 still satisfies the active asset test on the (2A)/(2B) assumptions  \[s 152-10(2)(a)]
+15 taxpayer carrying on a business just before the event, if MNAV not met \[s 152-10(2)(b)]
+16 object entity is a CGT SBE or satisfies MNAV, each 40% read as 20%     \[s 152-10(2)]
+17 taxpayer is a CGT concession stakeholder, or stakeholders together hold
+     at least 90% of the taxpayer                                        \[s 152-10(2)]
+```
+
+**Participation percentages**
+
+```
+18 SBPP = direct + indirect                \[s 152-65]
+19 direct SBPP                             \[s 152-70(1)]
+     company: item 1 — lowest of voting, dividend and capital rights
+     fixed trust: item 2
+     discretionary trust: item 3 — the SMALLER of the income and capital
+       distribution percentages, applying for the whole income year
+     no-distribution years: look back to the last year a distribution was
+       made, but only where the trust also had no net income or a tax loss
+20 indirect SBPP                           \[s 152-75]
+21 significant individual: SBPP of at least 20%   \[s 152-55]
+22 CGT concession stakeholder: a significant individual, or their spouse
+     with SBPP above zero                  \[s 152-60]
+```
+
+**15-year exemption, company or trust**
+
+```
+23 basic conditions satisfied              \[s 152-110(1)(a)]
+24 continuous ownership across the 15 years ending just before the event \[s 152-110(1)(b)]
+     continued through Subdiv 124-B and 126-A rollovers only  \[s 152-115]
+25 a significant individual for a TOTAL of at least 15 years during ownership;
+     not necessarily continuous or the same person           \[s 152-110(1)(c)]
+26 an individual who was a significant individual just before the event  \[s 152-110(1)(d)]
+27 that individual was 55 or over just before the event      \[s 152-110(1)(d)(i)]
+28 and the event happened in connection with their retirement — judgement
+     predicate, see Q5                     \[s 152-110(1)(d)(i)]
+29 or that individual was permanently incapacitated          \[s 152-110(1)(d)(ii)]
+30 disregard a pre-CGT status change for 24 and 25           \[s 152-110(1A)]
+```
+
+Individual branch (s 152-105): read 25 as s 152-105(c) where the asset is a share, and apply 27-28 to the taxpayer.
+
+**Consequences and ordering**
+
+```
+31 the capital gain is disregarded in full  \[s 152-110(1)]
+32 income from the event is neither assessable nor exempt  \[s 152-110(2)]
+33 capital losses aren't applied and Div 115 isn't reached
+34 Subdiv 152-C, D and E are unavailable for this gain  \[s 152-215; 152-330; 152-430]
+35 no election needed — Subdiv 152-B has no choice provision
+```
+
+**Downstream payment**
+
+```
+36 exempt amount is the gain disregarded, not the proceeds   \[s 152-125(1)(a)]
+37 payee was a stakeholder just before the event             \[s 152-125(1)(c)]
+38 paid before the later of two years after the event and six months after
+     the last possible earnout benefit     \[s 152-125(1)(b)]
+39 within the stakeholder's participation cap                \[s 152-125(2)]
+40 traced through interposed entities where relevant
+41 earnout rights looked through            \[Subdiv 118-I]
+42 CGT cap election in the approved form, given on or before the contribution \[s 292-100]
+```
+
+For a discretionary trust, 19, 21 and 22 all depend on the trustee's distribution resolution for the year of the event, and that same resolution is how the payment at 36-39 is made. So 19, 25, 26, 38 and 39 are interdependent as a matter of law: a capital-only distribution of the exempt amount drives the income limb of item 3 to zero and extinguishes the significant-individual status 26 rests on (ATO ID 2012/99, Note 1).
+
+\---
+
+## 6\. Attestation
+
+I have reviewed this bounty artefact bundle on the facts as presented. My verdict above reflects my professional judgement as at the submission date. I understand my verdict will be minted into the public reviewer registry with the attribution posture stated in the frontmatter.
+
+**Signed: Dev Magoon
+Name:** Dev Magoon
+**Credential: CPA
+Date: 14/09/2026**
