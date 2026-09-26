@@ -1,0 +1,1525 @@
+the target language is: prolog.
+
+% Division 36 loss sequencing, revision 2. Written out as executable rules.
+% Each rule that states a provision carries, in plain words above it, an
+% "If ... then ..." statement of what we think it says, naming the subsection.
+% If any of those statements is wrong, our fix will be wrong. A few rules are
+% mechanical helpers with no statutory content of their own, and one is a scope
+% rule; those are marked "Mechanical: no statutory content" (or noted as the
+% scope rule) instead of naming a subsection. Conformance after this build,
+% measured by counting every non-indented lowercase rule-clause line between the
+% templates and the first scenario: 51 of 51 clauses carry a subsection comment
+% or a mechanical/scope marker (51/51).
+%
+% BUILD: rev2 build3 (PR-B, 2026-09-25). PR-B adds partly-exempt (split) receipts
+% as a first-class input: a split-receipt three-part fact, a REQUIRED "is a split
+% receipt" marker that drives characterisation, two refusal guards (one
+% "malformed split receipt" guard covering parts that do not sum to the gross and
+% any negative part; and the guard for the split receipts' assessable parts
+% exceeding the asserted assessable income), and folds the exempt PART (not the
+% gross) of a split receipt into total exempt income for s 36-20(1) via a
+% two-sum total (whole-exempt gross + split exempt parts). The scope rule gates
+% ALLOWED LIMITED DEDUCTIONS only; "deductions other than tax losses" is gated
+% transitively through allowed-limited, so the scope condition is proved once,
+% not twice. Net exempt income remaining is a closed form, not a five-call
+% re-derivation. See the implementation note below for why each of these shapes
+% was necessary on this reasoner (an earlier build was OOM-killed).
+% Earlier builds: rev2 build2 (PR-A / PR-A2, 2026-09-22) delivered the single
+% scope rule (2a), the new outputs absorbed/deducted/taxable income/net exempt
+% income remaining (2b), earliest-first pool consumption (2c), fixtures P7/P8 (3),
+% the seven-dead-helper cleanup and Tests A-C (PR-A2).
+% This file supersedes, in order: the rev2 build1 file (SHA-256
+% 29c51b9d4d084c70876d3c4a35a62dcb9042532f4e52c21b32c3f4c4fe0541dd, reviewed in
+% round one but never issued), the PR-A merged file #40 (SHA-256
+% 670825e957e0c54b575b411b472ddf27941d20d1a29f888dc45d05c4b750a525), and the
+% PR-A2 merged file #41 (SHA-256
+% 7a2a14e52ea1510fc6ff9b340d08830dce4e649714bb80de6f0989ad9d8147f6).
+% MEASURED: 205 embedded test cases, all passing under the reasoner's 30-second
+% per-query cap, zero timeouts; full suite 4 m 44 s (slowest scenario DM-3, its
+% eight figure queries ~37 s combined, each well under the 30 s cap). Reasoner
+% LogicalContracts/LogicalEnglish2 @ 445b4da, SWI-Prolog 9.0.4.
+% Verifier: zero untested-predicate warnings.
+%
+% IMPLEMENTATION NOTE (why PR-B took the shapes above; this reasoner has no
+% memoisation, so every re-derivation under backtracking is paid in full and an
+% earlier PR-B build was OOM-killed). Four causes, each fixed:
+%   1. Double scope gate. The earlier build gated BOTH allowed-limited deductions
+%      AND deductions other than tax losses on the scope rule. Because deductions
+%      other than tax losses already reaches allowed-limited, the scope condition
+%      (with its negated-refusal sub-goals) was proved twice on every deductions
+%      derivation, and deductions is re-derived throughout the figure chain.
+%      Gating allowed-limited alone (deductions inherits scope transitively) took
+%      the "deductions" path from 16 s / 491 MB to 3 s / 67 MB.
+%   2. Six guards under the negated scope rule. The earlier build carried six
+%      refusal-guard clauses (two for parts-not-summing, three for a negative
+%      part, one for assessable-parts-exceed-income). Each is re-proved under the
+%      negated refusal gate in every figure rule. Collapsing the malformed cases
+%      into ONE "is a malformed split receipt" guard (plus the assessable-parts
+%      guard) removes that multiplier.
+%   3. A three-slot numeric template under "; unknown" characterisation. The
+%      earlier build characterised a split receipt by matching the three-part
+%      numeric fact directly inside the "is characterised; unknown" derivation;
+%      that multi-slot numeric match, re-run under backtracking, drove a single
+%      DM-3 query past 200 s. Characterising by a plain "is a split receipt"
+%      marker (a single-slot fact) took it to 3 s. This is why the marker is a
+%      REQUIRED input, not derived from the numeric parts.
+%   4. A five-call "net exempt income remaining". The earlier build derived the
+%      remaining pool by re-calling net exempt income and the absorbed/excess
+%      chain up to five times per query, each re-deriving total exempt income.
+%      Rewriting it as a closed form (net exempt income minus the amount already
+%      consumed) removes the repeated deep re-derivation.
+%
+% This file is scoped to a single non-corporate, Australian-resident taxpayer.
+%
+% TRI-STATE OUTPUT (absence is handled by Logical English's ; unknown mechanism
+% and the (answers, unknowns) pair, not by negation-as-failure):
+%   - PROVEN: a query returns answers with no unknowns. The figures are certified.
+%   - CANNOT BE DETERMINED: a query returns answers together with unknowns that
+%     name the missing facts (e.g. "the taxpayer is an Australian resident in the
+%     year", "the pension is characterised"). The figures hold only on those
+%     assumptions; the caller MUST NOT treat them as certified.
+%   - REFUSED: a fact set outside scope derives "it is refused that ... can be
+%     assessed ... because ..." and no figures (the negated refusal gate in each
+%     figure rule blocks computation). The refusal grounds are: the taxpayer is a
+%     corporate tax entity (s 36-17 applies), a receipt is exempt under s 51-100
+%     (s 36-10(5) disregard not implemented), the taxpayer is a foreign resident
+%     (s 36-20(2) not implemented), "split receipt: malformed (negative part or
+%     parts do not sum to gross)", or "split receipt: assessable parts exceed
+%     asserted assessable income".
+%
+% INPUT CONTRACT / PRECONDITIONS:
+%   - The three open scope conditions are supplied as facts where known:
+%     "is an Australian resident in the year", "is not a corporate tax entity at
+%     any time in the year", and a stated character for every receipt. Absent,
+%     they surface as unknowns rather than silently failing.
+%   - The taxpayer is not a trust to which Sch 2F ITAA 1936 applies; there are no
+%     Div 245, Div 165 or bankruptcy events in the year; losses brought forward
+%     are amounts not previously utilised (s 960-20). Assumed of every fact set.
+%   - "deductions other than tax losses" is the year's allowable deductions
+%     AFTER any Division 35 non-commercial-loss deferral (s 35-10(2)), split into
+%     "limited deductions" (s 26-55(1): Div 30 gifts, Div 31 covenants, s 25-50,
+%     s 290-150 personal super) and "other deductions".
+%   - No s 393-5 farm management deposit deductions (excluded from the s 26-55(2)
+%     limit computation but deductions for s 36-10; not modelled).
+%   - Every receipt has a stated character: exempt income under a provision, or
+%     non-assessable non-exempt (NANE) under a provision, or exempt under
+%     s 51-100, or (a partly exempt receipt) a split receipt stating an exempt
+%     part, an assessable part and a NANE part.
+%   - A partly exempt receipt is entered as ONE split receipt, which is THREE
+%     facts: "receives the receipt of a gross", the marker "the receipt is a
+%     split receipt", and the three-part fact "the receipt has an exempt part of
+%     ... and an assessable part of ... and a non-assessable non-exempt part of
+%     ...". The marker is REQUIRED: characterisation keys off it, not off the
+%     numeric parts, because matching a multi-slot numeric template inside the
+%     "is characterised; unknown" derivation is not affordable on this reasoner
+%     (see implementation-note cause 3). The parts must sum to the gross and none
+%     may be negative, or the receipt is a malformed split receipt and the fact
+%     set is refused. Only the exempt part is the s 36-20(1) figure; the
+%     assessable part is ordinary assessable income and the NANE part is
+%     disregarded (s 6-20(4)).
+%   - Annual assessable income remains an ASSERTED figure. It is checked against
+%     the receipts: if the sum of the split receipts' assessable parts exceeds it,
+%     the fact set is refused. Deriving assessable income FROM the parts is the
+%     intended model but is deferred pending reasoner memoisation (summing the
+%     assessable parts and reading them back through the figure rules re-derives
+%     the amount-available chain under backtracking; Fable measurement
+%     2026-09-22, same no-memoisation cause as the s 36-15 inline note below).
+%
+% ITAA 1997 s 26-55   limit on gift, covenant, pension and super deductions
+% ITAA 1997 s 36-10   how a tax loss is calculated
+% ITAA 1997 s 36-15   how earlier year tax losses are deducted (non-corporate)
+% ITAA 1997 s 36-20   what net exempt income means
+% ITAA 1997 s 6-20    exempt income; subsection (4): NANE is not exempt income
+% ITAA 1997 s 4-15    taxable income = assessable income - deductions
+% ITAA 1997 s 960-115 meaning of corporate tax entity (used by the s 36-17 guard)
+% Foreign tax paid on assessable income is deliberately NOT an input to this
+% file; any foreign income tax offset is a Division 770 matter handled
+% elsewhere. Only foreign tax on an exempt receipt bears on Division 36 (it
+% reduces net exempt income via s 36-20(1)).
+% Verified against LogicalContracts/LogicalEnglish2 @ 445b4da, SWI-Prolog 9.0.4.
+
+the templates are:
+    *a taxpayer* is an Australian resident in *a year*; unknown.
+    *a taxpayer* is a corporate tax entity in *a year*.
+    *a taxpayer* is not a corporate tax entity at any time in *a year*; unknown.
+    *a taxpayer* is within the scope of these rules in *a year*.
+    *a taxpayer* is a foreign resident in *a year*.
+    *a taxpayer* has other deductions of *an amount* in *a year*.
+    *a taxpayer* has limited deductions of *an amount* in *a year*.
+    *a taxpayer* has assessable income of *an amount* in *a year*.
+    *a taxpayer* has a loss brought forward of *an amount* from *a loss year* into *a year*.
+    *a taxpayer* receives *a receipt* of *an amount* in *a year*.
+    *a receipt* is exempt income under *a provision*.
+    *a receipt* is not assessable and not exempt under *a provision*.
+    *a receipt* is exempt under section 51-100.
+    *a receipt* has an exempt part of *an amount* and an assessable part of *an amount* and a non-assessable non-exempt part of *an amount*.
+    *a receipt* is characterised; unknown.
+    *a receipt* is a split receipt.
+    *a receipt* is a malformed split receipt.
+    *a taxpayer* has every receipt characterised in *a year*.
+    *a taxpayer* incurs revenue outgoings of *an amount* in earning *a receipt*.
+    *a taxpayer* pays foreign tax of *an amount* on *a receipt*.
+    *a taxpayer* has allowed limited deductions of *an amount* in *a year*.
+    *a taxpayer* has deductions other than tax losses of *an amount* in *a year*.
+    *a taxpayer* has total exempt income of *an amount* in *a year*.
+    *a taxpayer* has total assessable parts of *an amount* in *a year*.
+    *a taxpayer* has total exempt outgoings of *an amount* in *a year*.
+    *a taxpayer* has total exempt foreign tax of *an amount* in *a year*.
+    *a taxpayer* has net exempt income of *an amount* in *a year*.
+    *a taxpayer* has an excess of deductions of *an amount* in *a year*.
+    *a taxpayer* has an excess of assessable income of *an amount* in *a year*.
+    *a taxpayer* has a tax loss of *an amount* for *a year*.
+    *a taxpayer* has an amount available against losses of *an amount* in *a year*.
+    *a taxpayer* has earlier losses before *a loss year* of *an amount* in *a year*.
+    *a taxpayer* has losses available before *a loss year* of *an amount* in *a year*.
+    *a taxpayer* applies *an amount* against the loss from *a loss year* in *a year*.
+    *a taxpayer* has *an amount* absorbed by net exempt income against the loss from *a loss year* in *a year*.
+    *a taxpayer* has *an amount* deducted against the loss from *a loss year* in *a year*.
+    *a taxpayer* carries forward *an amount* from *a loss year* after *a year*.
+    *a taxpayer* carries forward *an amount* for *a year*.
+    *a taxpayer* has taxable income of *an amount* in *a year*.
+    *a taxpayer* has net exempt income remaining of *an amount* in *a year*.
+    *a taxpayer* has total loss brought forward of *an amount* in *a year*.
+    it is refused that *a taxpayer* can be assessed in *a year* because *a reason*.
+
+the knowledge base div36 includes:
+
+% ---------------------------------------------------------------------------
+% Input guards. A guard derives an explicit refusal-with-reason; the figure
+% rules are gated so a refused fact set yields no figures. The negated refusal
+% (it is not the case that it is refused ...) is tested once, inside the scope
+% rule "a taxpayer is within the scope of these rules"; the caller-facing figure
+% rules test that scope rule rather than repeating the guard.
+% The scope rule is tested in three places: inside net exempt income, inside
+% deductions other than tax losses, and inside allowed limited deductions. Net
+% exempt income and deductions carry it because some figures reach deductions
+% without passing through net exempt income - taxable income of 0 (deductions >=
+% assessable income) reaches only the deductions path. Allowed limited deductions
+% carries its own scope test directly (both clauses), because a refused fact set
+% can reach it without computing deductions at all (Test A queries it with no
+% receipts); gating it here keeps it refused on a refused fact set.
+% Absence of the three open scope conditions is handled by ; unknown, not by
+% these guards.
+% ---------------------------------------------------------------------------
+
+% If the taxpayer is a foreign resident in the year, then refuse: s 36-20(2)
+% foreign-resident computation is not implemented here.
+it is refused that a taxpayer can be assessed in a year because a reason
+    if the taxpayer is a foreign resident in the year
+    and the reason = foreign resident: s 36-20(2) not implemented.
+
+% If the taxpayer is a corporate tax entity (s 960-115) in the year, then refuse:
+% s 36-17 applies to corporate tax entities and is a separate file. This is the
+% affirmative of the scope gate's "not a corporate tax entity at any time in the
+% year" condition: whenever this guard fires the gate condition fails, so the
+% guard and the gate test one thing from opposite sides. It reads the affirmative
+% "is a corporate tax entity" template rather than the negation of the gate's own
+% template, because that is the form the corporate fixtures assert; a double
+% negation of a ; unknown template would leave the guard unread by those facts.
+% Here "the year" is the year of deduction (the later year in which the earlier
+% loss is deducted), s 36-15.
+it is refused that a taxpayer can be assessed in a year because a reason
+    if the taxpayer is a corporate tax entity in the year
+    and the reason = corporate tax entity: s 36-17 applies not this file.
+
+% If any receipt is exempt under s 51-100, then refuse: the s 36-10(5) 90%
+% shipping disregard is not implemented.
+it is refused that a taxpayer can be assessed in a year because a reason
+    if the taxpayer receives a shipping receipt of a shipping gross amount in the year
+    and the shipping receipt is exempt under section 51-100
+    and the reason = s 51-100 receipt: s 36-10(5) disregard not implemented.
+
+% If the taxpayer received a split receipt that is malformed, then refuse: no
+% s 36-20(1) figure can be trusted from a receipt whose parts are negative or
+% do not sum to its gross.
+it is refused that a taxpayer can be assessed in a year because a reason
+    if the taxpayer receives a receipt of a gross amount in the year
+    and the receipt is a malformed split receipt
+    and the reason = split receipt: malformed (negative part or parts do not sum to gross).
+
+% If the sum of the assessable parts across all receipts exceeds the asserted
+% assessable income, then refuse: the asserted figure is inconsistent with the
+% receipts. The sum is taken over base facts in "total assessable parts" (below,
+% with the other s 36-20(1) sums) and read back here as a fact-variable.
+it is refused that a taxpayer can be assessed in a year because a reason
+    if the taxpayer has total assessable parts of a parts total in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the parts total > the assessable income amount
+    and the reason = split receipt: assessable parts exceed asserted assessable income.
+
+
+
+
+
+% ---------------------------------------------------------------------------
+% Receipt characterisation. A receipt has a stated character when it is exempt
+% income, NANE, or exempt under s 51-100. "is characterised" is declared
+% ; unknown, so a receipt with no stated character surfaces as an unknown rather
+% than silently failing.
+% ---------------------------------------------------------------------------
+
+% Mechanical: no statutory content. A receipt that is exempt income is
+% characterised.
+a receipt is characterised if the receipt is exempt income under a provision.
+
+% Mechanical: no statutory content. A receipt that is NANE is characterised.
+a receipt is characterised if the receipt is not assessable and not exempt under a provision.
+
+% Mechanical: no statutory content. A receipt exempt under s 51-100 is
+% characterised.
+a receipt is characterised if the receipt is exempt under section 51-100.
+
+% Mechanical: no statutory content. A split receipt (one stated as an exempt
+% part, an assessable part and a NANE part) is characterised; the parts carry the
+% character within the one receipt, so whole-receipt characterisation clauses do
+% not apply to it.
+a receipt is characterised if the receipt is a split receipt.
+
+% Mechanical: no statutory content. A split receipt is malformed when any part
+% is negative or the parts do not sum to the gross received. Five clauses, one
+% concept, read by a single refusal guard; one comment per clause below.
+% Mechanical: no statutory content. Malformed: negative exempt part.
+a receipt is a malformed split receipt
+    if the receipt has an exempt part of an exempt amount and an assessable part of an assessable amount and a non-assessable non-exempt part of a nane amount
+    and the exempt amount < 0.
+% Mechanical: no statutory content. Malformed: negative assessable part.
+a receipt is a malformed split receipt
+    if the receipt has an exempt part of an exempt amount and an assessable part of an assessable amount and a non-assessable non-exempt part of a nane amount
+    and the assessable amount < 0.
+% Mechanical: no statutory content. Malformed: negative NANE part.
+a receipt is a malformed split receipt
+    if the receipt has an exempt part of an exempt amount and an assessable part of an assessable amount and a non-assessable non-exempt part of a nane amount
+    and the nane amount < 0.
+% Mechanical: no statutory content. Malformed: parts exceed gross.
+a receipt is a malformed split receipt
+    if the receipt has an exempt part of an exempt amount and an assessable part of an assessable amount and a non-assessable non-exempt part of a nane amount
+    and a taxpayer receives the receipt of a gross amount in a year
+    and a parts subtotal = the exempt amount + the assessable amount
+    and a parts total = the parts subtotal + the nane amount
+    and the parts total > the gross amount.
+% Mechanical: no statutory content. Malformed: parts fall short of gross.
+a receipt is a malformed split receipt
+    if the receipt has an exempt part of an exempt amount and an assessable part of an assessable amount and a non-assessable non-exempt part of a nane amount
+    and a taxpayer receives the receipt of a gross amount in a year
+    and a parts subtotal = the exempt amount + the assessable amount
+    and a parts total = the parts subtotal + the nane amount
+    and the parts total < the gross amount.
+
+% Mechanical: no statutory content. If every receipt the taxpayer receives in
+% the year is characterised, then the taxpayer has every receipt characterised in
+% the year. Where a receipt's character is open, the universal holds only on the
+% assumption that it is characterised, and that assumption is reported as an
+% unknown.
+a taxpayer has every receipt characterised in a year
+    if for all cases in which
+        the taxpayer receives a receipt of an amount in the year
+        it is the case that
+        the receipt is characterised.
+
+% Scope rule (no statutory content of its own; counts with the mechanical
+% helpers in the N/N tally). It gathers the one place every figure rule tests
+% whether this file may compute at all, so the condition is proved once per
+% figure rather than re-proved inside each internal total. Two kinds of
+% condition, kept distinct:
+%   - statutory: the taxpayer is not a corporate tax entity at any time in the
+%     year, because s 36-15 governs non-corporate taxpayers and s 36-17 (the
+%     corporate rule) is a separate file;
+%   - this file's own limits: the taxpayer is an Australian resident (s 36-20(2)
+%     foreign-resident computation is out of scope), every receipt is
+%     characterised, and no refusal ground fires. An open resident or character
+%     fact surfaces as an unknown here rather than failing.
+a taxpayer is within the scope of these rules in a year
+    if the taxpayer is not a corporate tax entity at any time in the year
+    and the taxpayer is an Australian resident in the year
+    and the taxpayer has every receipt characterised in the year
+    and it is not the case that it is refused that the taxpayer can be assessed in the year because a reason.
+
+
+% ---------------------------------------------------------------------------
+% s 26-55(2). Limit on gifts, covenants, s 25-50 pension and s 290-150 super:
+% they cannot create or add to a loss.
+% ---------------------------------------------------------------------------
+
+% If assessable income equals or exceeds other deductions, then the allowed
+% limited amount is that headroom (assessable income - other deductions):
+% s 26-55(2).
+a taxpayer has allowed limited deductions of an amount in a year
+    if the taxpayer has limited deductions of a limited deduction amount in the year
+    and the taxpayer has other deductions of an other deduction amount in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the assessable income amount >= the other deduction amount
+    and the taxpayer is within the scope of these rules in the year
+    and the amount = the assessable income amount - the other deduction amount.
+
+% If other deductions exceed assessable income, then no limited deduction is
+% allowed: s 26-55(2) (it cannot create or add to a loss).
+a taxpayer has allowed limited deductions of 0 in a year
+    if the taxpayer has limited deductions of a limited deduction amount in the year
+    and the taxpayer has other deductions of an other deduction amount in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the other deduction amount > the assessable income amount
+    and the taxpayer is within the scope of these rules in the year.
+
+% If the limited deductions do not exceed the allowed amount, then the deductions
+% other than tax losses are the other deductions plus the limited deductions:
+% s 26-55(2).
+a taxpayer has deductions other than tax losses of an amount in a year
+    if the taxpayer has other deductions of an other deduction amount in the year
+    and the taxpayer has limited deductions of a limited deduction amount in the year
+    and the taxpayer has allowed limited deductions of an allowed limited amount in the year
+    and the limited deduction amount =< the allowed limited amount
+    and the amount = the other deduction amount + the limited deduction amount.
+
+% If the limited deductions exceed the allowed amount, then only the allowed
+% amount is added to the other deductions: s 26-55(2).
+a taxpayer has deductions other than tax losses of an amount in a year
+    if the taxpayer has other deductions of an other deduction amount in the year
+    and the taxpayer has limited deductions of a limited deduction amount in the year
+    and the taxpayer has allowed limited deductions of an allowed limited amount in the year
+    and the limited deduction amount > the allowed limited amount
+    and the amount = the other deduction amount + the allowed limited amount.
+
+% ---------------------------------------------------------------------------
+% s 36-20(1). Net exempt income. Computed as three sums over the year's receipts
+% (total exempt income, total revenue outgoings of earning it, total foreign tax
+% on it), then floored at nil.
+% ---------------------------------------------------------------------------
+
+
+% If a receipt is exempt income in whole, then its gross counts; if a receipt is
+% a valid split receipt, then its exempt part counts: total exempt income for
+% the year is the sum of both, s 36-20(1) "total exempt income from all
+% sources". An empty sum is nil. NANE receipts and NANE parts contribute nothing
+% (s 6-20(4)). Scope is not tested here: this total is reached only through net
+% exempt income, which carries the scope rule.
+a taxpayer has total exempt income of a number G in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and a number W is the sum of each gross amount such that
+        the taxpayer receives a receipt of the gross amount in the year
+        and the receipt is exempt income under a provision
+    and a number S is the sum of each exempt amount such that
+        the taxpayer receives a split receipt of a gross amount in the year
+        and the split receipt has an exempt part of the exempt amount and an assessable part of an assessable amount and a non-assessable non-exempt part of a nane amount
+    and G = W + S.
+
+% Mechanical: no statutory content. The sum of the assessable parts of all split
+% receipts, read back by the refusal guard that checks them against the asserted
+% assessable income. An empty sum is nil.
+a taxpayer has total assessable parts of a number A in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and A is the sum of each assessable amount such that
+        the taxpayer receives a receipt of a gross amount in the year
+        and the receipt has an exempt part of an exempt amount and an assessable part of the assessable amount and a non-assessable non-exempt part of a nane amount.
+
+% If an exempt receipt was earned at a revenue outgoing, then the total revenue
+% outgoings for the year are the sum of those outgoings: s 36-20(1). A receipt
+% with no incurred outgoing contributes nothing. Scope is carried by net exempt
+% income, the only caller, not re-tested here.
+a taxpayer has total exempt outgoings of a number O in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and O is the sum of each outgoing amount such that
+        the taxpayer receives a receipt of a gross amount in the year
+        and the receipt is exempt income under a provision
+        and the taxpayer incurs revenue outgoings of the outgoing amount in earning the receipt.
+
+% If foreign tax was paid on an exempt receipt, then the total foreign tax for
+% the year is the sum of that foreign tax: s 36-20(1). A receipt with no foreign
+% tax contributes nothing. Scope is carried by net exempt income, the only
+% caller, not re-tested here.
+a taxpayer has total exempt foreign tax of a number F in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and F is the sum of each foreign amount such that
+        the taxpayer receives a receipt of a gross amount in the year
+        and the receipt is exempt income under a provision
+        and the taxpayer pays foreign tax of the foreign amount on the receipt.
+
+% If total exempt income exceeds the total outgoings and foreign tax, then the
+% net exempt income for the year is that surplus: s 36-20(1).
+a taxpayer has net exempt income of an amount in a year
+    if the taxpayer is within the scope of these rules in the year
+    and the taxpayer has total exempt income of a gross exempt figure in the year
+    and the taxpayer has total exempt outgoings of an outgoings figure in the year
+    and the taxpayer has total exempt foreign tax of a foreign figure in the year
+    and a net figure = the gross exempt figure - the outgoings figure - the foreign figure
+    and the net figure >= 0
+    and the amount = the net figure.
+
+% If the total outgoings and foreign tax equal or exceed total exempt income,
+% then the net exempt income for the year is nil: s 36-20(1) (it cannot be
+% negative). This also covers a year with no exempt receipt (empty sums).
+a taxpayer has net exempt income of 0 in a year
+    if the taxpayer is within the scope of these rules in the year
+    and the taxpayer has total exempt income of a gross exempt figure in the year
+    and the taxpayer has total exempt outgoings of an outgoings figure in the year
+    and the taxpayer has total exempt foreign tax of a foreign figure in the year
+    and a net figure = the gross exempt figure - the outgoings figure - the foreign figure
+    and the net figure < 0.
+
+% ---------------------------------------------------------------------------
+% s 36-10. Tax loss for the year (one method statement, steps 1-4).
+% ---------------------------------------------------------------------------
+
+% Steps 1-2. If deductions exceed assessable income, then the excess of
+% deductions is that difference: s 36-10 steps 1 and 2.
+a taxpayer has an excess of deductions of an amount in a year
+    if the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the deduction amount > the assessable income amount
+    and the amount = the deduction amount - the assessable income amount.
+
+% Steps 1-2. If assessable income equals or exceeds deductions, then the excess
+% of deductions is nil: s 36-10 steps 1 and 2.
+a taxpayer has an excess of deductions of 0 in a year
+    if the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the assessable income amount >= the deduction amount.
+
+% Steps 3-4. If the excess of deductions exceeds net exempt income, then the tax
+% loss is that residue: s 36-10 steps 3 and 4 (net exempt income is subtracted
+% inside the tax-loss calculation).
+a taxpayer has a tax loss of an amount for a year
+    if the taxpayer has an excess of deductions of an excess amount in the year
+    and the taxpayer has net exempt income of a net exempt amount in the year
+    and the excess amount > the net exempt amount
+    and the amount = the excess amount - the net exempt amount.
+
+% Steps 3-4. If net exempt income equals or exceeds the excess of deductions,
+% then the tax loss is nil: s 36-10 steps 3 and 4.
+a taxpayer has a tax loss of 0 for a year
+    if the taxpayer has an excess of deductions of an excess amount in the year
+    and the taxpayer has net exempt income of a net exempt amount in the year
+    and the net exempt amount >= the excess amount.
+
+% ---------------------------------------------------------------------------
+% s 36-15(2),(3),(4). The amount available to absorb losses brought forward.
+% The three limbs are mutually exclusive on (net exempt income, profit/loss).
+% ---------------------------------------------------------------------------
+
+% s 36-15(2). If there is no net exempt income and assessable income exceeds
+% deductions, then the amount available against losses brought forward is that
+% excess of assessable income over deductions.
+a taxpayer has an amount available against losses of an amount in a year
+    if the taxpayer has net exempt income of 0 in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the assessable income amount > the deduction amount
+    and the amount = the assessable income amount - the deduction amount.
+
+% s 36-15(3). If there is net exempt income and assessable income exceeds
+% deductions, then the amount available is the net exempt income plus that excess
+% of assessable income (loss taken first from net exempt income, then the excess).
+a taxpayer has an amount available against losses of an amount in a year
+    if the taxpayer has net exempt income of a net exempt amount in the year
+    and the net exempt amount > 0
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the assessable income amount > the deduction amount
+    and a profit amount = the assessable income amount - the deduction amount
+    and the amount = the net exempt amount + the profit amount.
+
+% s 36-15(4). If there is net exempt income and deductions equal or exceed
+% assessable income and the net exempt income exceeds the excess of deductions,
+% then the amount available is the net exempt income left after that excess.
+a taxpayer has an amount available against losses of an amount in a year
+    if the taxpayer has net exempt income of a net exempt amount in the year
+    and the net exempt amount > 0
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the deduction amount >= the assessable income amount
+    and the taxpayer has an excess of deductions of an excess amount in the year
+    and the net exempt amount > the excess amount
+    and the amount = the net exempt amount - the excess amount.
+
+% s 36-15(4). If there is net exempt income and deductions equal or exceed
+% assessable income and the excess of deductions equals or exceeds the net exempt
+% income, then nothing is left to absorb losses brought forward.
+a taxpayer has an amount available against losses of 0 in a year
+    if the taxpayer has net exempt income of a net exempt amount in the year
+    and the net exempt amount > 0
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the deduction amount >= the assessable income amount
+    and the taxpayer has an excess of deductions of an excess amount in the year
+    and the excess amount >= the net exempt amount.
+
+% s 36-15(2). If there is no net exempt income and deductions equal or exceed
+% assessable income, then nothing is available to absorb losses brought forward
+% (there is neither net exempt income nor an excess of assessable income over
+% deductions from which to deduct them): s 36-15(2).
+a taxpayer has an amount available against losses of 0 in a year
+    if the taxpayer has net exempt income of 0 in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the taxpayer has assessable income of an assessable income amount in the year
+    and the deduction amount >= the assessable income amount.
+
+% ---------------------------------------------------------------------------
+% s 36-15(5). Losses brought forward are (loss year, undeducted amount) facts,
+% deducted earliest loss year first.
+% ---------------------------------------------------------------------------
+
+% If a loss was brought forward from a loss year, then the total of losses
+% brought forward from strictly-earlier loss years is the sum of those earlier
+% undeducted amounts: s 36-15(5) (they consume the available amount first).
+a taxpayer has earlier losses before a loss year of a number E in a year
+    if the taxpayer has a loss brought forward of a brought forward amount from the loss year into the year
+    and E is the sum of each earlier amount such that
+        the taxpayer has a loss brought forward of the earlier amount from an earlier loss year into the year
+        and the earlier loss year < the loss year.
+
+% If a loss was brought forward from a loss year and the amount available exceeds
+% the earlier losses, then the losses still available before this loss year are
+% that difference: s 36-15(5) (earliest first). Otherwise nil.
+a taxpayer has losses available before a loss year of an amount in a year
+    if the taxpayer has a loss brought forward of a brought forward amount from the loss year into the year
+    and the taxpayer has an amount available against losses of an available amount in the year
+    and the taxpayer has earlier losses before the loss year of an earlier total in the year
+    and the available amount > the earlier total
+    and the amount = the available amount - the earlier total.
+
+% If the earlier loss years have already consumed the whole amount available,
+% then no headroom is left before this loss year: nil, s 36-15(5) (earliest
+% first).
+a taxpayer has losses available before a loss year of 0 in a year
+    if the taxpayer has a loss brought forward of a brought forward amount from the loss year into the year
+    and the taxpayer has an amount available against losses of an available amount in the year
+    and the taxpayer has earlier losses before the loss year of an earlier total in the year
+    and the earlier total >= the available amount.
+
+% s 36-15(5). If a loss was brought forward from a loss year and the losses
+% available before it do not exceed that undeducted loss, then all those
+% available losses are applied to it.
+a taxpayer applies an amount against the loss from a loss year in a year
+    if the taxpayer has a loss brought forward of a brought forward amount from the loss year into the year
+    and the taxpayer has losses available before the loss year of a headroom amount in the year
+    and the headroom amount =< the brought forward amount
+    and the amount = the headroom amount.
+
+% s 36-15(5). If a loss was brought forward from a loss year and the losses
+% available before it exceed that undeducted loss, then only the undeducted loss
+% is applied (the remainder of the available amount passes to the next loss year).
+a taxpayer applies an amount against the loss from a loss year in a year
+    if the taxpayer has a loss brought forward of a brought forward amount from the loss year into the year
+    and the taxpayer has losses available before the loss year of a headroom amount in the year
+    and the headroom amount > the brought forward amount
+    and the amount = the brought forward amount.
+
+% ---------------------------------------------------------------------------
+% s 36-15(2),(3),(4). Splitting the applied loss into the part absorbed by net
+% exempt income and the part deducted against the excess of assessable income.
+% A loss is taken FIRST from net exempt income, then from the excess (s 36-15(3));
+% a profit year with no net exempt income deducts entirely against the excess
+% (s 36-15(2)); a loss year with net exempt income absorbs entirely from net
+% exempt income (s 36-15(4)). Where there are several loss years the net-exempt
+% -income pool is consumed earliest loss year first (s 36-15(5)): each year's
+% absorbed amount is limited to the pool remaining after all earlier loss years
+% have taken their share.
+%
+% Implementation note (not law): the net-exempt-income pool arithmetic is
+% repeated inline in each of the four rules below (absorbed, deducted, taxable
+% income, net exempt income remaining) rather than factored into named helper
+% predicates. This reasoner has no memoisation, so a named helper called from a
+% rule that also calls applies is re-derived on backtracking, and the amount
+% available underneath it is recomputed many times over. Measured on P7: the
+% inline form runs in about 10 s, whereas routing the four rules through named
+% pool/total helpers took about 126 s with 3 queries exceeding the 30 s cap. The
+% pool is therefore written out as: net exempt income less the excess of
+% deductions, floored at nil; less the pool already taken by earlier loss years
+% (the lesser of that pool and the earlier losses brought forward); floored at
+% nil. The law is in the If ... then ... lines; this note explains only why the
+% shape is repeated.
+% ---------------------------------------------------------------------------
+
+% Mechanical: no statutory content. The excess of assessable income over
+% deductions where there is a profit (s 36-15(2),(3)).
+a taxpayer has an excess of assessable income of an amount in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the assessable income amount > the deduction amount
+    and the amount = the assessable income amount - the deduction amount.
+
+% Mechanical: no statutory content. The excess of assessable income is nil where
+% deductions equal or exceed assessable income (a loss year).
+a taxpayer has an excess of assessable income of 0 in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the deduction amount >= the assessable income amount.
+
+% s 36-15(3),(4). The amount absorbed by net exempt income against a loss is the
+% lesser of the amount applied to it and the net-exempt-income pool remaining
+% after all earlier loss years have taken their share (s 36-15(5), earliest
+% first). Invariant: the sum of absorbed across all loss years never exceeds the
+% net exempt income pool.
+a taxpayer has an amount absorbed by net exempt income against the loss from a loss year in a year
+    if the taxpayer applies an applied amount against the loss from the loss year in the year
+    and the taxpayer has an excess of deductions of an excess amount in the year
+    and the taxpayer has net exempt income of a net exempt amount in the year
+    and the taxpayer has earlier losses before the loss year of an earlier total in the year
+    and a raw pool amount = the net exempt amount - the excess amount
+    and the maximum of the raw pool amount and 0 is a pool amount
+    and the minimum of the pool amount and the earlier total is an absorbed before amount
+    and a raw remaining amount = the pool amount - the absorbed before amount
+    and the maximum of the raw remaining amount and 0 is a pool remaining amount
+    and the minimum of the applied amount and the pool remaining amount is the amount.
+
+% s 36-15(2),(3). The amount deducted against the excess of assessable income is
+% the applied amount less the part absorbed by net exempt income
+% (Deducted = applies - absorbed), using the pool remaining after earlier loss
+% years have taken their share (s 36-15(5), earliest first).
+a taxpayer has an amount deducted against the loss from a loss year in a year
+    if the taxpayer applies an applied amount against the loss from the loss year in the year
+    and the taxpayer has an excess of deductions of an excess amount in the year
+    and the taxpayer has net exempt income of a net exempt amount in the year
+    and the taxpayer has earlier losses before the loss year of an earlier total in the year
+    and a raw pool amount = the net exempt amount - the excess amount
+    and the maximum of the raw pool amount and 0 is a pool amount
+    and the minimum of the pool amount and the earlier total is an absorbed before amount
+    and a raw remaining amount = the pool amount - the absorbed before amount
+    and the maximum of the raw remaining amount and 0 is a pool remaining amount
+    and the minimum of the applied amount and the pool remaining amount is an absorbed amount
+    and the amount = the applied amount - the absorbed amount.
+
+% ---------------------------------------------------------------------------
+% s 36-15. Total losses brought forward, used by the taxable-income and
+% net-exempt-income-remaining outputs below.
+% ---------------------------------------------------------------------------
+
+% Mechanical: no statutory content. The total of all losses brought forward,
+% summed over the (loss year, amount) facts.
+a taxpayer has total loss brought forward of a number T in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and T is the sum of each brought forward amount such that
+        the taxpayer has a loss brought forward of the brought forward amount from a loss year into the year.
+
+% ---------------------------------------------------------------------------
+% s 4-15. Taxable income = assessable income - deductions. The deductions are the
+% year's deductions other than tax losses PLUS the earlier-year losses deducted
+% against income this year (the total deducted, not the part absorbed by net
+% exempt income). Nil where deductions equal or exceed assessable income.
+% ---------------------------------------------------------------------------
+
+% s 4-15. If assessable income exceeds deductions other than tax losses, the
+% taxable income is that excess less the losses deducted against income (the
+% total deducted, i.e. the earlier-year losses deducted against income this year,
+% not the part absorbed by net exempt income).
+a taxpayer has taxable income of an amount in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the assessable income amount > the deduction amount
+    and the taxpayer has an amount available against losses of an available amount in the year
+    and the taxpayer has total loss brought forward of a total loss in the year
+    and the taxpayer has an excess of assessable income of an income excess amount in the year
+    and the minimum of the available amount and the total loss is a total applied
+    and a pool amount = the available amount - the income excess amount
+    and the minimum of the total applied and the pool amount is a total absorbed
+    and a total deducted = the total applied - the total absorbed
+    and the amount = the assessable income amount - the deduction amount - the total deducted.
+
+% s 4-15. If deductions equal or exceed assessable income, taxable income is nil.
+a taxpayer has taxable income of 0 in a year
+    if the taxpayer has assessable income of an assessable income amount in the year
+    and the taxpayer has deductions other than tax losses of a deduction amount in the year
+    and the deduction amount >= the assessable income amount.
+
+% ---------------------------------------------------------------------------
+% Net exempt income remaining after ss 36-10 and 36-15. Net exempt income is
+% consumed first by the excess of deductions inside the tax-loss calculation
+% (s 36-10 steps 3-4), then by absorbing losses brought forward (s 36-15). What
+% is left is reported so the caller sees nothing is silently discarded:
+% remaining = net exempt income - min(excess, net exempt income) - total absorbed,
+% never negative.
+% ---------------------------------------------------------------------------
+
+% ss 36-10, 36-15. If net exempt income exceeds the excess of deductions, then
+% what remains after ss 36-10 and 36-15 is that surplus less the losses brought
+% forward, floored at nil: the surplus absorbs the losses (earliest first, but the
+% order does not change the total), and whatever the losses do not consume is
+% left over. Equivalent to net exempt income less the part consumed inside the
+% tax-loss step less the total absorbed, written in closed form so the rule reads
+% three figures rather than five.
+a taxpayer has net exempt income remaining of an amount in a year
+    if the taxpayer has net exempt income of a net exempt amount in the year
+    and the taxpayer has an excess of deductions of an excess amount in the year
+    and the net exempt amount > the excess amount
+    and a pool amount = the net exempt amount - the excess amount
+    and the taxpayer has total loss brought forward of a total loss in the year
+    and a remainder = the pool amount - the total loss
+    and the maximum of the remainder and 0 is the amount.
+
+% ss 36-10, 36-15. If the excess of deductions equals or exceeds net exempt
+% income, none remains.
+a taxpayer has net exempt income remaining of 0 in a year
+    if the taxpayer has net exempt income of a net exempt amount in the year
+    and the taxpayer has an excess of deductions of an excess amount in the year
+    and the excess amount >= the net exempt amount.
+
+% ---------------------------------------------------------------------------
+% Carry-forward. Per year, never one aggregate.
+% ---------------------------------------------------------------------------
+
+% If a loss was brought forward from a loss year and part was applied, then the
+% amount carried forward from that loss year is the undeducted amount less what
+% was applied. The undeducted part is deducted in a still-later income year
+% (s 36-15(1)); where several loss years remain they keep their earliest-first
+% order (s 36-15(5)).
+a taxpayer carries forward an amount from a loss year after a year
+    if the taxpayer has a loss brought forward of a brought forward amount from the loss year into the year
+    and the taxpayer applies an applied amount against the loss from the loss year in the year
+    and the amount = the brought forward amount - the applied amount.
+
+% s 36-15(1). This year's tax loss is carried forward under its own year, to be
+% deducted in a later income year (s 36-15(1)); when it is later deducted
+% alongside earlier losses they are taken in the order incurred, earliest first
+% (s 36-15(5)).
+a taxpayer carries forward an amount for a year
+    if the taxpayer has a tax loss of the amount for the year.
+
+
+% ---------------------------------------------------------------------------
+% Fixtures. Wren Kavanagh is a stand-in for the client. Loss brought forward is
+% 3286 from FY2025 into FY2026. Deductions are split into other (2822) and
+% limited (0). The three original scenarios rewritten to the new templates; the
+% aggregate carry-forward is now shown per year.
+% ---------------------------------------------------------------------------
+
+% 1. As reported: the 4,579 is exempt income, with no outgoings of earning it.
+scenario as reported is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 4579 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 1757 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 1529 from FY2025 after FY2026"] and unknowns [].
+
+% 2. If the 4,579 turns out to be non-assessable non-exempt income instead.
+%    Then no net exempt income arises, so nothing absorbs the loss brought
+%    forward: the whole 3286 carries forward from FY2025, and this year's 2822
+%    tax loss carries forward under FY2026.
+scenario if nane is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the payment of 4579 in FY2026.
+    the payment is not assessable and not exempt under section 59-30.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 0 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 2822 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 0 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 3286 from FY2025 after FY2026"] and unknowns [].
+
+% 3. If the 4,579 is a gross figure and there were revenue outgoings of earning
+%    it. Illustrated with 500.
+scenario if expenses is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    Wren Kavanagh incurs revenue outgoings of 500 in earning the pension.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 4079 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 1257 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 2029 from FY2025 after FY2026"] and unknowns [].
+
+
+% ---------------------------------------------------------------------------
+% Additional fixtures S4-S12 (computed) and G1 and G4 (open conditions), G2, G3 and G5 (refusals), per Fable
+% dispatch 2026-09-17. All Wren Kavanagh, FY2026, Australian resident, not a
+% corporate tax entity, limited deductions 0 unless stated. Losses brought
+% forward are per loss year.
+% ---------------------------------------------------------------------------
+
+% S4. Profit year with net exempt income; s 36-15(3) (DM Q6a). The loss brought
+% forward is deducted first from net exempt income, then from the excess of
+% assessable income over deductions.
+scenario S4 profit nei is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 12000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 40000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 10000 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 4579 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 10000 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+
+% S5. Profit year with only a NANE receipt; s 36-15(2). No net exempt income, so
+% the loss brought forward is deducted from the excess of assessable income over
+% deductions.
+scenario S5 profit nane is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 12000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 40000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 10000 from FY2025 into FY2026.
+    Wren Kavanagh receives the payment of 1000 in FY2026.
+    the payment is not assessable and not exempt under section 59-30.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 0 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 10000 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+
+% S6. Small profit with net exempt income (SC F6). The loss is taken first from
+% net exempt income (100), then from the excess.
+scenario S6 small profit nei is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 1000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 5000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 100 in FY2026.
+    the pension is exempt income under section 52-10.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 100 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 3286 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+
+% S7. Small profit, no receipt (SC F5 corrected); s 36-15(2). The loss is
+% deducted from the excess of assessable income over deductions.
+scenario S7 small profit no receipt is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 1000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 5000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 0 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 3286 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+
+% S8. Two exempt receipts aggregating to the same total as "as reported". The
+% net exempt income is the sum across receipts; the answers match as reported.
+scenario S8 two exempt receipts is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension A of 3000 in FY2026.
+    the pension A is exempt income under section 52-10.
+    Wren Kavanagh receives the pension B of 1579 in FY2026.
+    the pension B is exempt income under section 52-10.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 4579 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 1757 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 1529 from FY2025 after FY2026"] and unknowns [].
+
+% S9. Exempt receipt plus a NANE receipt. The NANE receipt contributes nothing;
+% exactly one answer per query, identical to as reported.
+scenario S9 exempt plus nane is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    Wren Kavanagh receives the payment of 1000 in FY2026.
+    the payment is not assessable and not exempt under section 59-30.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 4579 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 1757 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 1529 from FY2025 after FY2026"] and unknowns [].
+
+% S10. Loss year with no receipt. Nothing absorbs the loss brought forward; the
+% whole 3286 carries forward from FY2025 and this year's 2822 tax loss carries
+% forward under FY2026.
+scenario S10 loss year no receipt is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 0 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 2822 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 0 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 3286 from FY2025 after FY2026"] and unknowns [].
+    carried forward this year expects answers ["Wren Kavanagh carries forward 2822 for FY2026"] and unknowns [].
+
+% S11. Two prior-year losses; s 36-15(5) earliest-first ordering. The 10000
+% available is applied first to the FY2023 loss (6000), then to the FY2024 loss
+% (4000 of 8000), leaving 4000 of FY2024 to carry forward.
+scenario S11 two prior losses is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 30000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 40000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 6000 from FY2023 into FY2026.
+    Wren Kavanagh has a loss brought forward of 8000 from FY2024 into FY2026.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 0 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 6000 against the loss from FY2023 in FY2026", "Wren Kavanagh applies 4000 against the loss from FY2024 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2023 after FY2026", "Wren Kavanagh carries forward 4000 from FY2024 after FY2026"] and unknowns [].
+
+% S12. s 26-55 limit (LI Q6). Gifts of 1000 are allowed only to the extent of
+% assessable income less other deductions; here other deductions (15250) exceed
+% assessable income (15000), so no gift is allowed. Net exempt income 250; no
+% tax loss; no loss brought forward.
+scenario S12 s 26-55 limit is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 15250 in FY2026.
+    Wren Kavanagh has limited deductions of 1000 in FY2026.
+    Wren Kavanagh has assessable income of 15000 in FY2026.
+    Wren Kavanagh receives the pension of 500 in FY2026.
+    the pension is exempt income under section 52-10.
+    Wren Kavanagh incurs revenue outgoings of 250 in earning the pension.
+    allowed limited expects answers ["Wren Kavanagh has allowed limited deductions of 0 in FY2026"] and unknowns [].
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 250 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+
+% S13. Two exempt receipts against an excess of deductions (GP Q6). Net exempt
+% income is the annual pool of 17,000, which absorbs the 5,000 excess entirely;
+% tax loss nil. Receipt-by-receipt evaluation would wrongly produce a 5,000 loss.
+scenario S13 two receipts absorb excess is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 25000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 20000 in FY2026.
+    Wren Kavanagh receives the disability support pension of 14000 in FY2026.
+    the disability support pension is exempt income under section 52-10.
+    Wren Kavanagh receives the rent assistance of 3000 in FY2026.
+    the rent assistance is exempt income under section 52-10.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 17000 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    carried forward this year expects answers ["Wren Kavanagh carries forward 0 for FY2026"] and unknowns [].
+
+% G1. Residency fact omitted. The scope gate "is an Australian resident" is open,
+% so the figures compute on that assumption and each figure query reports the
+% unknown "Wren Kavanagh is an Australian resident in FY2026". No refusal (the
+% taxpayer is not stated to be a foreign resident).
+scenario G1 residency omitted is:
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 4579 in FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    applied expects answers ["Wren Kavanagh applies 1757 against the loss from FY2025 in FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 1529 from FY2025 after FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    absorbed by nei expects answers ["Wren Kavanagh has 1757 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns ["Wren Kavanagh is an Australian resident in FY2026"].
+    refusal expects answers [] and unknowns [].
+
+% G2. Corporate tax entity: expect the refusal naming s 36-17.
+scenario G2 corporate is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is a corporate tax entity in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    refusal expects answers ["it is refused that Wren Kavanagh can be assessed in FY2026 because corporate tax entity: s 36-17 applies not this file"] and unknowns [].
+    net exempt income expects answers [] and unknowns [].
+    this year loss expects answers [] and unknowns [].
+    applied expects answers [] and unknowns [].
+    carried forward prior expects answers [] and unknowns [].
+    absorbed by nei expects answers [] and unknowns [].
+    deducted expects answers [] and unknowns [].
+    taxable income expects answers [] and unknowns [].
+    net exempt income remaining expects answers [] and unknowns [].
+    allowed limited expects answers [] and unknowns [].
+
+% G3. Shipping receipt exempt under s 51-100: expect the refusal naming s 36-10(5).
+scenario G3 shipping is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt under section 51-100.
+    refusal expects answers ["it is refused that Wren Kavanagh can be assessed in FY2026 because s 51-100 receipt: s 36-10(5) disregard not implemented"] and unknowns [].
+    net exempt income expects answers [] and unknowns [].
+    this year loss expects answers [] and unknowns [].
+    applied expects answers [] and unknowns [].
+    carried forward prior expects answers [] and unknowns [].
+    absorbed by nei expects answers [] and unknowns [].
+    deducted expects answers [] and unknowns [].
+    taxable income expects answers [] and unknowns [].
+    net exempt income remaining expects answers [] and unknowns [].
+    allowed limited expects answers [] and unknowns [].
+
+% G4. Uncharacterised receipt: the "is exempt income under" line is omitted, so
+% the pension has no stated character. The scope gate "has every receipt
+% characterised" holds only on the assumption "the pension is characterised", so
+% the figures compute and each figure query reports that unknown. No refusal.
+scenario G4 uncharacterised receipt is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 0 in FY2026"] and unknowns ["the pension is characterised"].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 2822 for FY2026"] and unknowns ["the pension is characterised"].
+    applied expects answers ["Wren Kavanagh applies 0 against the loss from FY2025 in FY2026"] and unknowns ["the pension is characterised"].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 3286 from FY2025 after FY2026"] and unknowns ["the pension is characterised"].
+    absorbed by nei expects answers ["Wren Kavanagh has 0 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns ["the pension is characterised"].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns ["the pension is characterised"].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns ["the pension is characterised"].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns ["the pension is characterised"].
+    refusal expects answers [] and unknowns [].
+
+% G5. Foreign resident stated outright: expect the refusal naming s 36-20(2).
+scenario G5 foreign resident stated is:
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh is a foreign resident in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    refusal expects answers ["it is refused that Wren Kavanagh can be assessed in FY2026 because foreign resident: s 36-20(2) not implemented"] and unknowns [].
+    net exempt income expects answers [] and unknowns [].
+    this year loss expects answers [] and unknowns [].
+    applied expects answers [] and unknowns [].
+    carried forward prior expects answers [] and unknowns [].
+    absorbed by nei expects answers [] and unknowns [].
+    deducted expects answers [] and unknowns [].
+    taxable income expects answers [] and unknowns [].
+    net exempt income remaining expects answers [] and unknowns [].
+    allowed limited expects answers [] and unknowns [].
+
+
+% ---------------------------------------------------------------------------
+% PR-A build 2 fixtures (Fable dispatch 2026-09-21). Commit 1 adds scenarios and
+% expects for every new output ahead of the rules; the new-output expects fail
+% until commit 2 defines the predicates. All Wren Kavanagh, FY2026, Australian
+% resident, not a corporate tax entity, limited deductions 0 unless stated.
+% New outputs: "absorbed by net exempt income" and "deducted" (the applies
+% split, per loss year), "taxable income" (s 4-15), "net exempt income
+% remaining" (after ss 36-10 and 36-15).
+% ---------------------------------------------------------------------------
+
+% P1. Small profit, no receipt; s 36-15(2). Loss deducted against the excess of
+% assessable income over deductions. NEI nil so nothing absorbed by NEI.
+scenario P1 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 1000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 5000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    absorbed by nei expects answers ["Wren Kavanagh has 0 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 3286 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 714 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% P2. Large profit with net exempt income; s 36-15(3). Loss (3000) taken first
+% from net exempt income (4000 available), so absorbed by NEI 3000, nothing
+% deducted. Taxable income is assessable income less deductions (48000).
+scenario P2 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 7000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 55000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3000 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4000 in FY2026.
+    the pension is exempt income under section 52-10.
+    absorbed by nei expects answers ["Wren Kavanagh has 3000 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 48000 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 1000 in FY2026"] and unknowns [].
+
+% P3. Profit with net exempt income, loss exceeds NEI; s 36-15(3). Loss (5000)
+% taken first from NEI (1000), then from the excess (4000 deducted). Taxable
+% income is assessable income less deductions less amount deducted (2000).
+scenario P3 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 4000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 10000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 5000 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 1000 in FY2026.
+    the pension is exempt income under section 52-10.
+    absorbed by nei expects answers ["Wren Kavanagh has 1000 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 4000 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 2000 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% P4. As P3 but the loss brought forward is 9000. Available 7000 (NEI 1000 +
+% excess 6000) is exhausted: absorbed by NEI 1000, deducted 6000, taxable income
+% nil, 2000 of the loss carries forward.
+scenario P4 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 4000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 10000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 9000 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 1000 in FY2026.
+    the pension is exempt income under section 52-10.
+    absorbed by nei expects answers ["Wren Kavanagh has 1000 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 6000 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 2000 from FY2025 after FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% P5. Loss year (deductions exceed assessable income by 1000) with net exempt
+% income 5000; s 36-15(4). This year's tax loss is nil (NEI covers the excess);
+% the excess (1000) consumes NEI first under s 36-10, leaving 4000 to absorb the
+% loss brought forward (3000). Absorbed by NEI 3000, nothing deducted, taxable
+% income nil, NEI remaining 1000.
+scenario P5 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 6000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 5000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3000 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 5000 in FY2026.
+    the pension is exempt income under section 52-10.
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    absorbed by nei expects answers ["Wren Kavanagh has 3000 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 1000 in FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+
+% P6. The as-reported scenario, restated with the new outputs. NEI remaining 0,
+% absorbed by NEI 1757, nothing deducted, taxable income nil.
+scenario P6 as reported is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+    absorbed by nei expects answers ["Wren Kavanagh has 1757 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+
+% DM-1. Reviewer fixture (DM): as-reported facts plus foreign tax of 600 on the
+% pension. Net exempt income 3979, tax loss nil, applied 1157, carried forward
+% 2129.
+scenario DM-1 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    Wren Kavanagh pays foreign tax of 600 on the pension.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 3979 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 1157 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 2129 from FY2025 after FY2026"] and unknowns [].
+    absorbed by nei expects answers ["Wren Kavanagh has 1157 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+
+% DM-2. Reviewer fixture (DM): deductions 12000, assessable income 10000,
+% foreign tax 1500 on the assessable income (no receipt to attach it to, so it
+% appears nowhere), loss brought forward 3286, no receipt. Net exempt income nil,
+% tax loss 2000, nothing applied, loss brought forward carries in full and this
+% year's 2000 tax loss carries forward under FY2026.
+scenario DM-2 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 12000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 10000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 0 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 2000 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 0 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 3286 from FY2025 after FY2026"] and unknowns [].
+    carried forward this year expects answers ["Wren Kavanagh carries forward 2000 for FY2026"] and unknowns [].
+    absorbed by nei expects answers ["Wren Kavanagh has 0 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% G-corp. Corporate tax entity asserted through the gate template. Expect the
+% refusal naming s 36-17.
+scenario G-corp is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is a corporate tax entity in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension is exempt income under section 52-10.
+    refusal expects answers ["it is refused that Wren Kavanagh can be assessed in FY2026 because corporate tax entity: s 36-17 applies not this file"] and unknowns [].
+
+% G-ship withdrawn by Fable: ill-posed spec, receipt with no recipient; G3
+% covers the guard. (A characterisation fact carries no taxpayer, so the refusal
+% cannot be grounded without a receives fact; the s 51-100 guard therefore keeps
+% its commit-1 form, requiring a received shipping receipt.)
+
+% P7. Two prior loss years with net exempt income; s 36-15(5) earliest first. The
+% pool of 4000 is absorbed FY2023 first (3000), leaving 1000 for FY2024; FY2024
+% deducts the remaining 4000 of its applied loss against the excess of assessable
+% income. Taxable income 20000 - 10000 - 4000 = 6000; the pool is fully consumed.
+scenario P7 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 10000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 20000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3000 from FY2023 into FY2026.
+    Wren Kavanagh has a loss brought forward of 5000 from FY2024 into FY2026.
+    Wren Kavanagh receives the pension of 4000 in FY2026.
+    the pension is exempt income under section 52-10.
+    absorbed by nei expects answers ["Wren Kavanagh has 3000 absorbed by net exempt income against the loss from FY2023 in FY2026", "Wren Kavanagh has 1000 absorbed by net exempt income against the loss from FY2024 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2023 in FY2026", "Wren Kavanagh has 4000 deducted against the loss from FY2024 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2023 after FY2026", "Wren Kavanagh carries forward 0 from FY2024 after FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 6000 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% P8. As P7 but a smaller profit (assessable 12000). The excess of assessable
+% income over deductions is only 2000, so of the FY2024 loss applied only 2000
+% can be deducted against income after 1000 is absorbed by net exempt income; the
+% remaining 2000 of that loss carries forward. Taxable income 0.
+scenario P8 is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 10000 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 12000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3000 from FY2023 into FY2026.
+    Wren Kavanagh has a loss brought forward of 5000 from FY2024 into FY2026.
+    Wren Kavanagh receives the pension of 4000 in FY2026.
+    the pension is exempt income under section 52-10.
+    absorbed by nei expects answers ["Wren Kavanagh has 3000 absorbed by net exempt income against the loss from FY2023 in FY2026", "Wren Kavanagh has 1000 absorbed by net exempt income against the loss from FY2024 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2023 in FY2026", "Wren Kavanagh has 2000 deducted against the loss from FY2024 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2023 after FY2026", "Wren Kavanagh carries forward 2000 from FY2024 after FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% ---------------------------------------------------------------------------
+% PR-B split-receipt fixtures (Fable dispatch 2026-09-24). Commit 1 adds the
+% scenarios and expects ahead of the rules; they fail until commit 2 defines the
+% split-receipt template, its characterisation clause, the three refusal guards
+% (parts not summing to gross; a negative part; assessable parts across all
+% receipts exceeding asserted assessable income) and folds the exempt part into
+% total exempt income. All Wren Kavanagh, FY2026, Australian resident, not a
+% corporate tax entity, limited deductions 0 unless stated.
+% ---------------------------------------------------------------------------
+
+% DM-3. Reviewer fixture (DM, Q6(d)): the 4,579 pension is a split receipt with
+% an exempt part of 3,000, an assessable part of 1,579 and a NANE part of 0. The
+% year's assessable income is asserted as 1,579 (the assessable part) and other
+% deductions are 2,822. Only the exempt part (3,000) is the s 36-20(1) figure, so
+% net exempt income is 3,000; the excess of deductions is 2,822 - 1,579 = 1,243;
+% no tax loss; the amount available is 3,000 - 1,243 = 1,757; the 3,286 loss
+% brought forward has 1,757 applied (all absorbed by net exempt income), 1,529
+% carries forward; taxable income nil; net exempt income remaining nil.
+scenario DM-3 partly exempt is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 1579 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4579 in FY2026.
+    the pension has an exempt part of 3000 and an assessable part of 1579 and a non-assessable non-exempt part of 0.
+    the pension is a split receipt.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 3000 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    applied expects answers ["Wren Kavanagh applies 1757 against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 1529 from FY2025 after FY2026"] and unknowns [].
+    absorbed by nei expects answers ["Wren Kavanagh has 1757 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% R-1. Split-receipt parts do not sum to the gross received: 600 + 500 + 0 = 1100
+% against a gross of 1,000. Expect the refusal; no figures. Assessable income is
+% asserted as 500 (= the assessable part) so only the parts-do-not-sum ground
+% fires, not the assessable-parts-exceed-income ground.
+scenario R-1 parts do not sum is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 500 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the receipt of 1000 in FY2026.
+    the receipt has an exempt part of 600 and an assessable part of 500 and a non-assessable non-exempt part of 0.
+    the receipt is a split receipt.
+    refusal expects answers ["it is refused that Wren Kavanagh can be assessed in FY2026 because split receipt: malformed (negative part or parts do not sum to gross)"] and unknowns [].
+    net exempt income expects answers [] and unknowns [].
+    this year loss expects answers [] and unknowns [].
+    applied expects answers [] and unknowns [].
+    carried forward prior expects answers [] and unknowns [].
+    absorbed by nei expects answers [] and unknowns [].
+    deducted expects answers [] and unknowns [].
+    taxable income expects answers [] and unknowns [].
+    net exempt income remaining expects answers [] and unknowns [].
+    allowed limited expects answers [] and unknowns [].
+
+% R-2. A split-receipt part is negative: 1,200 / -200 / 0 on a gross of 1,000.
+% Expect the refusal; no figures.
+scenario R-2 negative part is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the receipt of 1000 in FY2026.
+    the receipt has an exempt part of 1200 and an assessable part of -200 and a non-assessable non-exempt part of 0.
+    the receipt is a split receipt.
+    refusal expects answers ["it is refused that Wren Kavanagh can be assessed in FY2026 because split receipt: malformed (negative part or parts do not sum to gross)"] and unknowns [].
+    net exempt income expects answers [] and unknowns [].
+    this year loss expects answers [] and unknowns [].
+    applied expects answers [] and unknowns [].
+    carried forward prior expects answers [] and unknowns [].
+    absorbed by nei expects answers [] and unknowns [].
+    deducted expects answers [] and unknowns [].
+    taxable income expects answers [] and unknowns [].
+    net exempt income remaining expects answers [] and unknowns [].
+    allowed limited expects answers [] and unknowns [].
+
+% R-3. The sum of the assessable parts across all receipts (2,000) exceeds the
+% asserted assessable income (1,000). Expect the refusal; no figures.
+scenario R-3 assessable parts exceed income is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 2822 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 1000 in FY2026.
+    Wren Kavanagh has a loss brought forward of 3286 from FY2025 into FY2026.
+    Wren Kavanagh receives the receipt of 3000 in FY2026.
+    the receipt has an exempt part of 1000 and an assessable part of 2000 and a non-assessable non-exempt part of 0.
+    the receipt is a split receipt.
+    refusal expects answers ["it is refused that Wren Kavanagh can be assessed in FY2026 because split receipt: assessable parts exceed asserted assessable income"] and unknowns [].
+    net exempt income expects answers [] and unknowns [].
+    this year loss expects answers [] and unknowns [].
+    applied expects answers [] and unknowns [].
+    carried forward prior expects answers [] and unknowns [].
+    absorbed by nei expects answers [] and unknowns [].
+    deducted expects answers [] and unknowns [].
+    taxable income expects answers [] and unknowns [].
+    net exempt income remaining expects answers [] and unknowns [].
+    allowed limited expects answers [] and unknowns [].
+
+% ---------------------------------------------------------------------------
+% Tests A–C. Reviewer fixtures ([attribution]). Run by Fable 2026-09-22 on
+% LogicalContracts/LogicalEnglish2 @ 445b4da, SWI-Prolog 9.0.4: all pass.
+% ---------------------------------------------------------------------------
+
+% Test A. Exact boundary for the s 26-55 limit. Assessable income equals other
+% deductions, so the allowed limited amount is nil: limited deductions cannot
+% create or add to a loss.
+scenario Test A exact limit boundary is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 5000 in FY2026.
+    Wren Kavanagh has limited deductions of 2000 in FY2026.
+    Wren Kavanagh has assessable income of 5000 in FY2026.
+    allowed limited expects answers ["Wren Kavanagh has allowed limited deductions of 0 in FY2026"] and unknowns [].
+    this year loss expects answers ["Wren Kavanagh has a tax loss of 0 for FY2026"] and unknowns [].
+    taxable income expects answers ["Wren Kavanagh has taxable income of 0 in FY2026"] and unknowns [].
+
+% Test B. Exact absorption. The loss brought forward equals the net exempt
+% income; nothing is deducted against assessable income and nil carries forward.
+scenario Test B perfect NEI absorption is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 0 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 4000 from FY2025 into FY2026.
+    Wren Kavanagh receives the pension of 4000 in FY2026.
+    the pension is exempt income under section 52-10.
+    absorbed by nei expects answers ["Wren Kavanagh has 4000 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    deducted expects answers ["Wren Kavanagh has 0 deducted against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 0 from FY2025 after FY2026"] and unknowns [].
+    net exempt income remaining expects answers ["Wren Kavanagh has net exempt income remaining of 0 in FY2026"] and unknowns [].
+
+% Test C. Compound s 36-20(1): gross 10000 less outgoings 2000 less foreign tax
+% 1500 gives net exempt income 6500. Loss brought forward 8000 absorbs 6500;
+% 1500 carries forward.
+scenario Test C compound NEI reductions is:
+    Wren Kavanagh is an Australian resident in FY2026.
+    Wren Kavanagh is not a corporate tax entity at any time in FY2026.
+    Wren Kavanagh has other deductions of 0 in FY2026.
+    Wren Kavanagh has limited deductions of 0 in FY2026.
+    Wren Kavanagh has assessable income of 0 in FY2026.
+    Wren Kavanagh has a loss brought forward of 8000 from FY2025 into FY2026.
+    Wren Kavanagh receives the foreign pension of 10000 in FY2026.
+    the foreign pension is exempt income under section 52-10.
+    Wren Kavanagh incurs revenue outgoings of 2000 in earning the foreign pension.
+    Wren Kavanagh pays foreign tax of 1500 on the foreign pension.
+    net exempt income expects answers ["Wren Kavanagh has net exempt income of 6500 in FY2026"] and unknowns [].
+    absorbed by nei expects answers ["Wren Kavanagh has 6500 absorbed by net exempt income against the loss from FY2025 in FY2026"] and unknowns [].
+    carried forward prior expects answers ["Wren Kavanagh carries forward 1500 from FY2025 after FY2026"] and unknowns [].
+
+query net exempt income is:
+    which taxpayer has net exempt income of which amount in which year.
+
+query this year loss is:
+    which taxpayer has a tax loss of which amount for which year.
+
+query applied is:
+    which taxpayer applies which amount against the loss from which loss year in which year.
+
+query carried forward prior is:
+    which taxpayer carries forward which amount from which loss year after which year.
+
+query carried forward this year is:
+    which taxpayer carries forward which amount for which year.
+
+query allowed limited is:
+    which taxpayer has allowed limited deductions of which amount in which year.
+
+query refusal is:
+    it is refused that which taxpayer can be assessed in which year because which reason.
+
+query absorbed by nei is:
+    which taxpayer has which amount absorbed by net exempt income against the loss from which loss year in which year.
+
+query deducted is:
+    which taxpayer has which amount deducted against the loss from which loss year in which year.
+
+query taxable income is:
+    which taxpayer has taxable income of which amount in which year.
+
+query net exempt income remaining is:
+    which taxpayer has net exempt income remaining of which amount in which year.
