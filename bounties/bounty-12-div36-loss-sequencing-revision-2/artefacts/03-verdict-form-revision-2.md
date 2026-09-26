@@ -1,9 +1,9 @@
 # Verdict form: Bounty #12 (Division 36, revision 2)
 
-Fill in the YAML block below and email it to support@lodgeit.net.au, or answer the same questions in prose. The block exists so your verdict can be hashed and entered in the registry without anyone retyping it. Leave any field blank rather than guess.
+Fill in the YAML block below and return this file, as the .md, attached to an email to support@lodgeit.net.au. Prose in the email itself is welcome alongside it. The block exists so your verdict can be hashed and entered in the registry without anyone retyping it. Leave any field blank rather than guess.
 
 ```yaml
-bounty: 11
+bounty: 12
 revision: 2
 file_sha256: aa97844c777b9b46b38aa69b83fe5a6f151f13ac303b2bea3883ae20a5bc6b8d
 

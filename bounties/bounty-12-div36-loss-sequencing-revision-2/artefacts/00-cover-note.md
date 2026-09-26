@@ -2,9 +2,9 @@
 
 Round one of these rules was Bounty #11, now closed. Revision 2 is reviewed as its own bounty, #12.
 
-**To:** Devashish Magoon, Sami Charaf, Jen H, Graeme Pollard (and Louise Ingoe on reply)
+**To:** Devashish Magoon, Sami Charaf
 **From:** Andrew Noble, LodgeiT
-**Date:** 2026-09-25
+**Date:** 2026-09-26
 
 ## What you are being sent
 
@@ -21,7 +21,7 @@ The file is 51 rules, 36 scenarios and 205 embedded test cases. Every test passe
 - **A REJECT is worth the same as an ACCEPT.** A polite approval of something wrong is the one outcome we cannot use.
 - **Verdicts by Friday 10 October 2026.** Say if you need longer.
 - **Named credit by default**, in the public reviewer registry, with the verdict hash and the file hash. Opt down to initialled or anonymous on the form.
-- Send the completed form to support@lodgeit.net.au. Prose in an email is equally acceptable.
+- Return the verdict form filled in, as the .md file attached to an email to support@lodgeit.net.au. Add any prose you like in the email itself.
 
 ## What changed since revision 1, and where your findings went
 
@@ -40,9 +40,9 @@ Revision 1 (about 90 lines, three scenarios) never deducted brought-forward loss
 | Refusals | Corporate tax entity (s 960-115, tested in the deduction year), s 51-100 receipt, foreign resident, malformed split receipt, assessable parts exceeding asserted income |
 | Tri-state | Every figure is proven, cannot be determined (with the missing fact named), or refused (with a reason) |
 
-Where each of your round-one findings landed:
+Where the round-one findings landed:
 
-- **Sami:** the "$1" (nil) case is fixture P1; the per-year ledger is s 36-15(5) as you described; the s 51-100 refusal stands with your reasoning in the comment; the Division 35 interaction is a stated precondition on the deductions input, and the file now outputs net exempt income remaining for a Division 35 file to consume. Your test case for that is open in `04-questions`.
+- **Sami:** the "$1" (nil) case is fixture P1; the per-year ledger is s 36-15(5) as you described; the s 51-100 refusal stands with your reasoning in the comment; the Division 35 interaction is a stated precondition on the deductions input, and the file now outputs net exempt income remaining for a Division 35 file to consume. You confirmed that test case on 25 September, and your Division 245 answer the same day covers QE, so QB and QE need no further answer from you.
 - **Dev:** s 6-20(4) is cited; your two fixtures are DM-1 and DM-2 with your figures; the partly exempt pension is DM-3; the corporate guard is keyed to s 960-115 and the deduction year. Your preference for deriving assessable income from receipt parts was not adopted, for a reason set out in `01-how-to-read` and put back to you in `04-questions`.
 - **Jen:** s 35-15 corrected (we had the section wrong, you were right); every rule now carries an "If … then …" comment naming its subsection; s 36-10(4) closed as note 2; no PP/non-PP concept in the file, by design.
 - **Graeme:** your Q6 fact pattern is fixture S13.
@@ -56,6 +56,6 @@ Where each of your round-one findings landed:
 
 ## The question we value most
 
-Can you construct a fact pattern where these rules produce a plausible figure that is wrong? Give the facts and the figure you expect, and we will run it. Three such patterns from an independent reviewer this week (Tests A–C) are already in the file.
+Can you construct a fact pattern where these rules produce a plausible figure that is wrong? Give the facts and the figure you expect, and we will run it. Three such patterns from our own independent check of the file (Tests A–C) are already in it.
 
 Andrew
