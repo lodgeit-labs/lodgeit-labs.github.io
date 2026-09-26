@@ -17,7 +17,7 @@ The file is 51 rules, 36 scenarios and 205 embedded test cases. Every test passe
 
 ## Terms
 
-- **$1,000 ex GST**, paid within five business days of your verdict. Revision 1 was $750; revision 2 is a materially larger file, and every reviewer is on the same terms.
+- **$1,300 ex GST**, paid within five business days of your verdict. Revision 1 was $750; revision 2 is a materially larger file, and every reviewer is on the same terms.
 - **A REJECT is worth the same as an ACCEPT.** A polite approval of something wrong is the one outcome we cannot use.
 - **Verdicts by Friday 10 October 2026.** Say if you need longer.
 - **Named credit by default**, in the public reviewer registry, with the verdict hash and the file hash. Opt down to initialled or anonymous on the form.
