@@ -25,7 +25,7 @@ The file is 51 rules, 36 scenarios and 205 embedded test cases. Every test passe
 
 ## What changed since revision 1, and where your findings went
 
-Revision 1 (about 90 lines, three scenarios) never deducted brought-forward losses against assessable income; it only applied them against net exempt income. Four of five reviewers said FIX. Revision 2 is a different file. In brief:
+Revision 1 (about 90 lines, three scenarios) never deducted brought-forward losses against assessable income; it only applied them against net exempt income. All five reviewers said FIX, two after follow-up questions. Revision 2 is a different file. In brief:
 
 | Area | Revision 2 |
 |---|---|
