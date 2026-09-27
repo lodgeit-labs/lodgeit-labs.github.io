@@ -7,7 +7,7 @@
 BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
 (The service name is historical — it fronts every calculator, not only FBT.)
 
-Last updated: 2026-09-21
+Last updated: 2026-09-27
 
 ## Status
 
@@ -296,6 +296,7 @@ computed under the wrong rules.
 
 Money and rates are returned as DECIMAL STRINGS, not JSON floats — "9830.60", not 9830.6.
 Internal arithmetic is exact rational; only emitted values are quantised. Parse as decimal.
+Rounding: exact inside, rounded once at emission, cents with ties away from zero; the full standard is at https://lodgeit.org/publish.html.
 
 ## Limits
 
