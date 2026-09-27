@@ -28,11 +28,11 @@
 
 <h1>Publishing a calculator to the LodgeiT Labs constellation</h1>
 
-<p class="lede"><em>An invitation and a standard — for Ryan Duguid, and for anyone building bounded
+<p class="lede"><em>An invitation and a standard for anyone building bounded, deterministic
 tax and accounting tools.</em><br>
-<em>LodgeiT Labs · September 2026 · draft v1</em></p>
+<em>LodgeiT Labs · September 2026 · draft v2</em></p>
 
-<h2>Why we're writing to you</h2>
+<h2>Why we're writing this</h2>
 
 <p>We run a small fleet of deterministic Australian tax and accounting calculators behind one public
 front door — no key, no signup, built so an agent can call them without a human in the loop (see
@@ -43,10 +43,9 @@ week.</p>
 
 <p>We are not going to build the rest of the world's tax and accounting algorithms ourselves. There
 are a million of them across jurisdictions and we'd like to point at other people's — provided they
-meet a standard an agent can rely on. Your published work already meets most of it. "Show the
-branch, formula, evidence state and rounding; refuse when the supplied facts do not settle the test;
-automate calculation and validation, not judgement or lodgement" is our philosophy in your words.
-Your Coal LSL levy calculator is a natural first candidate.</p>
+meet a standard an agent can rely on. If you already show the branch, the formula, the evidence
+state and the rounding — and refuse when the supplied facts do not settle the test — you are most of
+the way there.</p>
 
 <p>This document sets out what "meeting the standard" means today, what we'd do with a calculator
 that meets it, and how we intend to help you earn from it as the platform matures. We are candid
@@ -81,8 +80,8 @@ properties.</p>
 <thead><tr><th>Thing</th><th>Pattern</th><th>Example</th></tr></thead>
 <tbody>
 <tr><td>Calculator</td><td><code>urn:sbrm:calculator:{module}:{name}</code></td><td><code>urn:sbrm:calculator:fbt:car-operating-cost</code></td></tr>
-<tr><td>Period</td><td><code>urn:sbrm:period:{calculator}:{scope}</code></td><td><code>urn:sbrm:period:coal-lsl-levy:fy2026</code></td></tr>
-<tr><td>Rate table</td><td><code>urn:sbrm:rate:{calculator}:{period}:{rate-type}</code></td><td><code>urn:sbrm:rate:coal-lsl-levy:fy2026:levy-rate</code></td></tr>
+<tr><td>Period</td><td><code>urn:sbrm:period:{calculator}:{scope}</code></td><td><code>urn:sbrm:period:payroll-levy:fy2026</code></td></tr>
+<tr><td>Rate table</td><td><code>urn:sbrm:rate:{calculator}:{period}:{rate-type}</code></td><td><code>urn:sbrm:rate:payroll-levy:fy2026:levy-rate</code></td></tr>
 </tbody>
 </table>
 
@@ -118,13 +117,13 @@ parameters the calculation actually used, each with a SHA-256 of the table's con
 two calls months apart, and it is what our bounty reviewers check against the legislation.</p>
 
 <pre><code>"manifest": {
-  "calculator": "urn:sbrm:calc:coal-lsl-levy",
-  "period": "urn:sbrm:period:coal-lsl-levy:fy2026",
+  "calculator": "urn:sbrm:calc:payroll-levy",
+  "period": "urn:sbrm:period:payroll-levy:fy2026",
   "rate_table_uris": [
-    { "uri": "urn:sbrm:rate:coal-lsl-levy:fy2026:levy-rate", "sha256": "…" }
+    { "uri": "urn:sbrm:rate:payroll-levy:fy2026:levy-rate", "sha256": "…" }
   ],
-  "engine": "coal-lsl-levy/1.2.0",
-  "citation": "Coal Mining Industry (Long Service Leave) Payroll Levy Collection Act 1992, s 3B"
+  "engine": "payroll-levy/1.2.0",
+  "citation": "Payroll Levy Collection Act, s 3B"
 }</code></pre>
 
 <p>Alongside it, an <strong>advisory</strong> block: what kind of figure this is and what it is not
@@ -142,9 +141,35 @@ agent will pass to the human.</p>
 <h2>4. Numbers are decimal strings</h2>
 
 <p>Money and rates are returned as <strong>decimal strings, never JSON floats</strong>:
-<code>"9830.60"</code>, not <code>9830.6</code>. State the rounding rule you applied in the advisory
-or in the OpenAPI description. This is the single most common way an otherwise-correct calculator
-fails a review.</p>
+<code>"9830.60"</code>, not <code>9830.6</code>. Beyond representation, the constellation has one
+rounding standard:</p>
+
+<ol>
+  <li><strong>Exact inside.</strong> Internal arithmetic is exact — rational or arbitrary-precision
+  decimal. No binary float on the path from parsed input to emitted figure.</li>
+  <li><strong>One rounding point.</strong> A figure is rounded once, when it is emitted. A rounded
+  value is never fed back into arithmetic, except as rule 6 allows.</li>
+  <li><strong>Cents, ties away from zero.</strong> Money emits at 2 dp, ties away from zero
+  (<code>ROUND_HALF_UP</code>, <code>MidpointRounding.AwayFromZero</code>, Excel <code>ROUND</code>).
+  Rates and factors emit at 4 dp on the same rule; the emitted scale is stated in the schema.</li>
+  <li><strong>Cent-quantised in, refused otherwise.</strong> Money inputs must already be cents. A
+  finer value is refused with <code>422</code> naming the field — never silently rounded.</li>
+  <li><strong>Published totals foot.</strong> Where lines and a total are published together, the
+  total is the sum of the published lines. A cent difference against the exact total is exposed as a
+  working, not hidden.</li>
+  <li><strong>The posted unit is the rounded line.</strong> When one rounded figure is apportioned
+  into posted periods, each period is rounded and the final period carries the difference so the
+  periods sum to the figure. This is the only place a rounded value is carried.</li>
+  <li><strong>Schedules never absorb.</strong> An amortisation schedule is not forced to close at
+  zero. A non-zero end balance is a fact about the contract or the stated rate and is reported as
+  such.</li>
+  <li><strong>Whole dollars only at the ATO label</strong>, once, by one named function, applying
+  the ATO's per-label direction. Never by a cast.</li>
+</ol>
+
+<p>A conformant calculator states in its advisory which of rules 3, 5, 6 and 7 apply to it, and
+names the rounding policy in force in its manifest beside the rate-table hashes. This is the single
+most common way an otherwise-correct calculator fails a review.</p>
 
 <h2>5. Determinism and reproducibility</h2>
 
@@ -203,11 +228,11 @@ an unpaid listing is still worth having — the agents are already reading <code
 
 <h2>A concrete first step</h2>
 
-<p>Take the Coal LSL levy calculator and put it behind the surface in §1–§4: discovery,
-<code>422/400/404</code> refusals with a <code>refusal_class</code>, a manifest naming the levy rate
-table with its hash and the s 3B citation, decimal-string money, and a five-case fixture in the
-repo. Send us the base URL. We'll run the fixture and the conformance pass, and if it clears, it is
-on the page and in <code>llms.txt</code> the same week — the first calculator in the constellation
+<p>Take one deterministic calculator you already have and put it behind the surface in §1–§4:
+discovery, <code>422/400/404</code> refusals with a <code>refusal_class</code>, a manifest naming the
+rate table with its hash and the statutory citation, decimal-string money, and a five-case fixture in
+the repo. Send us the base URL. We'll run the fixture and the conformance pass, and if it clears, it
+is on the page and in <code>llms.txt</code> the same week — the first calculator in the constellation
 that we didn't write.</p>
 
 <p>If something in the standard doesn't fit your tool, say so; the spec is young and you are the kind
