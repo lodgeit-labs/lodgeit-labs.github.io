@@ -1,4 +1,5 @@
 # LodgeiT Labs — Calculator Constellation
+Last updated: 2026-09-28
 
 > Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
 > No authentication, no key, no client library. Designed to be called by agents.
@@ -7,7 +8,6 @@
 BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
 (The service name is historical — it fronts every calculator, not only FBT.)
 
-Last updated: 2026-09-27
 
 ## Status
 
