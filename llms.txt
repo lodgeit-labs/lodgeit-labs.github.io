@@ -116,6 +116,10 @@ Response: benchmark_rate, remaining_term_years, statutory_myr, total_repayments,
 manifest cites urn:sbrm:rate:div7a:{period}:benchmark-interest with a SHA-256 content hash.
 Pin against it to detect a rate-table change.
 
+KNOWN DEFECT (D57, 2026-09-28): remaining_term_years is one year short for every MYR year (the first MYR year returns term − 1; s 109E(6) gives term). statutory_myr, shortfall and deemed_dividend are therefore overstated. Do not rely on this calculator's MYR until this line is removed. Fix is in progress.
+
+Last updated: 2026-09-28.
+
 ## Fringe Benefits Tax
 
 POST /v1/calculators/{calculator_uri}/urn:sbrm:period:fbt:fy2026
