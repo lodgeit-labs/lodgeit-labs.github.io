@@ -1,5 +1,5 @@
 # LodgeiT Labs — Calculator Constellation
-Last updated: 2026-09-28
+Last updated: 2026-09-29
 
 > Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
 > No authentication, no key, no client library. Designed to be called by agents.
@@ -15,7 +15,7 @@ BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
 - div7a — AVAILABLE. ITAA 1936 Division 7A minimum yearly repayment and deemed dividend.
 - fbt — AVAILABLE. FBTAA 1986 taxable value across nineteen benefit-category calculators; see
   the Fringe Benefits Tax section and GET /v1/calculators for the full list.
-- fano — AVAILABLE. Trial-balance line classifier for the LodgeiT chart of accounts. Rules first,
+- fano — AVAILABLE (classifier — model in path). Trial-balance line classifier for the LodgeiT chart of accounts. Rules first,
   model second; a draft is the engine refusing to guess. Different base URL and shape from the
   calculators; see the Fano classifier section.
 - hp — AVAILABLE. Amortisation schedule for a hire purchase, chattel mortgage or equipment loan;
@@ -299,6 +299,7 @@ computed under the wrong rules.
 Money and rates are returned as DECIMAL STRINGS, not JSON floats — "9830.60", not 9830.6.
 Internal arithmetic is exact rational; only emitted values are quantised. Parse as decimal.
 Rounding: exact inside, rounded once at emission, cents with ties away from zero; the full standard is at https://lodgeit.org/publish.html.
+Money inputs are cent-quantised (at most 2 dp), as a JSON number or a decimal string; a finer value is refused with 422 money_not_cent_quantised naming the field.
 
 ## Limits
 
