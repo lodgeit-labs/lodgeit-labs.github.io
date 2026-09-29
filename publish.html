@@ -80,8 +80,8 @@ properties.</p>
 <thead><tr><th>Thing</th><th>Pattern</th><th>Example</th></tr></thead>
 <tbody>
 <tr><td>Calculator</td><td><code>urn:sbrm:calculator:{module}:{name}</code></td><td><code>urn:sbrm:calculator:fbt:car-operating-cost</code></td></tr>
-<tr><td>Period</td><td><code>urn:sbrm:period:{calculator}:{scope}</code></td><td><code>urn:sbrm:period:payroll-levy:fy2026</code></td></tr>
-<tr><td>Rate table</td><td><code>urn:sbrm:rate:{calculator}:{period}:{rate-type}</code></td><td><code>urn:sbrm:rate:payroll-levy:fy2026:levy-rate</code></td></tr>
+<tr><td>Period</td><td><code>urn:sbrm:period:{module}:{scope}</code></td><td><code>urn:sbrm:period:fbt:fy2026</code></td></tr>
+<tr><td>Rate table</td><td><code>urn:sbrm:rate:{module}:{period}:{rate-type}</code></td><td><code>urn:sbrm:rate:div7a:fy2026:benchmark-interest</code></td></tr>
 </tbody>
 </table>
 
@@ -117,13 +117,13 @@ parameters the calculation actually used, each with a SHA-256 of the table's con
 two calls months apart, and it is what our bounty reviewers check against the legislation.</p>
 
 <pre><code>"manifest": {
-  "calculator": "urn:sbrm:calc:payroll-levy",
+  "calculator": "urn:sbrm:calculator:payroll-levy:levy",
   "period": "urn:sbrm:period:payroll-levy:fy2026",
   "rate_table_uris": [
     { "uri": "urn:sbrm:rate:payroll-levy:fy2026:levy-rate", "sha256": "…" }
   ],
   "engine": "payroll-levy/1.2.0",
-  "citation": "Payroll Levy Collection Act, s 3B"
+  "citation": "<Act name> <year>, s <section>"
 }</code></pre>
 
 <p>Alongside it, an <strong>advisory</strong> block: what kind of figure this is and what it is not
