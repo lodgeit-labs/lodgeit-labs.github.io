@@ -1,5 +1,5 @@
 # LodgeiT Labs — Calculator Constellation
-Last updated: 2026-09-29
+Last updated: 2026-09-30
 
 > Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
 > No authentication, no key, no client library. Designed to be called by agents.
@@ -189,6 +189,7 @@ urn:sbrm:module:hp. Amortisation schedule for a hire purchase, chattel mortgage 
 loan: nominal monthly period basis, in arrears or in advance, monthly frequency, with an optional
 balloon that replaces or adds to the instalment on its row. Internal balances are unrounded;
 output rounds to cents. The residual is reported against the stated rate and never forced to zero.
+Since hp-schedule-1.1.0: totals.interest is the sum of the published rows; totals.rounding_residual carries the cent difference against the exact total.
 Monthly frequency only; other frequencies are refused.
 
 Request:
@@ -275,6 +276,8 @@ manifest.rate_table_uris — the statutory rate tables the calculation actually 
 with a content hash. Emitted by the computation, not attached by hand: if the list changes,
 the arithmetic changed. An empty list means the figure derives from your inputs alone.
 
+manifest.rounding_policy — the rounding standard the engine applied, currently lodgeit-rounding-1.0 (the eight rules in publish.html). Emitted by the engine; absent only if the engine did not declare it.
+
 advisory — what kind of figure this is and what it is not. Varies by calculator. An AASB 116
 carrying amount carries a warning against tax use; a Division 7A figure carries the tax-agent
 framing. Read it; the distinction is load-bearing.
@@ -286,6 +289,7 @@ framing. Read it; the distinction is load-bearing.
 404  unknown calculator URN, or a period URN this calculator does not accept. Body names
      what it does accept.
 5xx  our fault. Retry is reasonable.
+Codes: a 422 carries detail[].type (e.g. money_not_cent_quantised, mutually_exclusive_inputs, non_cent_boundary); a 400 carries detail.refusal_class (e.g. pool_asset_out_of_t6_scope, myr_year_beyond_loan_term, myr_year_not_after_loan_year, money_not_cent_quantised, fbt_year_outside_cohort, unsupported_frequency). A 502 body says unrecognised_engine_error and names the term.
 
 A 4xx from the engine behind the gateway is never surfaced as a 5xx. A 5xx means something is
 genuinely wrong on our side, not that your request was bad.
