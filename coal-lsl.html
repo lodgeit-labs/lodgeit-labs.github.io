@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coal LSL levy — Calculator Constellation</title>
+<meta name="description" content="Monthly Coal Mining Industry long service leave payroll levy and eligible wages for one employee, one month, as a public HTTP API. External contributor; conformance-passed.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/fano.html">Fano</a>
+      <a href="/publish.html">Publish</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Coal LSL levy <span class="pill ok">available</span> <span class="pill">external contributor</span></h1>
+
+<p class="lede">Monthly Coal Mining Industry long service leave payroll levy and eligible wages for one
+employee and one month. Eligible wages are the greater of Formula A and Formula B under s&nbsp;3B
+of the <em>Coal Mining Industry (Long Service Leave) Payroll Levy Collection Act 1992</em>; the
+levy is that figure at the published 2.7% rate, rounded once at the end. The caller establishes the
+employee's eligibility and pay facts; the calculator does not assess them. Internal arithmetic is
+exact; money outputs are 2 dp, eligible wages and Formula&nbsp;B keep quarter cents at 4 dp, and
+<code>levy_before_rounding</code> is exact at 8&nbsp;dp before the single final rounding to cents.</p>
+
+<div class="note warn">
+<strong>Hosted by the contributor, not on LodgeiT infrastructure.</strong> This calculator runs on
+the contributor's own Cloudflare Worker. LodgeiT points at it and attests <strong>conformance
+only</strong> — the numbers reproduce against a published standard and an inspectable source. It is
+<strong>not yet practitioner-attested</strong>: no credentialed practitioner has certified that the
+levy logic is correct against the statute. See the provenance panel below, and the
+<a href="/bounties/bounty-13-coal-lsl-levy/">open bounty seeking that review</a>.
+</div>
+
+<h2>Trust &amp; provenance</h2>
+
+<p><strong>Builder:</strong> Ryan Duguid — <a href="https://duguid.com.au/">duguid.com.au</a>
+(browser version at <a href="https://duguid.com.au/tools/coal-lsl-levy/">duguid.com.au/tools/coal-lsl-levy</a>).
+Source: <a href="https://github.com/ryanduguid/ryanduguid.github.io">github.com/ryanduguid/ryanduguid.github.io</a>,
+path <code>service/coal-lsl-levy</code>, pinned at revision
+<code>53ba9b8</code> (v0.4.0).</p>
+
+<p><strong>Attestation tier: conformance-passed.</strong> On the publishing standard's ladder
+(<a href="/publish.html">unattested → conformance-passed → practitioner-attested → jurisdiction-owned</a>),
+this entry sits at the second rung. The honest reading of that label is load-bearing:</p>
+
+<ul>
+<li><strong>What "conformance-passed" means:</strong> the service conforms to the published contract
+and its numbers reproduce exactly against an inspectable, pinned source.</li>
+<li><strong>What it does NOT mean:</strong> it is <em>not</em> a practitioner certifying that the tax
+is computed correctly. Conformance proves "the running code is the reviewed code and the numbers are
+reproducible", not "the levy logic is right in law".</li>
+</ul>
+
+<p>The inspectable conformance chain, so you can check it yourself rather than trust us:</p>
+
+<ol>
+<li><strong>Pinned public source.</strong> The engine is open at revision <code>53ba9b8</code>; every
+claim below is checkable against that tree.</li>
+<li><strong>Public runnable suite.</strong> Clone the source and run the conformance runner against
+the live Worker:
+<pre><code>npm run conformance -- --base https://coal-lsl-levy.coal-lsl-levy-service.workers.dev</code></pre>
+It exercises the <strong>23 synthetic fixtures</strong> in
+<code>service/coal-lsl-levy/fixtures/cases.json</code> (8 computed results, 5 factual refusals,
+8 validation failures, 2 unsupported periods), checking every expected value, the served rate/method
+hashes, and the raw response bytes on repeat calls.</li>
+<li><strong>Live manifest proves running = reviewed.</strong> Each computed response carries rate and
+method content hashes plus the engine's <code>code_revision</code>. Comparing those to the pinned
+source proves the running Worker is the reviewed source (a dirty build is labelled <code>-dirty</code>).</li>
+<li><strong>LodgeiT independent re-pass (2026-10-11).</strong> We re-ran it ourselves:
+source tests <strong>64/64</strong>, live conformance <strong>16/16</strong> against the Worker,
+<code>npm audit --audit-level=high</code> <strong>0 vulnerabilities</strong>, and the six
+publish-standard sections (discovery, manifest/hashes, decimal strings, refusals, limits, rounding)
+all exercised. (The Worker unit test <code>worker.test.mjs</code> was not run on our host — wrangler
+would not install — a tooling gap, not a defect.)</li>
+</ol>
+
+<p>The rounding choice, <code>half_up_cent_final_step</code>, conforms to LodgeiT's published rounding
+standard (HALF_UP, ties away from zero). It is the calculator's documented choice, <em>not</em> a
+statutory rule — which is exactly the kind of thing the review bounty asks a practitioner to judge.</p>
+
+<h2>Base URL</h2>
+
+<pre><code>https://coal-lsl-levy.coal-lsl-levy-service.workers.dev</code></pre>
+
+<p>This calculator has its <strong>own base URL</strong>, separate from the shared LodgeiT gateway
+used by the in-house calculators — because the contributor hosts it. Put the base in configuration,
+not code.</p>
+
+<h2>Endpoint</h2>
+
+<pre><code>POST /v1/calculators/urn:sbrm:calculator:coal-lsl:levy/urn:sbrm:period:coal-lsl-levy:{YYYY-MM}</code></pre>
+
+<p>URN <code>urn:sbrm:calculator:coal-lsl:levy</code>, module <code>urn:sbrm:module:coal-lsl</code>.
+Period-scoped by month: the period URN is <code>urn:sbrm:period:coal-lsl-levy:{YYYY-MM}</code>,
+because levy returns are monthly. Supported months are January&nbsp;2024 to August&nbsp;2026.
+Selection depends on facts, not an election. Read the input schema from <code>/openapi.json</code>
+(OpenAPI&nbsp;3.1) before calling.</p>
+
+<p>Discovery and liveness are standard:</p>
+
+<pre><code>GET /v1/modules
+GET /v1/calculators[?module=urn:sbrm:module:coal-lsl]
+GET /v1/rates/{period_uri}[/{rate_id}]
+GET /openapi.json
+GET /healthz
+GET /livez</code></pre>
+
+<h2>Inputs</h2>
+
+<table>
+<thead><tr><th>Field</th><th>Required</th><th>Allowed values</th></tr></thead>
+<tbody>
+<tr><td><code>reporting_month</code></td><td>required</td><td>string <code>YYYY-MM</code>; must match the period URN</td></tr>
+<tr><td><code>branch</code></td><td>required</td><td><code>base_rate</code> | <code>annual_salary</code> | <code>casual</code></td></tr>
+<tr><td><code>employee.eligible_employee</code></td><td>required</td><td>boolean; caller establishes eligibility</td></tr>
+<tr><td><code>pay.base_rate_of_pay</code></td><td>required</td><td>decimal string</td></tr>
+<tr><td><code>pay.salary_sacrificed</code></td><td>required</td><td>decimal string (<code>"0.00"</code> for nil)</td></tr>
+<tr><td><code>pay.overtime_and_penalty_rates</code></td><td>required</td><td>decimal string</td></tr>
+<tr><td><code>pay.allowances</code></td><td>required</td><td>decimal string</td></tr>
+<tr><td><code>pay.allowances_exclude_expense_reimbursements</code></td><td>required</td><td>boolean</td></tr>
+<tr><td><code>pay.bonuses</code></td><td>required</td><td>array (may be empty); bonuses count only where paid at least monthly</td></tr>
+</tbody>
+</table>
+
+<p>Every amount is required, including <code>"0.00"</code> for nil. JSON-number amounts, negative
+values, excess precision (more than 2 dp) and unknown fields are rejected with 422 naming the field.
+Facts the selected branch needs but the caller has not supplied, and pay components the branch would
+discard, are refused with 400 and a stable <code>refusal_class</code>.</p>
+
+<h2>What the figures are</h2>
+
+<ul>
+<li><strong>Eligible wages = greater of Formula&nbsp;A and Formula&nbsp;B</strong> (s&nbsp;3B(1), base-rate branch). Formula&nbsp;A is the base rate of pay including incentive payments and bonuses. Formula&nbsp;B is 75% of (base rate + overtime and penalty rates + allowances other than expense reimbursements). The annual-salary and casual branches apply s&nbsp;3B(2) and s&nbsp;3B(3) respectively.</li>
+<li><strong>Levy = eligible wages × 2.7%</strong>, computed exactly then rounded once, half up to cents, in integer arithmetic. The rate is <strong>reviewer to verify</strong> against the current levy regulations — this page reports the 2.7% value the contributor's pinned source uses (<code>methods.json</code>, record <code>s3b-from-2024-01</code>), not an independently re-derived statutory rate.</li>
+<li><strong>Scales:</strong> money 2&nbsp;dp; rates and factors 4&nbsp;dp; eligible wages and Formula&nbsp;B 4&nbsp;dp (exact quarter cents); <code>levy_before_rounding</code> exact at 8&nbsp;dp. Each amount is capped at <code>833999930994.53</code>, with an aggregate limit checked separately.</li>
+<li>Each computed response carries rate and method content hashes, statutory citations, engine source hash, version and <code>code_revision</code>. No calculation fetches external data or uses the current date.</li>
+<li><strong>Statutory basis:</strong> s&nbsp;3B of the <em>Coal Mining Industry (Long Service Leave) Payroll Levy Collection Act 1992</em>, as amended by the Fair Work Legislation Amendment (Protecting Worker Entitlements) Act 2023, read in Compilation No.&nbsp;12. The source check in the manifest is automated retrieval, <strong>not a practitioner attestation</strong>.</li>
+</ul>
+
+<h2>Worked example</h2>
+
+<p>One eligible employee, base-rate branch, June&nbsp;2026, where Formula&nbsp;B wins and the levy
+lands on a half-cent (so the final rounding bites):</p>
+
+<pre><code>curl -s -X POST \
+  "https://coal-lsl-levy.coal-lsl-levy-service.workers.dev/v1/calculators/urn:sbrm:calculator:coal-lsl:levy/urn:sbrm:period:coal-lsl-levy:2026-06" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reporting_month": "2026-06",
+    "branch": "base_rate",
+    "employee": { "eligible_employee": true },
+    "pay": {
+      "base_rate_of_pay": "6000.00",
+      "salary_sacrificed": "0.00",
+      "overtime_and_penalty_rates": "3000.00",
+      "allowances": "500.00",
+      "allowances_exclude_expense_reimbursements": true,
+      "bonuses": []
+    }
+  }'</code></pre>
+
+<p>Derivation: Formula&nbsp;A = 6000.00. Formula&nbsp;B = 0.75 × (6000.00 + 3000.00 + 500.00)
+= 0.75 × 9500.00 = 7125.00. The greater is 7125.00. Levy = 7125.00 × 0.027 = 192.375, rounded half
+up to 192.38. From the live response:</p>
+
+<pre><code>branch.code              "s 3B(1)"
+eligible_wages           "7125.0000"
+workings.formula_a       "6000.00"
+workings.formula_b       "7125.0000"
+workings.winner          "formula_b"
+rate.value_percent       "2.7000"
+levy_before_rounding     "192.37500000"
+levy                     "192.38"
+rounding.differs         true</code></pre>
+
+<p>This is one of 8 computed fixtures; the suite also exercises 5 factual refusals (unknown
+eligibility, not eligible, casual loading unanswered, casual components not read, allowances without
+the reimbursement assertion), 8 validation failures, and 2 unsupported-period 404s.</p>
+
+<footer class="site">
+  <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; External contributor
+  (<a href="https://duguid.com.au/">Ryan Duguid</a>), conformance-passed, not yet
+  practitioner-attested. Not advice. Consult a registered tax agent.</p>
+</footer>
+
+</div>
+</body>
+</html>

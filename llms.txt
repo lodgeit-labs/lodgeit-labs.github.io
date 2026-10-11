@@ -1,5 +1,5 @@
 # LodgeiT Labs — Calculator Constellation
-Last updated: 2026-09-30
+Last updated: 2026-10-11
 
 > Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
 > No authentication, no key, no client library. Designed to be called by agents.
@@ -20,6 +20,10 @@ BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
   calculators; see the Fano classifier section.
 - hp — AVAILABLE. Amortisation schedule for a hire purchase, chattel mortgage or equipment loan;
   see the Hire purchase section.
+- coal-lsl — AVAILABLE (external contributor · tier: conformance-passed). Monthly Coal Mining
+  Industry long service leave payroll levy and eligible wages, one employee one month. Hosted by
+  the contributor, NOT on LodgeiT infrastructure; it has its OWN base URL. Conformance-passed, not
+  yet practitioner-attested. See the Coal LSL levy section.
 
 ## Discovery
 
@@ -212,6 +216,86 @@ manifest, advisory.
 The residual (rate_precision_residual) is a stated-rate artefact; it is reported, never forced to
 zero. The lender's total amount repayable governs; a non-zero residual reflects the stated rate's
 display precision. contract_form affects GST and title treatment, not the amortisation.
+
+## Coal LSL levy   (external contributor · tier: conformance-passed)
+
+Hosted by the contributor, not on LodgeiT infrastructure. LodgeiT points at it and attests
+conformance only; correctness is not practitioner-attested yet. Like Fano, this entry has its
+OWN base URL, separate from the shared gateway above.
+
+BASE: https://coal-lsl-levy.coal-lsl-levy-service.workers.dev
+(The contributor's own Cloudflare Worker; will change. Put it in configuration, not code.)
+
+Contributor: Ryan Duguid — site https://duguid.com.au/ — source
+github.com/ryanduguid/ryanduguid.github.io (service/coal-lsl-levy).
+Pinned revision: 53ba9b8 (v0.4.0).  Attestation tier: conformance-passed.
+Conformance: 16/16 vs the published standard; independently re-passed by LodgeiT 2026-10-11
+(source tests 64/64; live conformance 16/16; npm audit --audit-level=high 0 vulns).
+Inspect it yourself:
+  npm run conformance -- --base https://coal-lsl-levy.coal-lsl-levy-service.workers.dev
+(23 fixtures in service/coal-lsl-levy/fixtures/cases.json: 8 computed, 5 factual refusals,
+8 validation failures, 2 unsupported periods.)
+
+HONEST LABEL: conformance-passed means the running code is the reviewed code and the numbers
+reproduce against a pinned, inspectable source. It does NOT mean a practitioner has certified the
+levy logic is correct against the statute. That review is an open bounty (bounty #13).
+
+Endpoint (period-scoped by month; levy returns are monthly):
+POST /v1/calculators/urn:sbrm:calculator:coal-lsl:levy/urn:sbrm:period:coal-lsl-levy:{YYYY-MM}
+
+URN urn:sbrm:calculator:coal-lsl:levy ; module urn:sbrm:module:coal-lsl. Earlier short URNs remain
+accepted as invocation aliases. Supported months: January 2024 to August 2026
+(urn:sbrm:period:coal-lsl-levy:YYYY-MM). Selection depends on facts, not an election.
+
+Discovery and liveness:
+GET  /v1/modules
+GET  /v1/calculators[?module=urn:sbrm:module:coal-lsl]
+GET  /v1/rates/{period_uri}[/{rate_id}]   rate and method records with content hashes
+GET  /openapi.json                         OpenAPI 3.1
+GET  /healthz , GET /livez                  liveness
+
+Request:
+  reporting_month                              string "YYYY-MM"; must match the period URN
+  branch                                       "base_rate" | "annual_salary" | "casual"
+  employee.eligible_employee                   boolean (the caller establishes eligibility)
+  pay.base_rate_of_pay                         decimal string
+  pay.salary_sacrificed                        decimal string ("0.00" for nil)
+  pay.overtime_and_penalty_rates               decimal string
+  pay.allowances                               decimal string
+  pay.allowances_exclude_expense_reimbursements boolean
+  pay.bonuses                                  array (may be empty); counted only if paid monthly
+
+Every amount is required, including "0.00" for nil. JSON-number amounts, negative values, excess
+precision (>2 dp) and unknown fields are rejected (422, naming the field). Facts the selected
+branch needs but are unsupplied, and pay components the branch would discard, are refused (400,
+with a stable refusal_class). Responses: 200 computed, 400 factual refusal, 404 unknown
+identifier, 422 invalid input, 413 oversized, 415 wrong media type, 429 with Retry-After, 500
+service fault (no internal details).
+
+Figures:
+  eligible_wages = greater of Formula A and Formula B (s 3B(1), base-rate branch).
+    Formula A = base rate of pay including incentive payments and bonuses.
+    Formula B = 0.75 x (base rate + overtime and penalty rates + allowances other than expense
+                reimbursements).
+  levy = eligible_wages x 2.7%, computed exactly then rounded once, half up to cents, in integer
+    arithmetic.  REVIEWER TO VERIFY the 2.7% rate and Formula B against the current levy
+    regulations; this file reports the value the contributor's pinned source uses (methods.json
+    record s3b-from-2024-01), not an independently re-derived statutory rate.
+  Scales: money 2 dp; rates/factors 4 dp; eligible_wages and formula_b 4 dp (exact quarter cents);
+    levy_before_rounding exact at 8 dp. Amount cap 833999930994.53 (aggregate limit checked
+    separately).
+  rounding_policy: half_up_cent_final_step (conforms lodgeit-rounding-1.0 = HALF_UP, ties away from
+    zero). The contributor's documented choice, not a statutory rule.
+
+Each computed response carries rate and method content hashes, statutory citations, engine source
+hash, version and code_revision (a dirty build is labelled -dirty). No calculation fetches external
+data or uses the current date. Statutory basis: s 3B of the Coal Mining Industry (Long Service
+Leave) Payroll Levy Collection Act 1992, as amended by the Fair Work Legislation Amendment
+(Protecting Worker Entitlements) Act 2023, read in Compilation No. 12. The manifest's source check
+is automated retrieval, not a practitioner attestation.
+
+Page: https://lodgeit.org/coal-lsl.html
+Review bounty (seeking a practitioner): https://lodgeit.org/bounties/bounty-13-coal-lsl-levy/
 
 ## Fano classifier
 
