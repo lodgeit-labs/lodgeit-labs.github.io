@@ -412,6 +412,29 @@ BOUNTIES = [
             ("06-terms.md", "Terms — IP, attribution, payment, timeline"),
         ],
     },
+    {
+        # External-contributor calculator review bounty. Numbered 13 because 11/12
+        # (Div 36 Logical English) are hand-authored cards outside this list; the
+        # non-contiguous gap means render_next_link leaves bounty #10 untouched.
+        "num": 13,
+        "slug": "coal-lsl-levy",
+        "title": "Coal LSL levy — statute-to-calculator review",
+        "title_url": "Coal%20LSL%20levy",
+        "description": "Coal Mining Industry (Long Service Leave) payroll levy — practitioner review of an external contributor's conformance-passed calculator against s 3B and the levy regulations.",
+        "prize": "800",
+        "hours": "3",
+        "anchors": "s 3B Coal Mining Industry (LSL) Payroll Levy Collection Act 1992 · levy regs",
+        "calculator": "Coal LSL levy (external · Ryan Duguid · live)",
+        "calc_status": "External contributor · conformance-passed",
+        "tagline": "Rodeo an external contributor's Coal LSL levy calculator against the statute. It is conformance-passed — numbers reproduce against a pinned, inspectable source — but no practitioner has yet certified the levy logic is correct in law. We want a credentialed reviewer to try to break it: the eligible-wages definition, the levy rate, Formula B, the rounding choice, the eligibility and branch tests, and the monthly period boundaries. A passing verdict lifts the calculator's attestation tier from conformance-passed to practitioner-attested.",
+        "artefacts": [
+            ("01-brief.md", "Brief — what it passes, what we want reviewed, who built it"),
+            ("02-worked-example.md", "Worked example — base-rate branch, Formula B wins, final-step rounding"),
+            ("03-forensic-questions.md", "Six forensic questions, easy → hard"),
+            ("04-reviewer-verdict-template.md", "Reviewer verdict template (YAML frontmatter)"),
+            ("06-terms.md", "Terms — IP, attribution, payment, timeline"),
+        ],
+    },
 ]
 
 
@@ -650,9 +673,15 @@ def render_status_badge(bounty_id, registry):
 
 
 def render_next_link(idx):
+    # Only chain to the immediately-following bounty when it is contiguous in
+    # number (num+1). A non-contiguous gap (e.g. 10 -> 13, because 11/12 are
+    # hand-authored cards outside this list) falls back to the get-in-touch link,
+    # so appending a later bounty never rewrites an earlier bounty's footer.
+    b = BOUNTIES[idx]
     if idx + 1 < len(BOUNTIES):
         b_next = BOUNTIES[idx + 1]
-        return f'<a href="/bounties/bounty-{b_next["num"]:02d}-{b_next["slug"]}/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Next: Bounty #{b_next["num"]:02d} &rarr;</a>'
+        if b_next["num"] == b["num"] + 1:
+            return f'<a href="/bounties/bounty-{b_next["num"]:02d}-{b_next["slug"]}/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Next: Bounty #{b_next["num"]:02d} &rarr;</a>'
     return '<a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>'
 
 
