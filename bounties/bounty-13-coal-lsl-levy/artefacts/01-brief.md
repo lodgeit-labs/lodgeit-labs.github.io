@@ -1,7 +1,7 @@
 # Bounty #13 — Coal LSL levy: statute-to-calculator review
 
 **Status:** OPEN · SEEKING REVIEWER
-**Prize:** AUD $630 ex GST — *proposed; Andrew to confirm the amount before a reviewer is engaged.*
+**Prize:** AUD $630 ex GST — *confirmed ≈ 3.5 hrs @ AUD $180/hr.*
 **Estimated effort:** ~3 hours
 **Credential class sought:** CA / CTA / CPA / FIPA / TPB-registered, with payroll-tax or
 Australian employment-entitlements experience. Coal-industry payroll familiarity is a plus.

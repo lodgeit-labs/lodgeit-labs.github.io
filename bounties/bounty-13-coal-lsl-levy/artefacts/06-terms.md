@@ -1,7 +1,7 @@
 # Terms — LodgeiT Labs Review Bounty
 
 **Bounty:** bounty-13-coal-lsl-levy
-**Prize:** AUD $630 ex GST — **proposed; Andrew to confirm the amount before a reviewer is engaged.** Paid on acceptance of verdict.
+**Prize:** AUD $630 ex GST — **confirmed ≈ 3.5 hrs @ AUD $180/hr.** Paid on acceptance of verdict.
 **Effort estimate:** ~3 hours
 
 ---
