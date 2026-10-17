@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof-of-Control — a cryptographic reality anchor for disclosures — LodgeiT Labs</title>
+<meta name="description" content="Internal report validation is omission-invariant: it cannot prove a filer actually controls the on-chain reserves, contracts or validator nodes it declares. LodgeiT Labs builds cryptographic proof-of-control — remote signing over Nostr / NIP-46 — binding a disclosed on-chain position to an independently verifiable control attestation.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Calculators</a>
+      <a href="/fano.html">Fano</a>
+      <a href="/proof-of-control.html">Proof-of-Control</a>
+      <a href="/scene-protocol/">Scene Protocol</a>
+      <a href="/publish.html">Publish</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Proof-of-Control: a cryptographic reality anchor for disclosures</h1>
+
+<p class="lede"><em>Internal validation proves a report is internally coherent. It cannot prove the
+filer controls what the report declares. That gap is where LodgeiT Labs anchors.</em><br>
+<em>LodgeiT Labs &middot; October 2026 &middot; draft v1</em></p>
+
+<h2>The problem internal validation cannot solve</h2>
+
+<p>A disclosure pipeline that validates an XBRL document — structural completeness against the
+taxonomy, arithmetic, compliance against a rule set — answers one question well: <em>is this report
+internally consistent?</em> It cannot answer a different and harder one: <em>does the entity filing
+it actually control the assets, contracts and nodes it claims?</em></p>
+
+<p>This limit is not a bug in any one implementation. It is structural, and it has a name. Internal
+validation is <strong>omission-invariant</strong>: a silently-omitted entity, wallet or liability
+leaves the validated report perfectly consistent with itself. The validator sees a clean document
+because it only ever sees the document. Auditchain&rsquo;s own lead architect co-authored the paper
+that proves this (Rutgers CARLab &amp; Meyers, September 2026), and its conclusion is the one we
+build on: <strong>internal validation must be paired with an external anchor.</strong></p>
+
+<p>Entity-level identity infrastructure anchors one edge of this. <strong>GLEIF Level&nbsp;2</strong>
+(the &ldquo;who owns whom&rdquo; relationship data behind the LEI) anchors the <em>entity
+perimeter</em> &mdash; which legal entities exist and how they relate. But a validated disclosure
+still asserts facts <em>below</em> that perimeter: that this filer controls <em>these</em> on-chain
+reserves, <em>these</em> smart contracts, <em>these</em> validator nodes. GLEIF tells you the entity
+is real. It does not tell you the entity holds the key.</p>
+
+<h2>What proof-of-control is</h2>
+
+<p>Proof-of-control binds a <strong>disclosed on-chain address or position</strong> to an
+<strong>independently verifiable control attestation</strong> &mdash; a signature the filer can only
+produce if it holds the controlling key, verifiable by anyone, bound to the specific disclosure it
+supports.</p>
+
+<p>LodgeiT builds this as <strong>remote signing over Nostr, using NIP-46</strong>. The signing key
+never leaves the holder&rsquo;s control: the disclosure system requests a signature over a challenge
+that names the disclosure and the claimed address; the holder&rsquo;s remote signer (a bunker, held
+by the filer, not by us and not by the validator) returns a signature; the signature is published to
+Nostr relays and is independently verifiable against the holder&rsquo;s public key. We have proven
+this end to end &mdash; external signing across independent relays, with per-relay signatures
+verified &mdash; so it is a working mechanism, not a design sketch.</p>
+
+<p>The result is an attestation with three properties a disclosure consumer can check without
+trusting us, the filer, or any single relay:</p>
+
+<ul>
+  <li><strong>Control, not custody transfer.</strong> The key stays with the holder. Producing the
+  signature is the proof; nothing moves, nothing is escrowed.</li>
+  <li><strong>Bound to the disclosure.</strong> The challenge names the specific disclosure and the
+  claimed on-chain position, so an attestation cannot be lifted and replayed against a different
+  filing.</li>
+  <li><strong>Independently verifiable.</strong> Verification is a signature check against a public
+  key over public relays. No LodgeiT endpoint sits in the trust path.</li>
+</ul>
+
+<h2>Where it plugs in</h2>
+
+<p>Proof-of-control is a reality anchor that attaches to a disclosure <em>after</em> the internal
+validator has done its job. It is complementary, not competitive &mdash; it answers the question the
+validator structurally cannot. Concrete attachment points:</p>
+
+<table>
+<thead><tr><th>Disclosure context</th><th>What proof-of-control anchors</th></tr></thead>
+<tbody>
+<tr>
+  <td>Proof-of-reserves state conditions</td>
+  <td>That the reserve addresses in the report are controlled by the filer at attestation time &mdash;
+  the control half of a reserves claim the validator cannot otherwise establish.</td>
+</tr>
+<tr>
+  <td>MiCAR white papers &amp; crypto-asset disclosures</td>
+  <td>That declared wallets, treasury positions and contract addresses are under the issuer&rsquo;s
+  control, bound to the published document.</td>
+</tr>
+<tr>
+  <td>Wallet &amp; validator schedules (e.g. a GENIUS Act BNP-style framework)</td>
+  <td>That each scheduled wallet or validator node is controlled by the declaring entity, node by
+  node, address by address.</td>
+</tr>
+<tr>
+  <td>Verified working-papers / event capture</td>
+  <td>A control attestation sits alongside verified operational events as part of the working-papers
+  trail a reviewer walks &mdash; the on-chain-control line item in the evidence file.</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note warn">
+<strong>What it does not claim.</strong> Proof-of-control anchors <em>assets and control</em>: that
+the filer holds the key to what it declared. It does <strong>not</strong> prove completeness against
+reality &mdash; it cannot surface a liability, a hidden wallet or an omitted entity the filer chose
+not to declare. That is the omission-invariance problem, and no internal mechanism solves it; an
+external anchor narrows the gap on the <em>control</em> axis, it does not close the <em>completeness</em>
+axis. We say this plainly because over-claiming here is how a reality anchor loses the credibility
+that makes it worth anchoring with.
+</div>
+
+<h2>Why LodgeiT brings this</h2>
+
+<p>LodgeiT Labs builds open-source infrastructure for financial truth: deterministic engines,
+content-hashed provenance, and a settlement layer (<a href="/publish.html">L402 over Lightning</a>)
+designed to be called by agents without a human in the loop. Proof-of-control is the reality-anchor
+edge of that same discipline &mdash; the same refusal to let a plausible-looking claim pass without a
+check a third party can reproduce. It carries downstream, too: a disclosure whose on-chain control is
+anchored can feed statutory resolution and lodgement with the control question already settled.</p>
+
+<p>The mechanism is live today. If you run a disclosure or validation pipeline and want the control
+half anchored, we can demonstrate proof-of-control end to end against a disclosure of your choosing.</p>
+
+<p>&mdash; Andrew Noble, LodgeiT Labs<br>
+<em><a href="mailto:andrew@lodgeit.net.au">andrew@lodgeit.net.au</a></em></p>
+
+<h2>Reference</h2>
+
+<ul>
+  <li>Verified working-papers &amp; event-capture surface: <a href="https://lightning.lodgeit.org/">https://lightning.lodgeit.org/</a></li>
+  <li>Settlement rail (L402 over Lightning) and the open-access philosophy: <a href="https://lodgeit.org/publish.html">https://lodgeit.org/publish.html</a></li>
+  <li>Open-source organisation: <a href="https://github.com/lodgeit-labs">https://github.com/lodgeit-labs</a></li>
+  <li>NIP-46 (Nostr remote signing): <a href="https://github.com/nostr-protocol/nips/blob/master/46.md">nostr-protocol/nips &middot; NIP-46</a></li>
+</ul>
+
+<footer class="site">
+  <p><a href="/">&larr; LodgeiT Labs</a> &nbsp;&middot;&nbsp; open-source financial infrastructure.</p>
+</footer>
+
+</div>
+</body>
+</html>
