@@ -1,5 +1,5 @@
 # LodgeiT Labs — Calculator Constellation
-Last updated: 2026-10-11
+Last updated: 2026-10-17
 
 > Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
 > No authentication, no key, no client library. Designed to be called by agents.
@@ -402,6 +402,31 @@ comes from. Independent implementations disagreeing is how the last several defe
 found — including one where the engine was right and our own reasoning was wrong.
 
 https://github.com/lodgeit-labs
+
+## Proof-of-Control — a cryptographic reality anchor for disclosures
+
+Internal report validation (XBRL structural completeness, arithmetic, compliance) is
+omission-invariant: it only ever sees the document, so it cannot prove the filer controls the
+on-chain reserves, contracts or validator nodes it declares. GLEIF Level 2 anchors the entity
+perimeter; it does not prove the filer holds the key below that perimeter.
+
+Proof-of-control is the external anchor: remote signing over Nostr using NIP-46 binds a disclosed
+on-chain address or position to an independently verifiable control attestation. The signing key
+stays with the holder (a bunker they control); the challenge names the specific disclosure and
+address so the attestation cannot be replayed; verification is a signature check against a public
+key over public relays, with no LodgeiT endpoint in the trust path. Proven end to end across
+independent relays.
+
+Plugs into: proof-of-reserves state conditions, MiCAR white papers, wallet/validator schedules
+(e.g. a GENIUS Act BNP-style framework), and verified working-papers trails
+(https://lightning.lodgeit.org/).
+
+Limit, stated plainly: proof-of-control anchors ASSETS AND CONTROL (the filer holds the key to
+what it declared). It does NOT prove completeness against reality — it cannot surface an omitted
+liability, hidden wallet or omitted entity. It narrows the control axis; it does not close the
+completeness axis.
+
+The full statement: https://lodgeit.org/proof-of-control.html
 
 ## Publishing a calculator
 
