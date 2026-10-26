@@ -1,0 +1,2262 @@
+the target language is: prolog.
+
+% ============================================================================
+% CAPITAL GAINS TAX: CGT EVENT A1 AND THE NET CAPITAL GAIN METHOD STATEMENT
+% Income Tax Assessment Act 1997 (Cth), Parts 3-1 and 3-3, as retrieved
+% through Tax Genii on 25 October 2026 (ATO legal database compilation).
+%
+% SCOPE (what this file decides)
+%   - CGT event A1 (s 104-10): disposal of a CGT asset by an individual, a
+%     company, a trust or a complying superannuation entity. Time of the event
+%     is the contract date (s 104-10(3)(a)); the income year is the year ending
+%     30 June containing it.
+%   - Capital proceeds (s 116-20) with market value substitution for no
+%     proceeds (s 116-30(1)) and non-arm's-length dealings (s 116-30(2)(b)(i)).
+%   - Cost base and reduced cost base: the five elements (s 110-25), costs of
+%     ownership only for assets acquired after 20 Aug 1991 and never for
+%     collectables or personal use assets (ss 110-25(4), 108-17, 108-30),
+%     market value substitution of the first element for no consideration or
+%     non-arm's-length acquisition (s 112-20(1)(a),(c)), net input tax credits
+%     (s 103-30), deductible amounts excluded from the cost base of assets
+%     acquired after 13 May 1997 (s 110-45(2)) and from every reduced cost
+%     base (s 110-55(4)).
+%   - Capital gain or loss (s 104-10(4)); reduction where an amount is
+%     otherwise assessable (s 118-20).
+%   - Disregarded gains and losses: pre-CGT assets (s 104-10(5)(a)); Norfolk
+%     Island transitional rule (IT(TP)A 1997 s 102-25); cars and valour
+%     decorations (s 118-5); collectables with a first element of $500 or less
+%     (s 118-10(1)); personal use asset gains with a first element of $10,000
+%     or less (s 118-10(3)) and all personal use asset losses (s 108-20(1));
+%     depreciating assets under Div 40/328 (s 118-24); trading stock
+%     (s 118-25); compensation, gambling and listed reimbursement schemes
+%     (s 118-37(1)(a),(c), (2)(a),(d),(e)); testamentary gifts to deductible
+%     gift recipients (s 118-60(1)); life policies and annuities held by the
+%     original owner or acquired for no consideration (s 118-300 items 3, 4).
+%   - Discount capital gains (Div 115): eligible entities (s 115-10), event
+%     after 21 Sep 1999 (s 115-15), no indexation (s 115-20, by refusal), at
+%     least 12 months (s 115-25(1), counted as in TD 2002/10); 50% and 33 1/3%
+%     (s 115-100); apportionment for an individual who was a foreign or
+%     temporary resident during part of a discount testing period starting
+%     after 8 May 2012 (ss 115-105, 115-115(2)).
+%   - The method statement (s 102-5(1)) steps 1, 2, 3 and 5; net capital loss
+%     (s 102-10); losses from collectables quarantined and carried forward
+%     (s 108-10(1),(4)); prior year net capital losses applied earliest first
+%     (s 102-15) and only to the extent unapplied (s 960-20(1)).
+%
+% REFUSED (returns a reason, never a figure): main residence (Subdiv 118-B);
+%   small business concessions (Div 152, step 4); roll-overs; deceased
+%   estates (Div 128); foreign or temporary residents at the time of the event
+%   (Div 855, Subdiv 768-R); discount testing periods starting on or before
+%   8 May 2012 for foreign/temporary residents (s 115-115(3)-(6)); trusts and
+%   superannuation entities with foreign/temporary residency (s 115-120);
+%   indexation (Div 114); any CGT event other than A1; substituted accounting
+%   periods; leases granted by the taxpayer (s 104-10(5)(b), Subdiv 104-F);
+%   depreciating assets with non-taxable use (event K7); trust gains flowing
+%   to beneficiaries (Subdiv 115-C); life insurance companies; entity kinds
+%   other than the four above; an event on 21 Sep 1999 (time of day needed);
+%   land or a stratum unit marked as a personal use asset (s 108-20(3));
+%   and, at the year level, a loss to be applied against discount gains that
+%   carry different percentages (the order is the taxpayer's choice).
+%   Not modelled at all (no marker, so no refusal: see open questions):
+%   separate assets (Subdiv 108-D), joint ownership (s 108-7), sets of
+%   collectables or personal use assets (ss 108-15, 108-25), integrity rules
+%   (ss 115-40, 115-45), Div 149, s 104-230, Subdiv 118-I earnouts, ESS, Div 775
+%   foreign currency, the affordable housing discount (s 115-125).
+%
+% DESIGN CHOICES (recorded in the open questions for practitioners)
+%   - Where the Act leaves the order of applying losses to the taxpayer
+%     (s 102-5 steps 1 and 2 notes, s 108-10(1) note) the file applies losses
+%     to non-discount gains before discount gains, the order that gives the
+%     lowest net capital gain.
+%   - Prior year losses are scenario inputs ("unapplied net capital loss of
+%     ... from the income year ..."); the file does not carry a loss it computes
+%     for one year into the next year of the same scenario.
+%
+% ANSWERS are three-way: a figure; "cannot be assessed because <fact> is
+%   missing" for a core input not stated; or "refused because <reason>".
+%
+% REASONER PIN: LogicalEnglish2 commit
+%   bc5cb5d1717634d6ca131e9689f49a0762310d3e (24 Oct 2026), SWI-Prolog 9.0.4.
+%   (The brief's pin 53c0021 is no longer in upstream history; see run log.)
+% MEASURED COUNTS (commands in the run log, 25 Oct 2026):
+%   templates 96, rules 110 (facts and rules under the knowledge base header),
+%   scenarios 59, queries 16, embedded tests 156 (all pass), untested_predicate 0.
+% ============================================================================
+
+the templates are:
+
+% --- Scenario inputs: who, what, when ----------------------------------------
+*a taxpayer* is an entity of kind *a kind*; undefined.
+*a disposal* is a disposal of *an asset* by *a taxpayer*; undefined.
+*a disposal* has contract date *a date*; undefined.
+*an asset* was acquired by *a taxpayer* on *a date*; undefined.
+*a disposal* is of CGT event type *a type*; undefined.
+*a taxpayer* uses a substituted accounting period; undefined.
+
+% --- Scenario inputs: capital proceeds (s 116-20) ------------------------------
+*a disposal* has money proceeds of *an amount*; undefined.
+*a disposal* has property proceeds with market value of *an amount*; undefined.
+*a disposal* was not at arm s length; undefined.
+*an asset* had a market value of *an amount* at the time of *a disposal*; undefined.
+
+% --- Scenario inputs: cost base elements (s 110-25, s 110-55, s 103-30, s 112-20)
+*an asset* has first element cost of *an amount*; undefined.
+*an asset* was acquired for no consideration; undefined.
+*a taxpayer* did not deal at arm s length in acquiring *an asset*; undefined.
+*an asset* had a market value of *an amount* when acquired; undefined.
+*an asset* has incidental costs of *an amount*; undefined.
+*an asset* has costs of ownership of *an amount*; undefined.
+*an asset* has capital improvement costs of *an amount*; undefined.
+*an asset* has title costs of *an amount*; undefined.
+*an asset* has net input tax credits of *an amount*; undefined.
+*an asset* has deducted amounts of *an amount*; undefined.
+*a taxpayer* chose indexation for *an asset*; undefined.
+
+% --- Scenario inputs: classification and exemptions --------------------------
+*an asset* is a collectable; undefined.
+*an asset* is a personal use asset; undefined.
+*an asset* is land or a stratum unit or a building or structure that is a separate CGT asset under Subdivision 108-D; undefined.
+*an asset* is a car or motor cycle or similar vehicle; undefined.
+*an asset* is a decoration awarded for valour or brave conduct; undefined.
+*a taxpayer* paid money or gave property for *an asset*; undefined.
+*an asset* is a depreciating asset whose decline in value was worked out under Division 40 or Division 328; undefined.
+*an asset* was used for a purpose other than a taxable purpose; undefined.
+*an asset* is trading stock of *a taxpayer* at the time of *a disposal*; undefined.
+*a disposal* relates directly to compensation or damages for a wrong or injury suffered by *a taxpayer* in the occupation of the taxpayer; undefined.
+*a disposal* relates directly to compensation or damages for a wrong or injury or illness suffered personally by *a taxpayer* or a relative of the taxpayer; undefined.
+*a disposal* relates directly to gambling or a game or a competition with prizes; undefined.
+*a disposal* results from receiving a reimbursement or payment of expenses under *a scheme*; undefined.
+*a scheme* is a scheme established under an enactment by an Australian government agency or a local governing body or a foreign government agency; undefined.
+*a scheme* is the M4/M5 Cashback Scheme; undefined.
+*a scheme* is the Unlawful Termination Assistance Scheme or the Alternative Dispute Resolution Assistance Scheme; undefined.
+*a disposal* is a testamentary gift of *an asset* that would have been deductible under section 30-15 but for being a testamentary gift; undefined.
+*an asset* is an interest in rights under a policy of insurance on the life of an individual or an annuity instrument; undefined.
+*a taxpayer* is the original owner of *an asset*; undefined.
+*a taxpayer* acquired *an asset* for no consideration; undefined.
+*a taxpayer* was a resident of Norfolk Island when *an asset* was acquired; undefined.
+*an asset* would have been exempt from CGT under the Norfolk Island law as it applied before 1 July 2016; undefined.
+*an amount* of the gain from *a disposal* is included in assessable income under another provision; undefined.
+
+% --- Scenario inputs: out-of-scope markers (each leads to a refusal) -----------
+*an asset* is a dwelling that was the main residence of *a taxpayer*; undefined.
+*a taxpayer* claims a small business CGT concession for *a disposal*; undefined.
+*a taxpayer* chooses a roll-over for *a disposal*; undefined.
+*an asset* passed to *a taxpayer* as a beneficiary or legal personal representative of a deceased estate; undefined.
+*a taxpayer* is a foreign resident or temporary resident at the time of *a disposal*; undefined.
+*a taxpayer* was a foreign resident or temporary resident during part of the discount testing period of *a disposal*; undefined.
+*a taxpayer* was an Australian resident for *a number* of the days of the discount testing period of *a disposal*; undefined.
+*an asset* is a lease granted by *a taxpayer*; undefined.
+*a taxpayer* is a beneficiary presently entitled to a capital gain of a trust; undefined.
+*a taxpayer* is a life insurance company; undefined.
+
+% --- Scenario inputs: prior year losses (s 102-15, s 108-10(4)) ------------------
+*a taxpayer* has an unapplied net capital loss of *an amount* from the income year *a year*; undefined.
+*a taxpayer* has an unapplied net capital loss from collectables of *an amount* from the income year *a year*; undefined.
+
+% --- Derived: stated-or-nil inputs (Implementation note, not law) -------------
+the property proceeds of *a disposal* are *an amount*.
+the incidental costs of *an asset* are *an amount*.
+the capital improvement costs of *an asset* are *an amount*.
+the title costs of *an asset* are *an amount*.
+the net input tax credits of *an asset* are *an amount*.
+the deducted amounts of *an asset* are *an amount*.
+the amount of the gain from *a disposal* otherwise assessable is *an amount*.
+
+% --- Derived: per-disposal outputs ----------------------------------------------
+*a disposal* is refused because *a reason*; memorable.
+*a disposal* cannot be assessed because *a fact* is missing; memorable.
+*a disposal* is assessable; memorable.
+*a disposal* is in the income year *a year*; memorable.
+*a date* is in the income year *a year*.
+the capital proceeds from *a disposal* are *an amount*; memorable.
+the first element of the cost base of *an asset* is *an amount*; memorable.
+the third element of the cost base of *an asset* is *an amount*; memorable.
+the cost base of *an asset* is *an amount*; memorable.
+the reduced cost base of *an asset* is *an amount*; memorable.
+the capital gain or loss from *a disposal* is disregarded because *a reason*; memorable.
+*a disposal* gives a capital gain of *an amount*; memorable.
+*a disposal* gives a capital loss of *an amount*; memorable.
+*a disposal* gives a discount capital gain; memorable.
+*a disposal* fails the discount test because *a reason*; memorable.
+the fraction of a discount capital gain from *a disposal* that remains after the discount is *a number*; memorable.
+
+% --- Derived: per-year outputs ---------------------------------------------------
+*a taxpayer* has *a disposal* in the income year *a year*; memorable.
+the net capital gain of *a taxpayer* for the income year *a year* cannot be worked out because *a reason*.
+the current year collectable gains of *a taxpayer* for *a year* are *a first amount* non-discount and *a second amount* discount; memorable.
+the collectable losses available to *a taxpayer* for *a year* are *an amount*; memorable.
+the collectable losses applied by *a taxpayer* for *a year* are *an amount*; memorable.
+the net capital loss from collectables of *a taxpayer* for the income year *a year* is *an amount*.
+the current year gains of *a taxpayer* for *a year* after collectable losses are *a first amount* non-discount and *a second amount* discount; memorable.
+the current year capital losses of *a taxpayer* for *a year* are *an amount*; memorable.
+the net capital loss of *a taxpayer* for the income year *a year* is *an amount*.
+the gains of *a taxpayer* for *a year* after step 1 are *a first amount* non-discount and *a second amount* discount; memorable.
+the prior year net capital losses available to *a taxpayer* for *a year* are *an amount*; memorable.
+the gains of *a taxpayer* for *a year* after step 2 are *a first amount* non-discount and *a second amount* discount; memorable.
+the prior year net capital losses of *a taxpayer* that remain unapplied after *a year* are *an amount*.
+the discounted gains of *a taxpayer* for *a year* are *an amount*; memorable.
+the net capital gain of *a taxpayer* for the income year *a year* is *an amount*.
+*a taxpayer* has a mixed discount percentage problem for *a year*.
+the minimum of *a first number* and *a second number* is *a third number*.
+
+the knowledge base cgt_a1 includes:
+
+% ============================================================================
+% PART A. Income year
+% ============================================================================
+
+% Mechanical: no statutory content. The income year "Y" means the year ending
+% 30 June Y (s 995-1 "income year"; a substituted accounting period is refused).
+a date is in the income year a year
+    if prolog (the date = date(Y1, M1, _), M1 =< 6, the year = Y1).
+
+a date is in the income year a year
+    if prolog (the date = date(Y1, M1, _), M1 > 6, plus(Y1, 1, Y2), the year = Y2).
+
+% Mechanical: the income year of a disposal is the income year of the time of
+% CGT event A1, which is the contract date (s 104-10(3)(a)).
+a disposal is in the income year a year
+    if the disposal has contract date a date
+    and the date is in the income year the year.
+
+% ============================================================================
+% PART B. Refusals: cases this file does not decide. Each returns a reason,
+% never a figure. (s 102-5 note 2 and the Divisions named in each reason.)
+% ============================================================================
+
+a disposal is refused because Subdivision 118-B main residence not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset is a dwelling that was the main residence of the taxpayer.
+
+a disposal is refused because Division 152 small business concessions not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer claims a small business CGT concession for the disposal.
+
+a disposal is refused because roll-overs not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer chooses a roll-over for the disposal.
+
+a disposal is refused because Division 128 deceased estates not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset passed to the taxpayer as a beneficiary or legal personal representative of a deceased estate.
+
+a disposal is refused because Division 855 and Subdivision 768-R foreign or temporary resident at the time of the event not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is a foreign resident or temporary resident at the time of the disposal.
+
+a disposal is refused because subsections 115-115(3) to (6) discount testing period starting on or before 8 May 2012 not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
+    and the asset was acquired by the taxpayer on a date
+    and the date is before or equal to 2012-05-08.
+
+a disposal is refused because section 115-120 and trusts or superannuation entities with foreign or temporary residency not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
+    and it is not the case that
+        the taxpayer is an entity of kind individual.
+
+a disposal is refused because Division 114 indexation not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer chose indexation for the asset.
+
+a disposal is refused because CGT event other than a1 not encoded
+    if the disposal is of CGT event type a type
+    and the type is different from a1.
+
+a disposal is refused because substituted accounting period not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer uses a substituted accounting period.
+
+a disposal is refused because paragraph 104-10(5)(b) and Subdivision 104-F lease granted by the taxpayer not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset is a lease granted by the taxpayer.
+
+a disposal is refused because CGT event K7 depreciating asset used for a non-taxable purpose not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset is a depreciating asset whose decline in value was worked out under Division 40 or Division 328
+    and the asset was used for a purpose other than a taxable purpose.
+
+a disposal is refused because Subdivision 115-C trust gains attributed to beneficiaries not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is a beneficiary presently entitled to a capital gain of a trust.
+
+a disposal is refused because life insurance companies not encoded
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is a life insurance company.
+
+a disposal is refused because entity kind not known to this file
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is an entity of kind a kind
+    and it is not the case that
+        the kind is in [individual, company, trust, complying superannuation entity].
+
+% If an asset marked as a personal use asset is land, a stratum unit, or a
+% building or structure that is a separate CGT asset, it cannot be a personal
+% use asset (s 108-20(3)); the inputs conflict and the file refuses.
+a disposal is refused because subsection 108-20(3) land or stratum unit or separate building cannot be a personal use asset
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset is a personal use asset
+    and the asset is land or a stratum unit or a building or structure that is a separate CGT asset under Subdivision 108-D.
+
+a disposal is refused because section 115-15 event on 21 September 1999 needs the time of day
+    if the disposal has contract date 1999-09-21.
+
+% ============================================================================
+% PART C. Missing core inputs: "cannot be assessed", naming the fact.
+% ============================================================================
+
+a disposal cannot be assessed because the taxpayer and asset of the disposal is missing
+    if the disposal has contract date a date
+    and it is not the case that
+        the disposal is a disposal of an asset by a taxpayer.
+
+a disposal cannot be assessed because the contract date of the disposal is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the disposal has contract date a date.
+
+a disposal cannot be assessed because the acquisition date of the asset is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the asset was acquired by the taxpayer on a date.
+
+a disposal cannot be assessed because the money proceeds of the disposal is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the disposal has money proceeds of an amount.
+
+a disposal cannot be assessed because the first element cost of the asset is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the asset has first element cost of an amount
+    and it is not the case that
+        the asset was acquired for no consideration
+    and it is not the case that
+        the taxpayer did not deal at arm s length in acquiring the asset.
+
+a disposal cannot be assessed because the market value of the asset when acquired is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset was acquired for no consideration
+    and it is not the case that
+        the asset had a market value of an amount when acquired.
+
+a disposal cannot be assessed because the market value of the asset when acquired is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer did not deal at arm s length in acquiring the asset
+    and it is not the case that
+        the asset had a market value of an amount when acquired.
+
+a disposal cannot be assessed because the market value of the asset at the time of the disposal is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and the disposal was not at arm s length
+    and it is not the case that
+        the asset had a market value of an amount at the time of the disposal.
+
+a disposal cannot be assessed because the market value of the asset at the time of the disposal is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and the disposal has money proceeds of a number M
+    and the property proceeds of the disposal are a number P
+    and a number T = M + P
+    and T = 0
+    and it is not the case that
+        the asset had a market value of an amount at the time of the disposal.
+
+a disposal cannot be assessed because the entity kind of the taxpayer is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the taxpayer is an entity of kind a kind.
+
+a disposal cannot be assessed because the number of Australian resident days in the discount testing period is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
+    and it is not the case that
+        the taxpayer was an Australian resident for a number of the days of the discount testing period of the disposal.
+
+% Mechanical: a disposal is assessable when nothing refuses it and no core
+% input is missing. One scope gate, used once per derivation path.
+a disposal is assessable
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the disposal is refused because a reason
+    and it is not the case that
+        the disposal cannot be assessed because a fact is missing.
+
+% ============================================================================
+% PART D. Capital proceeds (s 116-20, s 116-30)
+% ============================================================================
+
+% If the disposal was at arm's length and the taxpayer received capital
+% proceeds then they are the money received plus the market value of other
+% property received (s 116-20(1)).
+the capital proceeds from a disposal are an amount
+    if the disposal is assessable
+    and it is not the case that
+        the disposal was not at arm s length
+    and the disposal has money proceeds of a number M
+    and the property proceeds of the disposal are a number P
+    and the amount = M + P
+    and the amount > 0.
+
+% If the taxpayer received no capital proceeds from the event then the
+% taxpayer is taken to have received the market value of the asset at the time
+% of the event (s 116-30(1)). [statute via TD 1999/D88 para 3 stating the rule;
+% s 116-30(3) retrieved directly lists its exceptions (C2 expiry, D1), which
+% do not cover event A1]
+the capital proceeds from a disposal are an amount
+    if the disposal is assessable
+    and it is not the case that
+        the disposal was not at arm s length
+    and the disposal has money proceeds of a number M
+    and the property proceeds of the disposal are a number P
+    and a number T = M + P
+    and T = 0
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset had a market value of the amount at the time of the disposal.
+
+% If the disposal was not at arm's length then the capital proceeds are the
+% market value of the asset at the time of the event (s 116-30(2)(b)(i)).
+the capital proceeds from a disposal are an amount
+    if the disposal is assessable
+    and the disposal was not at arm s length
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset had a market value of the amount at the time of the disposal.
+
+% ============================================================================
+% PART E. Cost base and reduced cost base (ss 110-25, 110-55, 112-20, 103-30,
+% 108-17, 108-30)
+% ============================================================================
+
+% If the asset was acquired for consideration at arm's length then the first
+% element is the money paid plus the market value of property given
+% (s 110-25(2)); the scenario states that total as "first element cost".
+the first element of the cost base of an asset is an amount
+    if a disposal is a disposal of the asset by a taxpayer
+    and the disposal is assessable
+    and it is not the case that
+        the asset was acquired for no consideration
+    and it is not the case that
+        the taxpayer did not deal at arm s length in acquiring the asset
+    and the asset has first element cost of the amount.
+
+% If no expenditure was incurred to acquire the asset then the first element is
+% its market value at acquisition (s 112-20(1)(a)).
+the first element of the cost base of an asset is an amount
+    if a disposal is a disposal of the asset by a taxpayer
+    and the disposal is assessable
+    and the asset was acquired for no consideration
+    and the asset had a market value of the amount when acquired.
+
+% If the taxpayer did not deal at arm's length in acquiring the asset then the
+% first element is its market value at acquisition (s 112-20(1)(c)).
+the first element of the cost base of an asset is an amount
+    if a disposal is a disposal of the asset by a taxpayer
+    and the disposal is assessable
+    and it is not the case that
+        the asset was acquired for no consideration
+    and the taxpayer did not deal at arm s length in acquiring the asset
+    and the asset had a market value of the amount when acquired.
+
+% If the asset is a collectable or a personal use asset then the third element
+% (costs of ownership) is excluded from its cost base (ss 108-17, 108-30).
+the third element of the cost base of an asset is 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and the asset is a collectable.
+
+the third element of the cost base of an asset is 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and the asset is a personal use asset.
+
+% If the asset was acquired on or before 20 August 1991 then its costs of
+% ownership are not a third element (s 110-25(4)).
+the third element of the cost base of an asset is 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset is a collectable
+    and it is not the case that
+        the asset is a personal use asset
+    and the asset was acquired by the taxpayer on a date
+    and the date is before or equal to 1991-08-20.
+
+% Implementation note (not law): costs of ownership not stated are nil.
+the third element of the cost base of an asset is 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset is a collectable
+    and it is not the case that
+        the asset is a personal use asset
+    and the asset was acquired by the taxpayer on a date
+    and the date is after 1991-08-20
+    and it is not the case that
+        the asset has costs of ownership of an amount.
+
+% If the asset was acquired after 20 August 1991 and is not a collectable or
+% personal use asset then the third element is its costs of ownership
+% (s 110-25(4): interest, maintenance, repairs, insurance, rates, land tax).
+the third element of the cost base of an asset is an amount
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset is a collectable
+    and it is not the case that
+        the asset is a personal use asset
+    and the asset was acquired by the taxpayer on a date
+    and the date is after 1991-08-20
+    and the asset has costs of ownership of the amount.
+
+% The cost base is the sum of the five elements (s 110-25(1)-(6)) reduced by
+% net input tax credits (s 103-30). For an asset acquired after 7.30 pm on
+% 13 May 1997, expenditure does not form part of the cost base to the extent
+% the taxpayer has deducted or can deduct it (s 110-45(2), e.g. Division 43
+% capital works). Elements not stated are taken as nil.
+the cost base of an asset is an amount
+    if a disposal is a disposal of the asset by a taxpayer
+    and the asset was acquired by the taxpayer on a date
+    and the date is after 1997-05-13
+    and the first element of the cost base of the asset is a number E1
+    and the incidental costs of the asset are a number E2
+    and the third element of the cost base of the asset is a number E3
+    and the capital improvement costs of the asset are a number E4
+    and the title costs of the asset are a number E5
+    and the net input tax credits of the asset are a number ITC
+    and the deducted amounts of the asset are a number DED
+    and a number T1 = E1 + E2
+    and a number T2 = T1 + E3
+    and a number T3 = T2 + E4
+    and a number T4 = T3 + E5
+    and a number T5 = T4 - ITC
+    and the amount = T5 - DED.
+
+% If the asset was acquired on or before 13 May 1997 then s 110-45(2) does not
+% apply and deducted amounts stay in the cost base (they still leave the
+% reduced cost base: s 110-55(4)). An acquisition on 13 May 1997 itself needs
+% the time of day; this file treats that day as "on or before".
+the cost base of an asset is an amount
+    if a disposal is a disposal of the asset by a taxpayer
+    and the asset was acquired by the taxpayer on a date
+    and the date is before or equal to 1997-05-13
+    and the first element of the cost base of the asset is a number E1
+    and the incidental costs of the asset are a number E2
+    and the third element of the cost base of the asset is a number E3
+    and the capital improvement costs of the asset are a number E4
+    and the title costs of the asset are a number E5
+    and the net input tax credits of the asset are a number ITC
+    and a number T1 = E1 + E2
+    and a number T2 = T1 + E3
+    and a number T3 = T2 + E4
+    and a number T4 = T3 + E5
+    and the amount = T4 - ITC.
+
+% The reduced cost base has the same elements except the third, which holds no
+% costs of ownership (s 110-55(2),(3)); amounts that have been or can be
+% deducted are excluded (s 110-55(4)); net input tax credits reduce it (s 103-30).
+the reduced cost base of an asset is an amount
+    if the first element of the cost base of the asset is a number E1
+    and the incidental costs of the asset are a number E2
+    and the capital improvement costs of the asset are a number E4
+    and the title costs of the asset are a number E5
+    and the net input tax credits of the asset are a number ITC
+    and the deducted amounts of the asset are a number DED
+    and a number T1 = E1 + E2
+    and a number T2 = T1 + E4
+    and a number T3 = T2 + E5
+    and a number T4 = T3 - ITC
+    and the amount = T4 - DED.
+
+% ============================================================================
+% PART F. Disregarded gains and losses (s 104-10(5), Div 118, s 108-20)
+% ============================================================================
+
+% If the asset was acquired before 20 September 1985 then the gain or loss is
+% disregarded (s 104-10(5)(a)).
+the capital gain or loss from a disposal is disregarded because paragraph 104-10(5)(a) asset acquired before 20 September 1985
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset was acquired by the taxpayer on a date
+    and the date is before 1985-09-20.
+
+% If the taxpayer was a Norfolk Island resident when the asset was acquired,
+% the asset was acquired before 24 October 2015, and the asset would have been
+% exempt under the pre-1 July 2016 Norfolk Island law, then the gain or loss is
+% disregarded (Income Tax (Transitional Provisions) Act 1997 s 102-25(2),
+% applying s 104-10(5)(a) with 24 October 2015 in place of 20 September 1985).
+the capital gain or loss from a disposal is disregarded because Norfolk Island transitional rule asset acquired by a Norfolk Island resident before 24 October 2015
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer was a resident of Norfolk Island when the asset was acquired
+    and the asset would have been exempt from CGT under the Norfolk Island law as it applied before 1 July 2016
+    and the asset was acquired by the taxpayer on a date
+    and the date is before 2015-10-24.
+
+% If the asset is a car, motor cycle or similar vehicle then the gain or loss
+% is disregarded (s 118-5(a)).
+the capital gain or loss from a disposal is disregarded because paragraph 118-5(a) car or motor cycle or similar vehicle
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is a car or motor cycle or similar vehicle.
+
+% If the asset is a decoration awarded for valour or brave conduct and the
+% taxpayer did not pay money or give property for it then the gain or loss is
+% disregarded (s 118-5(b)).
+the capital gain or loss from a disposal is disregarded because paragraph 118-5(b) valour decoration not paid for
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is a decoration awarded for valour or brave conduct
+    and it is not the case that
+        the taxpayer paid money or gave property for the asset.
+
+% If the asset is a collectable and the first element of its cost base is $500
+% or less then the gain or loss is disregarded (s 118-10(1)).
+the capital gain or loss from a disposal is disregarded because subsection 118-10(1) collectable with first element 500 or less
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is a collectable
+    and the first element of the cost base of the asset is a number E1
+    and E1 =< 500.
+
+% If the asset is a depreciating asset whose decline in value was worked out
+% under Division 40 or 328 (and it was not used for a non-taxable purpose,
+% which is refused above) then the gain or loss is disregarded (s 118-24(1)).
+the capital gain or loss from a disposal is disregarded because section 118-24 depreciating asset
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is a depreciating asset whose decline in value was worked out under Division 40 or Division 328.
+
+% If the asset is trading stock of the taxpayer at the time of the event then
+% the gain or loss is disregarded (s 118-25(1)). [statute via ATO private
+% rulings 1051222143636 and 1051268314606 stating the rule; the note to
+% s 118-25 retrieved directly]
+the capital gain or loss from a disposal is disregarded because section 118-25 trading stock
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is trading stock of the taxpayer at the time of the disposal.
+
+% If the event relates directly to compensation or damages for a wrong or
+% injury in the taxpayer's occupation then the gain or loss is disregarded
+% (s 118-37(1)(a)(i)).
+the capital gain or loss from a disposal is disregarded because subparagraph 118-37(1)(a)(i) compensation for a wrong or injury in the occupation
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the disposal relates directly to compensation or damages for a wrong or injury suffered by the taxpayer in the occupation of the taxpayer.
+
+% If the event relates directly to compensation or damages for a wrong, injury
+% or illness the taxpayer or a relative suffers personally then the gain or
+% loss is disregarded (s 118-37(1)(a)(ii)).
+the capital gain or loss from a disposal is disregarded because subparagraph 118-37(1)(a)(ii) compensation for a wrong or injury or illness suffered personally
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the disposal relates directly to compensation or damages for a wrong or injury or illness suffered personally by the taxpayer or a relative of the taxpayer.
+
+% If the event relates directly to gambling, a game or a competition with
+% prizes then the gain or loss is disregarded (s 118-37(1)(c)).
+the capital gain or loss from a disposal is disregarded because paragraph 118-37(1)(c) gambling or a game or a competition with prizes
+    if the disposal is assessable
+    and the disposal relates directly to gambling or a game or a competition with prizes.
+
+% If the gain or loss results from receiving a reimbursement or payment of
+% expenses under a listed scheme then it is disregarded (s 118-37(2)(a),(d),(e)).
+the capital gain or loss from a disposal is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme
+    if the disposal is assessable
+    and the disposal results from receiving a reimbursement or payment of expenses under a scheme
+    and the scheme is a scheme established under an enactment by an Australian government agency or a local governing body or a foreign government agency.
+
+the capital gain or loss from a disposal is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme
+    if the disposal is assessable
+    and the disposal results from receiving a reimbursement or payment of expenses under a scheme
+    and the scheme is the M4/M5 Cashback Scheme.
+
+the capital gain or loss from a disposal is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme
+    if the disposal is assessable
+    and the disposal results from receiving a reimbursement or payment of expenses under a scheme
+    and the scheme is the Unlawful Termination Assistance Scheme or the Alternative Dispute Resolution Assistance Scheme.
+
+% If the disposal is a testamentary gift of property that would have been
+% deductible under s 30-15 if it had not been testamentary then the gain or
+% loss is disregarded (s 118-60(1)).
+the capital gain or loss from a disposal is disregarded because subsection 118-60(1) testamentary gift deductible under section 30-15
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the disposal is a testamentary gift of the asset that would have been deductible under section 30-15 but for being a testamentary gift.
+
+% If the asset is an interest in rights under a life insurance policy or an
+% annuity instrument and the taxpayer (not a complying superannuation entity)
+% is its original owner then the gain or loss is disregarded (s 118-300(1)
+% table item 3). [statute via EM and PR 2018/11]
+the capital gain or loss from a disposal is disregarded because section 118-300 life policy or annuity interest of the original owner or acquired for no consideration
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is an interest in rights under a policy of insurance on the life of an individual or an annuity instrument
+    and it is not the case that
+        the taxpayer is an entity of kind complying superannuation entity
+    and the taxpayer is the original owner of the asset.
+
+% If the taxpayer acquired such an interest for no consideration then the gain
+% or loss is disregarded (s 118-300(1) table item 4). [statute via PR 2018/11]
+the capital gain or loss from a disposal is disregarded because section 118-300 life policy or annuity interest of the original owner or acquired for no consideration
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is an interest in rights under a policy of insurance on the life of an individual or an annuity instrument
+    and it is not the case that
+        the taxpayer is an entity of kind complying superannuation entity
+    and the taxpayer acquired the asset for no consideration.
+
+% ============================================================================
+% PART G. The capital gain or capital loss from CGT event A1 (s 104-10(4)),
+% reduced under s 118-20, with the personal use asset rules (ss 118-10(3),
+% 108-20(1)).
+% ============================================================================
+
+% If the first element of a personal use asset's cost base is $10,000 or less
+% and a gain would arise then the capital gain is disregarded (s 118-10(3)).
+the capital gain or loss from a disposal is disregarded because subsection 118-10(3) personal use asset gain with first element 10000 or less
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is a personal use asset
+    and the first element of the cost base of the asset is a number E1
+    and E1 =< 10000
+    and the capital proceeds from the disposal are a number CP
+    and the cost base of the asset is a number CB
+    and CP > CB.
+
+% If the gain does not exceed the amount otherwise assessable then it is
+% reduced to zero (s 118-20(2)): neither a capital gain nor a capital loss.
+the capital gain or loss from a disposal is disregarded because subsection 118-20(2) gain reduced to zero by the amount otherwise assessable
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the amount of the gain from the disposal otherwise assessable is a number INC
+    and INC > 0
+    and the capital proceeds from the disposal are a number CP
+    and the cost base of the asset is a number CB
+    and CP > CB
+    and a number RAW = CP - CB
+    and RAW =< INC.
+
+% If the capital proceeds exceed the cost base then the taxpayer makes a
+% capital gain of the excess (s 104-10(4), first limb), reduced by any amount
+% of it included in assessable income under another provision
+% (s 118-20(1),(3)); unless the gain or loss is disregarded.
+a disposal gives a capital gain of an amount
+    if the disposal is assessable
+    and it is not the case that
+        the capital gain or loss from the disposal is disregarded because a reason
+    and the disposal is a disposal of an asset by a taxpayer
+    and the capital proceeds from the disposal are a number CP
+    and the cost base of the asset is a number CB
+    and CP > CB
+    and the amount of the gain from the disposal otherwise assessable is a number INC
+    and a number RAW = CP - CB
+    and the amount = RAW - INC.
+
+% If the capital proceeds are less than the reduced cost base then the taxpayer
+% makes a capital loss (s 104-10(4), second limb), unless the asset is a
+% personal use asset, whose losses are disregarded (s 108-20(1)).
+a disposal gives a capital loss of an amount
+    if the disposal is assessable
+    and it is not the case that
+        the capital gain or loss from the disposal is disregarded because a reason
+    and the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the asset is a personal use asset
+    and the capital proceeds from the disposal are a number CP
+    and the reduced cost base of the asset is a number RCB
+    and CP < RCB
+    and the amount = RCB - CP.
+
+% If a personal use asset would give a capital loss then the loss is
+% disregarded (s 108-20(1)).
+the capital gain or loss from a disposal is disregarded because subsection 108-20(1) personal use asset loss
+    if the disposal is assessable
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset is a personal use asset
+    and the capital proceeds from the disposal are a number CP
+    and the reduced cost base of the asset is a number RCB
+    and CP < RCB.
+
+% ============================================================================
+% PART H. Discount capital gains (Div 115)
+% ============================================================================
+
+% If the taxpayer is a company then the gain is not a discount capital gain
+% (s 115-10 lists individuals, complying superannuation entities, trusts and
+% life insurance companies only).
+a disposal fails the discount test because section 115-10 company taxpayer
+    if the disposal gives a capital gain of a number G
+    and the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is an entity of kind company.
+
+% If the CGT event happened before 21 September 1999 then the gain is not a
+% discount capital gain (s 115-15).
+a disposal fails the discount test because section 115-15 event before 21 September 1999
+    if the disposal gives a capital gain of a number G
+    and the disposal has contract date a date
+    and the date is before 1999-09-21.
+
+% If the asset was not acquired at least 12 months before the CGT event then
+% the gain is not a discount capital gain (s 115-25(1)). "At least 12 months
+% before" excludes both the acquisition day and the event day (TD 2002/10): the
+% event must fall after the first anniversary of the acquisition.
+a disposal fails the discount test because subsection 115-25(1) asset not acquired at least 12 months before the event
+    if the disposal gives a capital gain of a number G
+    and the disposal is a disposal of an asset by a taxpayer
+    and the asset was acquired by the taxpayer on a date
+    and an anniversary is 12 months after the date
+    and the disposal has contract date a second date
+    and the second date is before or equal to the anniversary.
+
+% Mechanical: a capital gain is a discount capital gain when no test fails
+% (s 115-5: ss 115-10, 115-15, 115-20 and 115-25; indexation (s 115-20) is
+% refused above, so a gain that reaches here was worked out without it).
+a disposal gives a discount capital gain
+    if the disposal gives a capital gain of a number G
+    and it is not the case that
+        the disposal fails the discount test because a reason.
+
+% If the discount capital gain is made by an individual who was an Australian
+% resident throughout the discount testing period, or by a trust, then the
+% discount percentage is 50% (s 115-100(a)): half the gain remains.
+the fraction of a discount capital gain from a disposal that remains after the discount is 0.5
+    if the disposal gives a discount capital gain
+    and the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is an entity of kind individual
+    and it is not the case that
+        the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal.
+
+the fraction of a discount capital gain from a disposal that remains after the discount is 0.5
+    if the disposal gives a discount capital gain
+    and the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is an entity of kind trust.
+
+% If the discount capital gain is made by a complying superannuation entity
+% then the discount percentage is 33 1/3% (s 115-100(b)): two thirds remain.
+the fraction of a discount capital gain from a disposal that remains after the discount is a number
+    if the disposal gives a discount capital gain
+    and the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is an entity of kind complying superannuation entity
+    and the number = 2 / 3.
+
+% If the individual was a foreign or temporary resident during part of a
+% discount testing period that started after 8 May 2012 then the discount
+% percentage is (Australian resident days) / (2 x days in the period)
+% (ss 115-105, 115-115(2)). The period runs from the acquisition day to the
+% event day, both inclusive.
+the fraction of a discount capital gain from a disposal that remains after the discount is a number
+    if the disposal gives a discount capital gain
+    and the disposal is a disposal of an asset by a taxpayer
+    and the taxpayer is an entity of kind individual
+    and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
+    and the taxpayer was an Australian resident for a number RD of the days of the discount testing period of the disposal
+    and the asset was acquired by the taxpayer on a date
+    and the disposal has contract date a second date
+    and the second date is a number N days after the date
+    and a number TD = N + 1
+    and a number DEN = 2 * TD
+    and a number PCT = RD / DEN
+    and the number = 1 - PCT.
+
+% ============================================================================
+% PART I. The net capital gain method statement (s 102-5(1)) and net capital
+% loss (s 102-10), with collectables quarantined (s 108-10).
+% ============================================================================
+
+% Mechanical.
+a taxpayer has a disposal in the income year a year
+    if the disposal is a disposal of an asset by the taxpayer
+    and the disposal is in the income year the year.
+
+% If any disposal of the taxpayer in the year is refused or cannot be assessed
+% then the net capital gain cannot be worked out (no figure is guessed).
+the net capital gain of a taxpayer for the income year a year cannot be worked out because refusal of one disposal in that income year
+    if the taxpayer has a disposal in the income year the year
+    and the disposal is a disposal of an asset by the taxpayer
+    and the disposal is refused because a reason.
+
+the net capital gain of a taxpayer for the income year a year cannot be worked out because missing input on one disposal in that income year
+    if the taxpayer has a disposal in the income year the year
+    and the disposal is a disposal of an asset by the taxpayer
+    and the disposal cannot be assessed because a fact is missing.
+
+% If losses must be applied and the discount gains of the year do not all carry
+% the same discount percentage then the taxpayer's choice of order (s 102-5
+% step 1 note 1, step 2 note 2) changes the result; this file does not choose.
+a taxpayer has a mixed discount percentage problem for a year
+    if the taxpayer has a disposal in the income year the year
+    and the disposal is a disposal of an asset by the taxpayer
+    and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
+    and the disposal gives a discount capital gain
+    and the current year capital losses of the taxpayer for the year are a number L
+    and the prior year net capital losses available to the taxpayer for the year are a number PL
+    and the collectable losses available to the taxpayer for the year are a number CL
+    and a number T1 = L + PL
+    and a number T2 = T1 + CL
+    and T2 > 0.
+
+the net capital gain of a taxpayer for the income year a year cannot be worked out because taxpayer choice of loss order across discount gains with different percentages
+    if the taxpayer has a mixed discount percentage problem for the year.
+
+% Mechanical: current year collectable gains, split into non-discount and
+% discount gains. Collectable losses reduce collectable gains only
+% (s 108-10(1)); the taxpayer chooses the order (note to s 108-10(1)). This
+% file applies them to non-discount gains first, the order that gives the
+% lowest net capital gain.
+the current year collectable gains of a taxpayer for a year are a first amount non-discount and a second amount discount
+    if the taxpayer has a disposal in the income year the year
+    and the first amount is the sum of each gain such that
+            a disposal D is a disposal of an asset A by the taxpayer
+            and D is in the income year the year
+            and A is a collectable
+            and D gives a capital gain of the gain
+            and it is not the case that
+                D gives a discount capital gain
+    and the second amount is the sum of each other gain such that
+            a disposal E is a disposal of an asset B by the taxpayer
+            and E is in the income year the year
+            and B is a collectable
+            and E gives a capital gain of the other gain
+            and E gives a discount capital gain.
+
+% The collectable losses available are the current year capital losses from
+% collectables plus unapplied net capital losses from collectables of earlier
+% years (s 108-10(1), (4)).
+the collectable losses available to a taxpayer for a year are an amount
+    if the taxpayer has a disposal in the income year the year
+    and a number CUR is the sum of each loss such that
+            a disposal D is a disposal of an asset A by the taxpayer
+            and D is in the income year the year
+            and A is a collectable
+            and D gives a capital loss of the loss
+    and a number PRI is the sum of each other loss such that
+            the taxpayer has an unapplied net capital loss from collectables of the other loss from the income year a prior year
+            and the prior year < the year
+    and the amount = CUR + PRI.
+
+% Mechanical: collectable losses are applied up to the collectable gains.
+the collectable losses applied by a taxpayer for a year are an amount
+    if the collectable losses available to the taxpayer for the year are a number CL
+    and the current year collectable gains of the taxpayer for the year are a number CN non-discount and a number CD discount
+    and a number TOT = CN + CD
+    and the minimum of CL and TOT is the amount.
+
+% If collectable losses exceed collectable gains then the excess is a net
+% capital loss from collectables, carried to a later year (s 108-10(4)).
+the net capital loss from collectables of a taxpayer for the income year a year is an amount
+    if the collectable losses available to the taxpayer for the year are a number CL
+    and the collectable losses applied by the taxpayer for the year are a number AP
+    and CL > AP
+    and the amount = CL - AP.
+
+% Mechanical: the current year gains after collectable losses, in two groups:
+% non-discount (collectable losses applied there first) and discount.
+the current year gains of a taxpayer for a year after collectable losses are a first amount non-discount and a second amount discount
+    if the current year collectable gains of the taxpayer for the year are a number CN non-discount and a number CD discount
+    and the collectable losses applied by the taxpayer for the year are a number AP
+    and the minimum of AP and CN is a number APN
+    and a number APD = AP - APN
+    and a number ON is the sum of each gain such that
+            a disposal D is a disposal of an asset A by the taxpayer
+            and D is in the income year the year
+            and it is not the case that
+                A is a collectable
+            and D gives a capital gain of the gain
+            and it is not the case that
+                D gives a discount capital gain
+    and a number OD is the sum of each other gain such that
+            a disposal E is a disposal of an asset B by the taxpayer
+            and E is in the income year the year
+            and it is not the case that
+                B is a collectable
+            and E gives a capital gain of the other gain
+            and E gives a discount capital gain
+    and a number RN = CN - APN
+    and the first amount = RN + ON
+    and a number RDI = CD - APD
+    and the second amount = RDI + OD.
+
+% Mechanical: the current year capital losses other than from collectables
+% (personal use asset losses never arise: s 108-20(1)).
+the current year capital losses of a taxpayer for a year are an amount
+    if the taxpayer has a disposal in the income year the year
+    and the amount is the sum of each loss such that
+            a disposal D is a disposal of an asset A by the taxpayer
+            and D is in the income year the year
+            and it is not the case that
+                A is a collectable
+            and D gives a capital loss of the loss.
+
+% Step 1 (s 102-5(1)): reduce the capital gains by the capital losses of the
+% year, non-discount gains first (the taxpayer's choice; note 1 to step 1).
+the gains of a taxpayer for a year after step 1 are a first amount non-discount and a second amount discount
+    if the current year gains of the taxpayer for the year after collectable losses are a number GN non-discount and a number GD discount
+    and the current year capital losses of the taxpayer for the year are a number L
+    and the minimum of L and GN is a number LN
+    and a number LREM = L - LN
+    and the minimum of LREM and GD is a number LD
+    and the first amount = GN - LN
+    and the second amount = GD - LD.
+
+% If the capital losses of the year exceed the capital gains of the year then
+% the excess is the net capital loss for the year (s 102-10(1)); prior year
+% losses are not consumed (s 102-5 step 2 applies only to amounts remaining).
+the net capital loss of a taxpayer for the income year a year is an amount
+    if the current year gains of the taxpayer for the year after collectable losses are a number GN non-discount and a number GD discount
+    and the current year capital losses of the taxpayer for the year are a number L
+    and a number TOT = GN + GD
+    and L > TOT
+    and the amount = L - TOT.
+
+% Step 2 (s 102-5(1)): apply unapplied net capital losses from earlier years
+% (s 102-15: in the order made) to the amounts remaining, non-discount first.
+the prior year net capital losses available to a taxpayer for a year are an amount
+    if the taxpayer has a disposal in the income year the year
+    and the amount is the sum of each loss such that
+            the taxpayer has an unapplied net capital loss of the loss from the income year a prior year
+            and the prior year < the year.
+
+the gains of a taxpayer for a year after step 2 are a first amount non-discount and a second amount discount
+    if the gains of the taxpayer for the year after step 1 are a number GN non-discount and a number GD discount
+    and the prior year net capital losses available to the taxpayer for the year are a number PL
+    and the minimum of PL and GN is a number PN
+    and a number PREM = PL - PN
+    and the minimum of PREM and GD is a number PD
+    and the first amount = GN - PN
+    and the second amount = GD - PD.
+
+% Mechanical: prior year losses not applied remain carried forward
+% (s 960-20(1)): a net capital loss is applied only to the extent not utilised.
+the prior year net capital losses of a taxpayer that remain unapplied after a year are an amount
+    if the gains of the taxpayer for the year after step 1 are a number GN non-discount and a number GD discount
+    and the prior year net capital losses available to the taxpayer for the year are a number PL
+    and a number TOT = GN + GD
+    and the minimum of PL and TOT is a number USED
+    and the amount = PL - USED.
+
+% Step 3 (s 102-5(1)): reduce each discount capital gain remaining after step 2
+% by its discount percentage. Losses are applied to the discount pool as a
+% whole, so each gain in the pool is reduced in proportion; every gain in the
+% pool carries the same percentage (mixed percentages are refused above), so
+% the discounted total equals the pool total times the fraction kept.
+the discounted gains of a taxpayer for a year are 0
+    if the gains of the taxpayer for the year after step 2 are a number GN non-discount and 0 discount.
+
+the discounted gains of a taxpayer for a year are an amount
+    if the gains of the taxpayer for the year after step 2 are a number GN non-discount and a number GD discount
+    and GD > 0
+    and a number SUM is the sum of each product such that
+            a disposal D is a disposal of an asset A by the taxpayer
+            and D is in the income year the year
+            and D gives a discount capital gain
+            and D gives a capital gain of a number G
+            and the fraction of a discount capital gain from D that remains after the discount is a number K
+            and the product = G * K
+    and a number GROSS is the sum of each gain such that
+            a disposal E is a disposal of an asset B by the taxpayer
+            and E is in the income year the year
+            and E gives a discount capital gain
+            and E gives a capital gain of the gain
+    and a number NUM = SUM * GD
+    and the amount = NUM / GROSS.
+
+% Step 5 (s 102-5(1)): the net capital gain is the sum of the amounts remaining
+% (step 4, the small business concessions, is refused above).
+the net capital gain of a taxpayer for the income year a year is an amount
+    if the taxpayer has a disposal in the income year the year
+    and it is not the case that
+        the net capital gain of the taxpayer for the income year the year cannot be worked out because a reason
+    and it is not the case that
+        the net capital loss of the taxpayer for the income year the year is a number NCL
+    and the gains of the taxpayer for the year after step 2 are a number GN non-discount and a number GD discount
+    and the discounted gains of the taxpayer for the year are a number DG
+    and the amount = GN + DG.
+
+% ============================================================================
+% Implementation notes (not law)
+% ============================================================================
+
+% An element not stated in the scenario is nil.
+the property proceeds of a disposal are an amount
+    if the disposal has property proceeds with market value of the amount.
+
+the property proceeds of a disposal are 0
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the disposal has property proceeds with market value of an amount.
+
+the incidental costs of an asset are an amount
+    if the asset has incidental costs of the amount.
+
+the incidental costs of an asset are 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset has incidental costs of an amount.
+
+the capital improvement costs of an asset are an amount
+    if the asset has capital improvement costs of the amount.
+
+the capital improvement costs of an asset are 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset has capital improvement costs of an amount.
+
+the title costs of an asset are an amount
+    if the asset has title costs of the amount.
+
+the title costs of an asset are 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset has title costs of an amount.
+
+the net input tax credits of an asset are an amount
+    if the asset has net input tax credits of the amount.
+
+the net input tax credits of an asset are 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset has net input tax credits of an amount.
+
+the deducted amounts of an asset are an amount
+    if the asset has deducted amounts of the amount.
+
+the deducted amounts of an asset are 0
+    if a disposal is a disposal of the asset by a taxpayer
+    and it is not the case that
+        the asset has deducted amounts of an amount.
+
+the amount of the gain from a disposal otherwise assessable is an amount
+    if the amount of the gain from the disposal is included in assessable income under another provision.
+
+the amount of the gain from a disposal otherwise assessable is 0
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        an amount of the gain from the disposal is included in assessable income under another provision.
+
+% Arithmetic helper.
+the minimum of a first number and a second number is a third number
+    if the first number =< the second number
+    and the third number = the first number.
+
+the minimum of a first number and a second number is a third number
+    if the first number > the second number
+    and the third number = the second number.
+
+% ============================================================================
+% SCENARIOS
+% ============================================================================
+
+% --- S1. Simple share sale, individual, held more than 12 months -----------
+% Working [statute]: proceeds 15000 (s 116-20); cost base 10000 + 200 incidental
+% = 10200 (s 110-25(2),(3)); gain 4800 (s 104-10(4)); acquired 2024-02-02,
+% anniversary 2025-02-02, contract 2025-02-03 is after it: discount (TD 2002/10);
+% individual 50% (s 115-100(a)); no losses; net capital gain 2400 for 2024-25.
+scenario s1 shares is:
+    alpha is an entity of kind individual.
+    d1 is a disposal of shares one by alpha.
+    d1 has contract date 2025-02-03.
+    shares one was acquired by alpha on 2024-02-02.
+    d1 has money proceeds of 15000.
+    shares one has first element cost of 10000.
+    shares one has incidental costs of 200.
+    cost base expects answers ["the cost base of shares one is 10200"].
+    gain expects answers ["d1 gives a capital gain of 4800"].
+    discount expects answers ["d1 gives a discount capital gain"].
+    net gain expects answers ["the net capital gain of alpha for the income year 2025 is 2400.00"].
+    refused expects answers [].
+    missing expects answers [].
+
+% --- S2. Same facts but sold on the anniversary: no discount (boundary) ------
+% Working [statute]: contract 2025-02-02 is not after the anniversary 2025-02-02
+% (TD 2002/10 example: 2 Feb to 2 Feb fails; 3 Feb passes); net capital gain 4800.
+scenario s2 shares on anniversary is:
+    alpha is an entity of kind individual.
+    d1 is a disposal of shares one by alpha.
+    d1 has contract date 2025-02-02.
+    shares one was acquired by alpha on 2024-02-02.
+    d1 has money proceeds of 15000.
+    shares one has first element cost of 10000.
+    shares one has incidental costs of 200.
+    discount expects answers [].
+    discount fail expects answers ["d1 fails the discount test because subsection 115-25(1) asset not acquired at least 12 months before the event"].
+    net gain expects answers ["the net capital gain of alpha for the income year 2025 is 4800.00"].
+
+% --- S3. Capital loss, individual -------------------------------------------
+% Working [statute]: reduced cost base 20000 + 100 = 20100 (s 110-55(2));
+% proceeds 15000 < 20100: capital loss 5100 (s 104-10(4)); net capital loss
+% 5100 for 2024-25 (s 102-10); no net capital gain.
+scenario s3 loss is:
+    beta is an entity of kind individual.
+    d1 is a disposal of shares two by beta.
+    d1 has contract date 2025-03-01.
+    shares two was acquired by beta on 2023-01-10.
+    d1 has money proceeds of 15000.
+    shares two has first element cost of 20000.
+    shares two has incidental costs of 100.
+    loss expects answers ["d1 gives a capital loss of 5100"].
+    net loss expects answers ["the net capital loss of beta for the income year 2025 is 5100"].
+    net gain expects answers [].
+
+% --- S4. Company: costs of ownership in cost base, no discount ----------------
+% Working [statute]: acquired after 20 Aug 1991 so the 30000 costs of ownership
+% are a third element (s 110-25(4)); cost base 500000+10000+30000 = 540000;
+% gain 700000-540000 = 160000; a company cannot make a discount capital gain
+% (s 115-10); contract 15 Oct 2025 is in the year ending 30 June 2026; net
+% capital gain 160000 for 2026.
+scenario s4 company is:
+    gamma co is an entity of kind company.
+    d1 is a disposal of warehouse by gamma co.
+    d1 has contract date 2025-10-15.
+    warehouse was acquired by gamma co on 2020-01-01.
+    d1 has money proceeds of 700000.
+    warehouse has first element cost of 500000.
+    warehouse has incidental costs of 10000.
+    warehouse has costs of ownership of 30000.
+    cost base expects answers ["the cost base of warehouse is 540000"].
+    gain expects answers ["d1 gives a capital gain of 160000"].
+    discount fail expects answers ["d1 fails the discount test because section 115-10 company taxpayer"].
+    net gain expects answers ["the net capital gain of gamma co for the income year 2026 is 160000.00"].
+
+% --- S5. Complying superannuation entity: 33 1/3% discount -------------------
+% Working [statute]: gain 69000-60000 = 9000; acquired 2022-05-05, anniversary
+% 2023-05-05, contract 2025-05-06 after it: discount; percentage 33 1/3%
+% (s 115-100(b)): 9000 x 2/3 = 6000.
+scenario s5 super fund is:
+    delta fund is an entity of kind complying superannuation entity.
+    d1 is a disposal of units one by delta fund.
+    d1 has contract date 2025-05-06.
+    units one was acquired by delta fund on 2022-05-05.
+    d1 has money proceeds of 69000.
+    units one has first element cost of 60000.
+    fraction expects answers ["the fraction of a discount capital gain from d1 that remains after the discount is 0.67"].
+    net gain expects answers ["the net capital gain of delta fund for the income year 2025 is 6000.00"].
+
+% --- S6. Trust: 50% discount ---------------------------------------------------
+% Working [statute]: as S1 but a trust (s 115-10(c), s 115-100(a)(ii)): 2400.
+scenario s6 trust is:
+    epsilon trust is an entity of kind trust.
+    d1 is a disposal of shares one by epsilon trust.
+    d1 has contract date 2025-02-03.
+    shares one was acquired by epsilon trust on 2024-02-02.
+    d1 has money proceeds of 15000.
+    shares one has first element cost of 10000.
+    shares one has incidental costs of 200.
+    net gain expects answers ["the net capital gain of epsilon trust for the income year 2025 is 2400.00"].
+
+% --- S7. Ordering: a loss against a non-discount gain and a discount gain -----
+% Working [statute]: d1 gain 20000 (discount: held since 2020); d2 gain 4000
+% (acquired 2024-09-01, sold 2025-01-15: not 12 months); d3 loss 6000.
+% Step 1 (s 102-5): the taxpayer chooses the order; the file applies the loss to
+% the non-discount gain first: 4000 -> 0, remaining 2000 against 20000 -> 18000.
+% Step 3: 18000 x 50% = 9000. Net capital gain 9000. (Applying the loss to the
+% discount gain first would give 14000 x 50% + 4000 = 11000: the choice matters.)
+scenario s7 ordering is:
+    zeta is an entity of kind individual.
+    d1 is a disposal of land one by zeta.
+    d1 has contract date 2024-12-01.
+    land one was acquired by zeta on 2020-01-01.
+    d1 has money proceeds of 30000.
+    land one has first element cost of 10000.
+    d2 is a disposal of shares three by zeta.
+    d2 has contract date 2025-01-15.
+    shares three was acquired by zeta on 2024-09-01.
+    d2 has money proceeds of 9000.
+    shares three has first element cost of 5000.
+    d3 is a disposal of shares four by zeta.
+    d3 has contract date 2025-02-01.
+    shares four was acquired by zeta on 2021-01-01.
+    d3 has money proceeds of 6000.
+    shares four has first element cost of 12000.
+    gain expects answers ["d1 gives a capital gain of 20000", "d2 gives a capital gain of 4000"].
+    loss expects answers ["d3 gives a capital loss of 6000"].
+    discount expects answers ["d1 gives a discount capital gain"].
+    net gain expects answers ["the net capital gain of zeta for the income year 2025 is 9000.00"].
+    net loss expects answers [].
+
+% --- S8. Collectables quarantined (the example in s 108-10(1), with a discount)
+% Working [statute]: painting gain 200 (collectable, held 5 years: discount);
+% coin loss 400 (collectable); shares gain 500 (held since 2023-05-05, sold
+% 2024-10-10: discount). s 108-10(1): the 400 reduces only the 200 collectable
+% gain -> 0; net capital loss from collectables 200 (s 108-10(4)). Shares gain
+% 500 x 50% = 250. Net capital gain 250. (The Act's example, without the
+% discount, gives 500.)
+scenario s8 collectables is:
+    eta is an entity of kind individual.
+    painting is a collectable.
+    coin is a collectable.
+    d1 is a disposal of painting by eta.
+    d1 has contract date 2024-08-08.
+    painting was acquired by eta on 2019-03-03.
+    d1 has money proceeds of 2200.
+    painting has first element cost of 2000.
+    d2 is a disposal of coin by eta.
+    d2 has contract date 2024-09-09.
+    coin was acquired by eta on 2022-02-02.
+    d2 has money proceeds of 600.
+    coin has first element cost of 1000.
+    d3 is a disposal of shares five by eta.
+    d3 has contract date 2024-10-10.
+    shares five was acquired by eta on 2023-05-05.
+    d3 has money proceeds of 1500.
+    shares five has first element cost of 1000.
+    gain expects answers ["d1 gives a capital gain of 200", "d3 gives a capital gain of 500"].
+    loss expects answers ["d2 gives a capital loss of 400"].
+    collectable loss carried expects answers ["the net capital loss from collectables of eta for the income year 2025 is 200"].
+    net gain expects answers ["the net capital gain of eta for the income year 2025 is 250.00"].
+    net loss expects answers [].
+
+% --- S9. Prior year net capital losses, earliest first, fully absorbed --------
+% Working [statute]: gain 20000 (discount). Step 2 (s 102-5, s 102-15): 5000
+% (2022) then 3000 (2023) applied: 20000 - 8000 = 12000. Step 3: 6000. Prior
+% losses remaining 0.
+scenario s9 prior losses is:
+    theta is an entity of kind individual.
+    d1 is a disposal of land one by theta.
+    d1 has contract date 2024-12-01.
+    land one was acquired by theta on 2020-01-01.
+    d1 has money proceeds of 30000.
+    land one has first element cost of 10000.
+    theta has an unapplied net capital loss of 5000 from the income year 2022.
+    theta has an unapplied net capital loss of 3000 from the income year 2023.
+    net gain expects answers ["the net capital gain of theta for the income year 2025 is 6000.00"].
+    prior losses carried expects answers ["the prior year net capital losses of theta that remain unapplied after 2025 are 0"].
+
+% --- S10. Prior year losses exceed the gain: nil net capital gain, remainder
+% carried forward, no net capital loss arises (s 102-10 is about current year
+% losses only).
+% Working [statute]: gain 20000; prior loss 25000; step 2 leaves 0; net capital
+% gain 0; unapplied 5000 carried forward (s 960-20(1)); no net capital loss.
+scenario s10 prior losses exceed is:
+    theta is an entity of kind individual.
+    d1 is a disposal of land one by theta.
+    d1 has contract date 2024-12-01.
+    land one was acquired by theta on 2020-01-01.
+    d1 has money proceeds of 30000.
+    land one has first element cost of 10000.
+    theta has an unapplied net capital loss of 25000 from the income year 2022.
+    net gain expects answers ["the net capital gain of theta for the income year 2025 is 0"].
+    net loss expects answers [].
+    prior losses carried expects answers ["the prior year net capital losses of theta that remain unapplied after 2025 are 5000"].
+
+% --- S11. Personal use assets: the $10,000 boundary and the loss rule ---------
+% Working [statute]: boat one first element 10000 (= 10000 or less): gain
+% disregarded (s 118-10(3)); boat two first element 10001: gain 15001-10001 =
+% 5000 (held 6 months: no discount); boat three: proceeds 15000 < reduced cost
+% base 20000, but a loss from a personal use asset is disregarded (s 108-20(1)).
+% Net capital gain 5000.
+scenario s11 personal use assets is:
+    iota is an entity of kind individual.
+    boat one is a personal use asset.
+    boat two is a personal use asset.
+    boat three is a personal use asset.
+    d1 is a disposal of boat one by iota.
+    d1 has contract date 2025-03-01.
+    boat one was acquired by iota on 2024-09-01.
+    d1 has money proceeds of 15000.
+    boat one has first element cost of 10000.
+    d2 is a disposal of boat two by iota.
+    d2 has contract date 2025-03-01.
+    boat two was acquired by iota on 2024-09-01.
+    d2 has money proceeds of 15001.
+    boat two has first element cost of 10001.
+    d3 is a disposal of boat three by iota.
+    d3 has contract date 2025-03-01.
+    boat three was acquired by iota on 2024-09-01.
+    d3 has money proceeds of 15000.
+    boat three has first element cost of 20000.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-10(3) personal use asset gain with first element 10000 or less", "the capital gain or loss from d3 is disregarded because subsection 108-20(1) personal use asset loss"].
+    gain expects answers ["d2 gives a capital gain of 5000"].
+    loss expects answers [].
+    net gain expects answers ["the net capital gain of iota for the income year 2025 is 5000.00"].
+
+% --- S12. Collectables: the $500 boundary; costs of ownership excluded ---------
+% Working [statute]: coin one first element 500: disregarded (s 118-10(1));
+% coin two first element 501, costs of ownership 100 are not in the cost base
+% of a collectable (s 108-17): cost base 501, gain 900-501 = 399 (held 6
+% months: no discount). Net capital gain 399.
+scenario s12 collectable boundary is:
+    kappa is an entity of kind individual.
+    coin one is a collectable.
+    coin two is a collectable.
+    d1 is a disposal of coin one by kappa.
+    d1 has contract date 2025-03-01.
+    coin one was acquired by kappa on 2024-09-01.
+    d1 has money proceeds of 900.
+    coin one has first element cost of 500.
+    d2 is a disposal of coin two by kappa.
+    d2 has contract date 2025-03-01.
+    coin two was acquired by kappa on 2024-09-01.
+    d2 has money proceeds of 900.
+    coin two has first element cost of 501.
+    coin two has costs of ownership of 100.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-10(1) collectable with first element 500 or less"].
+    cost base expects answers ["the cost base of coin one is 500", "the cost base of coin two is 501"].
+    gain expects answers ["d2 gives a capital gain of 399"].
+    net gain expects answers ["the net capital gain of kappa for the income year 2025 is 399.00"].
+
+% --- S13. Nil gain, $1 gain, deducted amounts, and the cost base / reduced
+% cost base gap ----------------------------------------------------------------
+% Working [statute]: d1 proceeds 1000 = cost base 1000: neither gain nor loss
+% (s 104-10(4) needs "more than" or "less than"). d2 proceeds 1001: gain 1.
+% d3: acquired 2024, cost 120, deducted 30: s 110-45(2) removes the 30 from the
+% cost base (90) and s 110-55(4) from the reduced cost base (90); proceeds 100
+% > 90: gain 10. d4: acquired 1990 (before 13 May 1997): s 110-45(2) does not
+% apply, cost base 120, reduced cost base 90; proceeds 100 are not more than
+% 120 and not less than 90: neither a gain nor a loss. Net capital gain
+% 1 + 10 = 11 (both held 6 months: no discount).
+scenario s13 nil and one dollar is:
+    lambda is an entity of kind individual.
+    d1 is a disposal of shares six by lambda.
+    d1 has contract date 2025-03-01.
+    shares six was acquired by lambda on 2024-09-01.
+    d1 has money proceeds of 1000.
+    shares six has first element cost of 1000.
+    d2 is a disposal of shares seven by lambda.
+    d2 has contract date 2025-03-01.
+    shares seven was acquired by lambda on 2024-09-01.
+    d2 has money proceeds of 1001.
+    shares seven has first element cost of 1000.
+    d3 is a disposal of building one by lambda.
+    d3 has contract date 2025-03-01.
+    building one was acquired by lambda on 2024-09-01.
+    d3 has money proceeds of 100.
+    building one has first element cost of 120.
+    building one has deducted amounts of 30.
+    d4 is a disposal of building two by lambda.
+    d4 has contract date 2025-03-01.
+    building two was acquired by lambda on 1990-09-01.
+    d4 has money proceeds of 100.
+    building two has first element cost of 120.
+    building two has deducted amounts of 30.
+    cost base expects answers ["the cost base of shares six is 1000", "the cost base of shares seven is 1000", "the cost base of building one is 90", "the cost base of building two is 120"].
+    reduced cost base expects answers ["the reduced cost base of shares six is 1000", "the reduced cost base of shares seven is 1000", "the reduced cost base of building one is 90", "the reduced cost base of building two is 90"].
+    gain expects answers ["d2 gives a capital gain of 1", "d3 gives a capital gain of 10"].
+    loss expects answers [].
+    disregarded expects answers [].
+    net gain expects answers ["the net capital gain of lambda for the income year 2025 is 11.00"].
+
+% --- S14. Section 118-20: amount otherwise assessable ------------------------
+% Working [statute]: d1 gain 30000 does not exceed the 40000 included under
+% s 6-5: reduced to zero (s 118-20(2), the Act's example); d2 gain 50000
+% exceeds the 20000 included: reduced to 30000 (s 118-20(3)); both held under
+% 12 months: no discount; net capital gain 30000.
+scenario s14 otherwise assessable is:
+    mu is an entity of kind individual.
+    d1 is a disposal of lot one by mu.
+    d1 has contract date 2025-03-01.
+    lot one was acquired by mu on 2024-09-01.
+    d1 has money proceeds of 130000.
+    lot one has first element cost of 100000.
+    40000 of the gain from d1 is included in assessable income under another provision.
+    d2 is a disposal of lot two by mu.
+    d2 has contract date 2025-03-01.
+    lot two was acquired by mu on 2024-09-01.
+    d2 has money proceeds of 150000.
+    lot two has first element cost of 100000.
+    20000 of the gain from d2 is included in assessable income under another provision.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-20(2) gain reduced to zero by the amount otherwise assessable"].
+    gain expects answers ["d2 gives a capital gain of 30000"].
+    net gain expects answers ["the net capital gain of mu for the income year 2025 is 30000.00"].
+
+% --- S15. Market value substitution on both sides -----------------------------
+% Working [statute]: house acquired from a parent for no consideration: first
+% element = market value 300000 at acquisition (s 112-20(1)(a)); sold to a
+% sibling not at arm's length: proceeds = market value 450000 at the event
+% (s 116-30(2)(b)(i)), not the 100000 paid; gain 150000; held since 2015:
+% discount; net capital gain 75000.
+scenario s15 market value substitution is:
+    nu is an entity of kind individual.
+    d1 is a disposal of house one by nu.
+    d1 has contract date 2025-03-01.
+    house one was acquired by nu on 2015-06-01.
+    house one was acquired for no consideration.
+    house one had a market value of 300000 when acquired.
+    d1 was not at arm s length.
+    d1 has money proceeds of 100000.
+    house one had a market value of 450000 at the time of d1.
+    proceeds expects answers ["the capital proceeds from d1 are 450000"].
+    cost base expects answers ["the cost base of house one is 300000"].
+    gain expects answers ["d1 gives a capital gain of 150000"].
+    net gain expects answers ["the net capital gain of nu for the income year 2025 is 75000.00"].
+
+% --- S16. GST input tax credits and property proceeds -----------------------
+% Working [statute]: EM example to s 103-30: cost 1100 incl. 100 GST with an
+% input tax credit of 100: cost base 1000. Proceeds: 1200 money + property
+% worth 300 = 1500 (s 116-20(1)(a),(b)). Gain 500 (held 6 months: no discount).
+scenario s16 gst and property proceeds is:
+    xi co is an entity of kind company.
+    d1 is a disposal of machine one by xi co.
+    d1 has contract date 2025-03-01.
+    machine one was acquired by xi co on 2024-09-01.
+    d1 has money proceeds of 1200.
+    d1 has property proceeds with market value of 300.
+    machine one has first element cost of 1100.
+    machine one has net input tax credits of 100.
+    proceeds expects answers ["the capital proceeds from d1 are 1500"].
+    cost base expects answers ["the cost base of machine one is 1000"].
+    gain expects answers ["d1 gives a capital gain of 500"].
+    net gain expects answers ["the net capital gain of xi co for the income year 2025 is 500.00"].
+
+% --- S17. Pre-CGT and the day before CGT started (received file: Colin, Loan) --
+% Working [statute]: stamps acquired 1980: gain or loss disregarded
+% (s 104-10(5)(a)); shares acquired 1985-09-19 (before 20 September 1985):
+% disregarded; shares acquired 1985-09-20: not pre-CGT, gain 400 (discount:
+% held for decades): 200. Net capital gain 200.
+scenario s17 pre cgt is:
+    omicron is an entity of kind individual.
+    d1 is a disposal of stamps by omicron.
+    d1 has contract date 2025-03-01.
+    stamps was acquired by omicron on 1980-01-01.
+    d1 has money proceeds of 5000.
+    stamps has first element cost of 100.
+    d2 is a disposal of shares eight by omicron.
+    d2 has contract date 2025-03-01.
+    shares eight was acquired by omicron on 1985-09-19.
+    d2 has money proceeds of 5000.
+    shares eight has first element cost of 100.
+    d3 is a disposal of shares nine by omicron.
+    d3 has contract date 2025-03-01.
+    shares nine was acquired by omicron on 1985-09-20.
+    d3 has money proceeds of 500.
+    shares nine has first element cost of 100.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because paragraph 104-10(5)(a) asset acquired before 20 September 1985", "the capital gain or loss from d2 is disregarded because paragraph 104-10(5)(a) asset acquired before 20 September 1985"].
+    gain expects answers ["d3 gives a capital gain of 400"].
+    net gain expects answers ["the net capital gain of omicron for the income year 2025 is 200.00"].
+
+% --- S18. Norfolk Island (received file: Colin) ------------------------------
+% Working [statute via EM, IT(TP)A s 102-25]: asset one acquired 2000-01-01 by a
+% Norfolk Island resident, exempt under the pre-2016 law: disregarded. asset
+% two acquired 2015-10-24 (not before): assessed normally, gain 400, discount:
+% 200. Net capital gain 200.
+scenario s18 norfolk island is:
+    colin is an entity of kind individual.
+    d1 is a disposal of asset one by colin.
+    d1 has contract date 2025-03-01.
+    asset one was acquired by colin on 2000-01-01.
+    colin was a resident of Norfolk Island when asset one was acquired.
+    asset one would have been exempt from CGT under the Norfolk Island law as it applied before 1 July 2016.
+    d1 has money proceeds of 5000.
+    asset one has first element cost of 100.
+    d2 is a disposal of asset two by colin.
+    d2 has contract date 2025-03-01.
+    asset two was acquired by colin on 2015-10-24.
+    colin was a resident of Norfolk Island when asset two was acquired.
+    asset two would have been exempt from CGT under the Norfolk Island law as it applied before 1 July 2016.
+    d2 has money proceeds of 500.
+    asset two has first element cost of 100.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because Norfolk Island transitional rule asset acquired by a Norfolk Island resident before 24 October 2015"].
+    gain expects answers ["d2 gives a capital gain of 400"].
+    net gain expects answers ["the net capital gain of colin for the income year 2025 is 200.00"].
+
+% --- S19. Cars and valour decorations (received file: Insurance, motor vehicle)
+% Working [statute]: car: disregarded (s 118-5(a)) even with a gain; medal not
+% paid for: disregarded (s 118-5(b)); medal bought: not disregarded under
+% s 118-5(b), gain 2000 (held 6 months). Net capital gain 2000.
+scenario s19 cars and medals is:
+    pi is an entity of kind individual.
+    car one is a car or motor cycle or similar vehicle.
+    medal one is a decoration awarded for valour or brave conduct.
+    medal two is a decoration awarded for valour or brave conduct.
+    pi paid money or gave property for medal two.
+    d1 is a disposal of car one by pi.
+    d1 has contract date 2025-03-01.
+    car one was acquired by pi on 2020-01-01.
+    d1 has money proceeds of 30000.
+    car one has first element cost of 20000.
+    d2 is a disposal of medal one by pi.
+    d2 has contract date 2025-03-01.
+    medal one was acquired by pi on 2020-01-01.
+    d2 has money proceeds of 3000.
+    medal one has first element cost of 0.
+    d3 is a disposal of medal two by pi.
+    d3 has contract date 2025-03-01.
+    medal two was acquired by pi on 2024-09-01.
+    d3 has money proceeds of 3000.
+    medal two has first element cost of 1000.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because paragraph 118-5(a) car or motor cycle or similar vehicle", "the capital gain or loss from d2 is disregarded because paragraph 118-5(b) valour decoration not paid for"].
+    gain expects answers ["d3 gives a capital gain of 2000"].
+    net gain expects answers ["the net capital gain of pi for the income year 2025 is 2000.00"].
+
+% --- S20. Depreciating assets and trading stock (received file: Farmer, Mixed)
+% Working [statute]: tractor: depreciating asset under Div 40, used wholly for
+% a taxable purpose: disregarded (s 118-24(1)); fridge used partly privately:
+% CGT event K7 applies instead, refused; stock: trading stock at the time of
+% the event: disregarded (s 118-25). The year cannot be worked out because the
+% fridge disposal is refused.
+scenario s20 depreciating and stock is:
+    rho is an entity of kind individual.
+    tractor is a depreciating asset whose decline in value was worked out under Division 40 or Division 328.
+    fridge is a depreciating asset whose decline in value was worked out under Division 40 or Division 328.
+    fridge was used for a purpose other than a taxable purpose.
+    d1 is a disposal of tractor by rho.
+    d1 has contract date 2025-03-01.
+    tractor was acquired by rho on 2020-01-01.
+    d1 has money proceeds of 30000.
+    tractor has first element cost of 20000.
+    d2 is a disposal of fridge by rho.
+    d2 has contract date 2025-03-01.
+    fridge was acquired by rho on 2020-01-01.
+    d2 has money proceeds of 900.
+    fridge has first element cost of 1200.
+    d3 is a disposal of stock by rho.
+    d3 has contract date 2025-03-01.
+    stock was acquired by rho on 2024-09-01.
+    stock is trading stock of rho at the time of d3.
+    d3 has money proceeds of 5000.
+    stock has first element cost of 4000.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because section 118-24 depreciating asset", "the capital gain or loss from d3 is disregarded because section 118-25 trading stock"].
+    refused expects answers ["d2 is refused because CGT event K7 depreciating asset used for a non-taxable purpose not encoded"].
+    cannot expects answers ["the net capital gain of rho for the income year 2025 cannot be worked out because refusal of one disposal in that income year"].
+    net gain expects answers [].
+
+% --- S21. Compensation, gambling, schemes (received file: Legal, Crypto) -----
+% Working [statute]: settlement for a workplace injury: s 118-37(1)(a)(i);
+% settlement for a relative's illness: s 118-37(1)(a)(ii); lottery win:
+% s 118-37(1)(c); M4/M5 Cashback reimbursement: s 118-37(2)(d); a council
+% rebate under a scheme established under an enactment: s 118-37(2)(a). All
+% disregarded; net capital gain 0.
+scenario s21 compensation is:
+    sigma is an entity of kind individual.
+    d1 is a disposal of claim one by sigma.
+    d1 has contract date 2025-03-01.
+    claim one was acquired by sigma on 2024-09-01.
+    d1 has money proceeds of 50000.
+    claim one has first element cost of 0.
+    d1 relates directly to compensation or damages for a wrong or injury suffered by sigma in the occupation of the taxpayer.
+    d2 is a disposal of claim two by sigma.
+    d2 has contract date 2025-03-01.
+    claim two was acquired by sigma on 2024-09-01.
+    d2 has money proceeds of 20000.
+    claim two has first element cost of 0.
+    d2 relates directly to compensation or damages for a wrong or injury or illness suffered personally by sigma or a relative of the taxpayer.
+    d3 is a disposal of ticket one by sigma.
+    d3 has contract date 2025-03-01.
+    ticket one was acquired by sigma on 2025-02-01.
+    d3 has money proceeds of 1000000.
+    ticket one has first element cost of 5.
+    d3 relates directly to gambling or a game or a competition with prizes.
+    d4 is a disposal of toll claim by sigma.
+    d4 has contract date 2025-03-01.
+    toll claim was acquired by sigma on 2024-09-01.
+    d4 has money proceeds of 800.
+    toll claim has first element cost of 0.
+    d4 results from receiving a reimbursement or payment of expenses under cashback.
+    cashback is the M4/M5 Cashback Scheme.
+    d5 is a disposal of rebate claim by sigma.
+    d5 has contract date 2025-03-01.
+    rebate claim was acquired by sigma on 2024-09-01.
+    d5 has money proceeds of 500.
+    rebate claim has first element cost of 0.
+    d5 results from receiving a reimbursement or payment of expenses under council scheme.
+    council scheme is a scheme established under an enactment by an Australian government agency or a local governing body or a foreign government agency.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because subparagraph 118-37(1)(a)(i) compensation for a wrong or injury in the occupation", "the capital gain or loss from d2 is disregarded because subparagraph 118-37(1)(a)(ii) compensation for a wrong or injury or illness suffered personally", "the capital gain or loss from d3 is disregarded because paragraph 118-37(1)(c) gambling or a game or a competition with prizes", "the capital gain or loss from d4 is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme", "the capital gain or loss from d5 is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme"].
+    gain expects answers [].
+    net gain expects answers ["the net capital gain of sigma for the income year 2025 is 0"].
+
+% --- S22. Testamentary gift and life policy (received file: Crypto, Insurance)
+% Working [statute]: painting left by will to a deductible gift recipient:
+% s 118-60(1), disregarded; life policy payout to its original owner:
+% s 118-300(1) item 3, disregarded; a life policy interest bought from the
+% original owner (consideration given, not original owner): not disregarded,
+% gain 20000 (held 6 months). Net capital gain 20000.
+scenario s22 gifts and policies is:
+    tau is an entity of kind individual.
+    d1 is a disposal of painting two by tau.
+    d1 has contract date 2025-03-01.
+    painting two was acquired by tau on 2010-01-01.
+    d1 has money proceeds of 0.
+    painting two had a market value of 20000 at the time of d1.
+    painting two has first element cost of 8000.
+    d1 is a testamentary gift of painting two that would have been deductible under section 30-15 but for being a testamentary gift.
+    policy one is an interest in rights under a policy of insurance on the life of an individual or an annuity instrument.
+    tau is the original owner of policy one.
+    d2 is a disposal of policy one by tau.
+    d2 has contract date 2025-03-01.
+    policy one was acquired by tau on 2010-01-01.
+    d2 has money proceeds of 100000.
+    policy one has first element cost of 40000.
+    policy two is an interest in rights under a policy of insurance on the life of an individual or an annuity instrument.
+    d3 is a disposal of policy two by tau.
+    d3 has contract date 2025-03-01.
+    policy two was acquired by tau on 2024-09-01.
+    d3 has money proceeds of 100000.
+    policy two has first element cost of 80000.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-60(1) testamentary gift deductible under section 30-15", "the capital gain or loss from d2 is disregarded because section 118-300 life policy or annuity interest of the original owner or acquired for no consideration"].
+    gain expects answers ["d3 gives a capital gain of 20000"].
+    net gain expects answers ["the net capital gain of tau for the income year 2025 is 20000.00"].
+
+% --- S23. Foreign residency during part of the discount testing period -------
+% Working [statute]: period 2020-01-01 to 2024-12-31 inclusive = 1827 days;
+% Australian resident 1000 of them; percentage = 1000 / (2 x 1827) = 27.3673%
+% (s 115-115(2)); gain 10000 reduced by 2736.73 leaves 7263.27. Net capital
+% gain 7263.27.
+scenario s23 foreign resident part period is:
+    upsilon is an entity of kind individual.
+    d1 is a disposal of flat one by upsilon.
+    d1 has contract date 2024-12-31.
+    flat one was acquired by upsilon on 2020-01-01.
+    d1 has money proceeds of 60000.
+    flat one has first element cost of 50000.
+    upsilon was a foreign resident or temporary resident during part of the discount testing period of d1.
+    upsilon was an Australian resident for 1000 of the days of the discount testing period of d1.
+    fraction expects answers ["the fraction of a discount capital gain from d1 that remains after the discount is 0.7263"].
+    net gain expects answers ["the net capital gain of upsilon for the income year 2025 is 7263.27"].
+
+% --- S24. Foreign residency plus a loss: the order of application is the
+% taxpayer's choice between gains with different percentages: not decided ----
+% Working [statute]: as S23 plus a non-collectable loss of 1000 and a 50% gain;
+% s 102-5 step 1 note 1 leaves the order to the taxpayer; refused at year level.
+scenario s24 mixed percentages is:
+    upsilon is an entity of kind individual.
+    d1 is a disposal of flat one by upsilon.
+    d1 has contract date 2024-12-31.
+    flat one was acquired by upsilon on 2020-01-01.
+    d1 has money proceeds of 60000.
+    flat one has first element cost of 50000.
+    upsilon was a foreign resident or temporary resident during part of the discount testing period of d1.
+    upsilon was an Australian resident for 1000 of the days of the discount testing period of d1.
+    d2 is a disposal of shares ten by upsilon.
+    d2 has contract date 2025-01-10.
+    shares ten was acquired by upsilon on 2021-01-01.
+    d2 has money proceeds of 2000.
+    shares ten has first element cost of 3000.
+    cannot expects answers ["the net capital gain of upsilon for the income year 2025 cannot be worked out because taxpayer choice of loss order across discount gains with different percentages"].
+    net gain expects answers [].
+
+% --- S25. Income year boundary: 30 June and 1 July ---------------------------
+% Working: contract 2025-06-30 is in the year ending 30 June 2025; 2025-07-01 is
+% in the year ending 30 June 2026. Each gain 1000, no discount (held 6 months).
+scenario s25 year boundary is:
+    phi is an entity of kind individual.
+    d1 is a disposal of shares eleven by phi.
+    d1 has contract date 2025-06-30.
+    shares eleven was acquired by phi on 2025-01-01.
+    d1 has money proceeds of 2000.
+    shares eleven has first element cost of 1000.
+    d2 is a disposal of shares twelve by phi.
+    d2 has contract date 2025-07-01.
+    shares twelve was acquired by phi on 2025-01-01.
+    d2 has money proceeds of 2000.
+    shares twelve has first element cost of 1000.
+    net gain expects answers ["the net capital gain of phi for the income year 2025 is 1000.00", "the net capital gain of phi for the income year 2026 is 1000.00"].
+
+% --- S26. Prior year collectable losses (s 108-10(4)) and current collectable
+% gains ------------------------------------------------------------------
+% Working [statute]: collectable gain 1000 (held 6 months: no discount);
+% unapplied net capital loss from collectables 300 from 2023: applied; 700
+% remains; no other gains; net capital gain 700; no collectable loss carried.
+scenario s26 prior collectable loss is:
+    chi is an entity of kind individual.
+    vase is a collectable.
+    d1 is a disposal of vase by chi.
+    d1 has contract date 2025-03-01.
+    vase was acquired by chi on 2024-09-01.
+    d1 has money proceeds of 3000.
+    vase has first element cost of 2000.
+    chi has an unapplied net capital loss from collectables of 300 from the income year 2023.
+    net gain expects answers ["the net capital gain of chi for the income year 2025 is 700.00"].
+    collectable loss carried expects answers [].
+
+% --- S27. A collectable loss cannot reduce a share gain (break-it) ------------
+% Working [statute]: collectable loss 400 and share gain 500 (no collectable
+% gain): s 108-10(1) quarantines the 400; net capital gain 500 (held 6 months:
+% no discount); net capital loss from collectables 400; no net capital loss.
+scenario s27 collectable loss quarantined is:
+    psi is an entity of kind individual.
+    coin is a collectable.
+    d1 is a disposal of coin by psi.
+    d1 has contract date 2025-03-01.
+    coin was acquired by psi on 2024-09-01.
+    d1 has money proceeds of 600.
+    coin has first element cost of 1000.
+    d2 is a disposal of shares five by psi.
+    d2 has contract date 2025-03-01.
+    shares five was acquired by psi on 2024-09-01.
+    d2 has money proceeds of 1500.
+    shares five has first element cost of 1000.
+    net gain expects answers ["the net capital gain of psi for the income year 2025 is 500.00"].
+    collectable loss carried expects answers ["the net capital loss from collectables of psi for the income year 2025 is 400"].
+    net loss expects answers [].
+
+% --- S28. Current year loss larger than gains: net capital loss, prior losses
+% untouched (break-it: a prior loss must not inflate the net capital loss) ---
+% Working [statute]: gain 1000, loss 4000: net capital loss 3000 (s 102-10);
+% the 2000 prior loss is not applied (step 2 has nothing remaining) and stays
+% carried forward in full.
+scenario s28 net loss with prior loss is:
+    omega is an entity of kind individual.
+    d1 is a disposal of shares thirteen by omega.
+    d1 has contract date 2025-03-01.
+    shares thirteen was acquired by omega on 2024-09-01.
+    d1 has money proceeds of 2000.
+    shares thirteen has first element cost of 1000.
+    d2 is a disposal of shares fourteen by omega.
+    d2 has contract date 2025-03-01.
+    shares fourteen was acquired by omega on 2024-09-01.
+    d2 has money proceeds of 1000.
+    shares fourteen has first element cost of 5000.
+    omega has an unapplied net capital loss of 2000 from the income year 2023.
+    net loss expects answers ["the net capital loss of omega for the income year 2025 is 3000"].
+    net gain expects answers [].
+    prior losses carried expects answers ["the prior year net capital losses of omega that remain unapplied after 2025 are 2000"].
+
+% --- S29 to S41. Refusals: one scenario per out-of-scope case -----------------
+scenario s29 refuse main residence is:
+    r1 is an entity of kind individual.
+    d1 is a disposal of home one by r1.
+    d1 has contract date 2025-03-01.
+    home one was acquired by r1 on 2010-01-01.
+    d1 has money proceeds of 900000.
+    home one has first element cost of 400000.
+    home one is a dwelling that was the main residence of r1.
+    refused expects answers ["d1 is refused because Subdivision 118-B main residence not encoded"].
+    gain expects answers [].
+    cannot expects answers ["the net capital gain of r1 for the income year 2025 cannot be worked out because refusal of one disposal in that income year"].
+
+scenario s30 refuse small business is:
+    r2 is an entity of kind individual.
+    d1 is a disposal of goodwill one by r2.
+    d1 has contract date 2025-03-01.
+    goodwill one was acquired by r2 on 2010-01-01.
+    d1 has money proceeds of 900000.
+    goodwill one has first element cost of 0.
+    r2 claims a small business CGT concession for d1.
+    refused expects answers ["d1 is refused because Division 152 small business concessions not encoded"].
+    gain expects answers [].
+
+scenario s31 refuse rollover is:
+    r3 is an entity of kind individual.
+    d1 is a disposal of shares fifteen by r3.
+    d1 has contract date 2025-03-01.
+    shares fifteen was acquired by r3 on 2010-01-01.
+    d1 has money proceeds of 9000.
+    shares fifteen has first element cost of 4000.
+    r3 chooses a roll-over for d1.
+    refused expects answers ["d1 is refused because roll-overs not encoded"].
+    gain expects answers [].
+
+scenario s32 refuse deceased estate is:
+    r4 is an entity of kind individual.
+    d1 is a disposal of inherited land by r4.
+    d1 has contract date 2025-03-01.
+    inherited land was acquired by r4 on 2020-01-01.
+    d1 has money proceeds of 90000.
+    inherited land has first element cost of 40000.
+    inherited land passed to r4 as a beneficiary or legal personal representative of a deceased estate.
+    refused expects answers ["d1 is refused because Division 128 deceased estates not encoded"].
+    gain expects answers [].
+
+scenario s33 refuse foreign resident at event is:
+    r5 is an entity of kind individual.
+    d1 is a disposal of shares sixteen by r5.
+    d1 has contract date 2025-03-01.
+    shares sixteen was acquired by r5 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares sixteen has first element cost of 4000.
+    r5 is a foreign resident or temporary resident at the time of d1.
+    refused expects answers ["d1 is refused because Division 855 and Subdivision 768-R foreign or temporary resident at the time of the event not encoded"].
+    gain expects answers [].
+
+scenario s34 refuse pre 2012 foreign period is:
+    r6 is an entity of kind individual.
+    d1 is a disposal of shares seventeen by r6.
+    d1 has contract date 2025-03-01.
+    shares seventeen was acquired by r6 on 2012-05-08.
+    d1 has money proceeds of 9000.
+    shares seventeen has first element cost of 4000.
+    r6 was a foreign resident or temporary resident during part of the discount testing period of d1.
+    r6 was an Australian resident for 3000 of the days of the discount testing period of d1.
+    refused expects answers ["d1 is refused because subsections 115-115(3) to (6) discount testing period starting on or before 8 May 2012 not encoded"].
+    gain expects answers [].
+
+scenario s35 refuse indexation is:
+    r7 is an entity of kind individual.
+    d1 is a disposal of shares eighteen by r7.
+    d1 has contract date 2025-03-01.
+    shares eighteen was acquired by r7 on 1995-01-01.
+    d1 has money proceeds of 9000.
+    shares eighteen has first element cost of 4000.
+    r7 chose indexation for shares eighteen.
+    refused expects answers ["d1 is refused because Division 114 indexation not encoded"].
+    gain expects answers [].
+
+scenario s36 refuse other event is:
+    r8 is an entity of kind individual.
+    d1 is a disposal of option one by r8.
+    d1 has contract date 2025-03-01.
+    option one was acquired by r8 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    option one has first element cost of 4000.
+    d1 is of CGT event type c2.
+    refused expects answers ["d1 is refused because CGT event other than a1 not encoded"].
+    gain expects answers [].
+
+scenario s37 event type a1 stated is:
+    r8 is an entity of kind individual.
+    d1 is a disposal of shares nineteen by r8.
+    d1 has contract date 2025-03-01.
+    shares nineteen was acquired by r8 on 2024-09-01.
+    d1 has money proceeds of 9000.
+    shares nineteen has first element cost of 4000.
+    d1 is of CGT event type a1.
+    refused expects answers [].
+    gain expects answers ["d1 gives a capital gain of 5000"].
+
+scenario s38 refuse substituted period is:
+    r9 co is an entity of kind company.
+    r9 co uses a substituted accounting period.
+    d1 is a disposal of shares twenty by r9 co.
+    d1 has contract date 2025-03-01.
+    shares twenty was acquired by r9 co on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares twenty has first element cost of 4000.
+    refused expects answers ["d1 is refused because substituted accounting period not encoded"].
+    gain expects answers [].
+
+scenario s39 refuse lease granted is:
+    r10 is an entity of kind individual.
+    d1 is a disposal of lease one by r10.
+    d1 has contract date 2025-03-01.
+    lease one was acquired by r10 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    lease one has first element cost of 4000.
+    lease one is a lease granted by r10.
+    refused expects answers ["d1 is refused because paragraph 104-10(5)(b) and Subdivision 104-F lease granted by the taxpayer not encoded"].
+    gain expects answers [].
+
+scenario s40 refuse trust beneficiary is:
+    r11 is an entity of kind individual.
+    r11 is a beneficiary presently entitled to a capital gain of a trust.
+    d1 is a disposal of shares twenty one by r11.
+    d1 has contract date 2025-03-01.
+    shares twenty one was acquired by r11 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares twenty one has first element cost of 4000.
+    refused expects answers ["d1 is refused because Subdivision 115-C trust gains attributed to beneficiaries not encoded"].
+    gain expects answers [].
+
+scenario s41 refuse life company and unknown kind is:
+    r12 co is an entity of kind company.
+    r12 co is a life insurance company.
+    d1 is a disposal of shares twenty two by r12 co.
+    d1 has contract date 2025-03-01.
+    shares twenty two was acquired by r12 co on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares twenty two has first element cost of 4000.
+    r13 is an entity of kind partnership.
+    d2 is a disposal of shares twenty three by r13.
+    d2 has contract date 2025-03-01.
+    shares twenty three was acquired by r13 on 2020-01-01.
+    d2 has money proceeds of 9000.
+    shares twenty three has first element cost of 4000.
+    d3 is a disposal of shares twenty four by r12 co.
+    d3 has contract date 1999-09-21.
+    shares twenty four was acquired by r12 co on 1990-01-01.
+    d3 has money proceeds of 9000.
+    shares twenty four has first element cost of 4000.
+    refused expects answers ["d1 is refused because life insurance companies not encoded", "d2 is refused because entity kind not known to this file", "d3 is refused because life insurance companies not encoded", "d3 is refused because section 115-15 event on 21 September 1999 needs the time of day"].
+    gain expects answers [].
+
+% --- S42 to S49. Missing core inputs: "cannot be assessed", naming the fact ----
+scenario s42 missing contract date is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    shares one was acquired by m1 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares one has first element cost of 4000.
+    missing expects answers ["d1 cannot be assessed because the contract date of the disposal is missing"].
+    gain expects answers [].
+
+scenario s43 missing acquisition date is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    d1 has money proceeds of 9000.
+    shares one has first element cost of 4000.
+    missing expects answers ["d1 cannot be assessed because the acquisition date of the asset is missing"].
+    gain expects answers [].
+    cannot expects answers ["the net capital gain of m1 for the income year 2025 cannot be worked out because missing input on one disposal in that income year"].
+
+scenario s44 missing proceeds is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m1 on 2020-01-01.
+    shares one has first element cost of 4000.
+    missing expects answers ["d1 cannot be assessed because the money proceeds of the disposal is missing"].
+    gain expects answers [].
+
+scenario s45 missing first element is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m1 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    missing expects answers ["d1 cannot be assessed because the first element cost of the asset is missing"].
+    gain expects answers [].
+
+scenario s46 missing market value at acquisition is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m1 on 2020-01-01.
+    shares one was acquired for no consideration.
+    d1 has money proceeds of 9000.
+    missing expects answers ["d1 cannot be assessed because the market value of the asset when acquired is missing"].
+    gain expects answers [].
+
+scenario s47 missing market value at disposal is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m1 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    d1 was not at arm s length.
+    shares one has first element cost of 4000.
+    missing expects answers ["d1 cannot be assessed because the market value of the asset at the time of the disposal is missing"].
+    gain expects answers [].
+
+scenario s48 missing entity kind is:
+    d1 is a disposal of shares one by m2.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m2 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares one has first element cost of 4000.
+    missing expects answers ["d1 cannot be assessed because the entity kind of the taxpayer is missing"].
+    gain expects answers [].
+
+scenario s49 missing resident days and disposal link is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m1 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares one has first element cost of 4000.
+    m1 was a foreign resident or temporary resident during part of the discount testing period of d1.
+    d2 has contract date 2025-03-01.
+    missing expects answers ["d1 cannot be assessed because the number of Australian resident days in the discount testing period is missing", "d2 cannot be assessed because the taxpayer and asset of the disposal is missing"].
+    gain expects answers [].
+
+% --- S50. Costs of ownership: the 20 August 1991 boundary (s 110-25(4)) -----
+% Working [statute]: asset acquired 1991-08-20 (not after 20 Aug 1991): the
+% 100 of ownership costs is not a third element, cost base 1000, gain 1000,
+% discount 500; asset acquired 1991-08-21: cost base 1100, gain 900, discount
+% 450. Net capital gain 950.
+scenario s50 ownership costs boundary is:
+    b1 is an entity of kind individual.
+    d1 is a disposal of lot a by b1.
+    d1 has contract date 2025-03-01.
+    lot a was acquired by b1 on 1991-08-20.
+    d1 has money proceeds of 2000.
+    lot a has first element cost of 1000.
+    lot a has costs of ownership of 100.
+    d2 is a disposal of lot b by b1.
+    d2 has contract date 2025-03-01.
+    lot b was acquired by b1 on 1991-08-21.
+    d2 has money proceeds of 2000.
+    lot b has first element cost of 1000.
+    lot b has costs of ownership of 100.
+    cost base expects answers ["the cost base of lot a is 1000", "the cost base of lot b is 1100"].
+    net gain expects answers ["the net capital gain of b1 for the income year 2025 is 950.00"].
+
+% --- S51. The 21 September 1999 boundary for the discount (s 115-15) --------
+% Working [statute]: both assets acquired 1990, cost 100, sold for 300: gain
+% 200 each. Event on 1999-09-20 is before 21 Sep 1999: no discount (200);
+% event on 1999-09-22: discount (100). Both in the year ending 30 June 2000.
+% Net capital gain 300. (An event on 21 Sep 1999 itself is refused: s41.)
+scenario s51 discount start date is:
+    b2 is an entity of kind individual.
+    d1 is a disposal of parcel x by b2.
+    d1 has contract date 1999-09-20.
+    parcel x was acquired by b2 on 1990-01-01.
+    d1 has money proceeds of 300.
+    parcel x has first element cost of 100.
+    d2 is a disposal of parcel y by b2.
+    d2 has contract date 1999-09-22.
+    parcel y was acquired by b2 on 1990-01-01.
+    d2 has money proceeds of 300.
+    parcel y has first element cost of 100.
+    discount fail expects answers ["d1 fails the discount test because section 115-15 event before 21 September 1999"].
+    discount expects answers ["d2 gives a discount capital gain"].
+    net gain expects answers ["the net capital gain of b2 for the income year 2000 is 300.00"].
+
+% --- S52. Twelve months across a leap day (TD 2002/10) ----------------------
+% Working [statute via TD 2002/10]: acquired 2024-02-29: 12 months after is
+% 2025-02-28 (last day of the month); an event on 2025-02-28 is not after it
+% (no discount, 200), an event on 2025-03-01 is (100): year 2025 = 300.
+% Acquired 2023-03-01: a clear year must contain 29 Feb 2024, so 366 whole
+% days: an event on 2024-03-01 fails (200), on 2024-03-02 passes (100): year
+% 2024 = 300.
+scenario s52 leap year anniversary is:
+    b3 is an entity of kind individual.
+    d1 is a disposal of parcel p by b3.
+    d1 has contract date 2025-02-28.
+    parcel p was acquired by b3 on 2024-02-29.
+    d1 has money proceeds of 300.
+    parcel p has first element cost of 100.
+    d2 is a disposal of parcel q by b3.
+    d2 has contract date 2025-03-01.
+    parcel q was acquired by b3 on 2024-02-29.
+    d2 has money proceeds of 300.
+    parcel q has first element cost of 100.
+    d3 is a disposal of parcel r by b3.
+    d3 has contract date 2024-03-01.
+    parcel r was acquired by b3 on 2023-03-01.
+    d3 has money proceeds of 300.
+    parcel r has first element cost of 100.
+    d4 is a disposal of parcel s by b3.
+    d4 has contract date 2024-03-02.
+    parcel s was acquired by b3 on 2023-03-01.
+    d4 has money proceeds of 300.
+    parcel s has first element cost of 100.
+    discount expects answers ["d2 gives a discount capital gain", "d4 gives a discount capital gain"].
+    net gain expects answers ["the net capital gain of b3 for the income year 2025 is 300.00", "the net capital gain of b3 for the income year 2024 is 300.00"].
+
+% --- S53. A general loss can reduce a collectable gain (s 108-10 restricts
+% only collectable losses) --------------------------------------------------
+% Working [statute]: collectable gain 1000 (held 6 months); share loss 300:
+% step 1 reduces the gain to 700. Net capital gain 700.
+scenario s53 general loss against collectable gain is:
+    b4 is an entity of kind individual.
+    vase is a collectable.
+    d1 is a disposal of vase by b4.
+    d1 has contract date 2025-03-01.
+    vase was acquired by b4 on 2024-09-01.
+    d1 has money proceeds of 3000.
+    vase has first element cost of 2000.
+    d2 is a disposal of shares five by b4.
+    d2 has contract date 2025-03-01.
+    shares five was acquired by b4 on 2024-09-01.
+    d2 has money proceeds of 700.
+    shares five has first element cost of 1000.
+    net gain expects answers ["the net capital gain of b4 for the income year 2025 is 700.00"].
+
+% --- S54. A net capital loss "from" a year applies only to later years ------
+% Working [statute]: d1 (year 2025) gain 1000, d2 (year 2026) gain 1000, both
+% held 6 months; an unapplied net capital loss of 400 from 2025 is an earlier
+% year's loss for 2026 only (s 102-5 step 2). Net 2025: 1000; 2026: 600.
+scenario s54 loss year strictness is:
+    b5 is an entity of kind individual.
+    d1 is a disposal of parcel t by b5.
+    d1 has contract date 2025-03-01.
+    parcel t was acquired by b5 on 2024-09-01.
+    d1 has money proceeds of 2000.
+    parcel t has first element cost of 1000.
+    d2 is a disposal of parcel u by b5.
+    d2 has contract date 2026-03-01.
+    parcel u was acquired by b5 on 2025-09-01.
+    d2 has money proceeds of 2000.
+    parcel u has first element cost of 1000.
+    b5 has an unapplied net capital loss of 400 from the income year 2025.
+    net gain expects answers ["the net capital gain of b5 for the income year 2025 is 1000.00", "the net capital gain of b5 for the income year 2026 is 600.00"].
+    prior losses carried expects answers ["the prior year net capital losses of b5 that remain unapplied after 2025 are 0", "the prior year net capital losses of b5 that remain unapplied after 2026 are 0"].
+
+% --- S55. No capital proceeds: market value taken to be received (s 116-30(1))
+% Working [statute]: a gift at arm's length for nothing: proceeds = market
+% value 5000; cost base 1000; gain 4000; held since 2015: discount; 2000. Then
+% the same with no market value stated: cannot be assessed.
+scenario s55 nil proceeds market value is:
+    b6 is an entity of kind individual.
+    d1 is a disposal of parcel v by b6.
+    d1 has contract date 2025-03-01.
+    parcel v was acquired by b6 on 2015-01-01.
+    d1 has money proceeds of 0.
+    parcel v had a market value of 5000 at the time of d1.
+    parcel v has first element cost of 1000.
+    proceeds expects answers ["the capital proceeds from d1 are 5000"].
+    net gain expects answers ["the net capital gain of b6 for the income year 2025 is 2000.00"].
+
+scenario s56 nil proceeds no market value is:
+    b6 is an entity of kind individual.
+    d1 is a disposal of parcel v by b6.
+    d1 has contract date 2025-03-01.
+    parcel v was acquired by b6 on 2015-01-01.
+    d1 has money proceeds of 0.
+    parcel v has first element cost of 1000.
+    missing expects answers ["d1 cannot be assessed because the market value of the asset at the time of the disposal is missing"].
+    net gain expects answers [].
+
+% --- S57. A trust with a foreign residency period is refused (s 115-120) -----
+scenario s57 trust foreign period refused is:
+    b7 trust is an entity of kind trust.
+    d1 is a disposal of parcel w by b7 trust.
+    d1 has contract date 2025-03-01.
+    parcel w was acquired by b7 trust on 2020-01-01.
+    d1 has money proceeds of 2000.
+    parcel w has first element cost of 1000.
+    b7 trust was a foreign resident or temporary resident during part of the discount testing period of d1.
+    b7 trust was an Australian resident for 500 of the days of the discount testing period of d1.
+    refused expects answers ["d1 is refused because section 115-120 and trusts or superannuation entities with foreign or temporary residency not encoded"].
+    net gain expects answers [].
+
+% --- S58. Collectable acquired for no consideration: the $500 test uses the
+% substituted first element (s 112-20, s 118-10(1)) ---------------------------
+% Working [statute]: market value 400 when acquired is the first element; 400
+% is 500 or less: the gain is disregarded. Net capital gain 0.
+scenario s58 collectable no consideration is:
+    b8 is an entity of kind individual.
+    brooch is a collectable.
+    d1 is a disposal of brooch by b8.
+    d1 has contract date 2025-03-01.
+    brooch was acquired by b8 on 2020-01-01.
+    brooch was acquired for no consideration.
+    brooch had a market value of 400 when acquired.
+    d1 has money proceeds of 900.
+    disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-10(1) collectable with first element 500 or less"].
+    net gain expects answers ["the net capital gain of b8 for the income year 2025 is 0"].
+
+% --- S59. Land marked as a personal use asset: inputs conflict (s 108-20(3))
+scenario s59 land as personal use asset refused is:
+    b9 is an entity of kind individual.
+    block one is a personal use asset.
+    block one is land or a stratum unit or a building or structure that is a separate CGT asset under Subdivision 108-D.
+    d1 is a disposal of block one by b9.
+    d1 has contract date 2025-03-01.
+    block one was acquired by b9 on 2020-01-01.
+    d1 has money proceeds of 12000.
+    block one has first element cost of 9000.
+    refused expects answers ["d1 is refused because subsection 108-20(3) land or stratum unit or separate building cannot be a personal use asset"].
+    disregarded expects answers [].
+    net gain expects answers [].
+
+query gain is:
+    which disposal gives a capital gain of which amount.
+
+query loss is:
+    which disposal gives a capital loss of which amount.
+
+query discount is:
+    which disposal gives a discount capital gain.
+
+query discount fail is:
+    which disposal fails the discount test because which reason.
+
+query disregarded is:
+    the capital gain or loss from which disposal is disregarded because which reason.
+
+query refused is:
+    which disposal is refused because which reason.
+
+query missing is:
+    which disposal cannot be assessed because which fact is missing.
+
+query net gain is:
+    the net capital gain of which taxpayer for the income year which year is which amount.
+
+query net loss is:
+    the net capital loss of which taxpayer for the income year which year is which amount.
+
+query cannot is:
+    the net capital gain of which taxpayer for the income year which year cannot be worked out because which reason.
+
+query collectable loss carried is:
+    the net capital loss from collectables of which taxpayer for the income year which year is which amount.
+
+query prior losses carried is:
+    the prior year net capital losses of which taxpayer that remain unapplied after which year are which amount.
+
+query cost base is:
+    the cost base of which asset is which amount.
+
+query reduced cost base is:
+    the reduced cost base of which asset is which amount.
+
+query proceeds is:
+    the capital proceeds from which disposal are which amount.
+
+query fraction is:
+    the fraction of a discount capital gain from which disposal that remains after the discount is which number.
