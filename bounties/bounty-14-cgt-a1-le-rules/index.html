@@ -107,7 +107,10 @@
                 <span class="gradient-text">CGT event A1 and the net capital gain method statement, written as executable rules</span>
             </h1>
             <p class="text-slate-300 text-lg leading-relaxed mb-6">
-                Check the law itself, written out as rules. CGT event A1, cost base, Div 118 disregards, Div 115 discount, s 102-5 method statement. 110 rules, 59 worked scenarios, 156 test cases. No software to run.
+                Check the law itself, written out as rules. CGT event A1, cost base, Div 118 disregards, Div 115 discount, s 102-5 method statement. 114 rules, 62 worked scenarios, 163 test cases. No software to run.
+            </p>
+            <p class="text-slate-400 text-base leading-relaxed mb-2">
+                How we work: <a href="/bounties/logical-english-best-practice/" class="text-lodgeit-light hover:text-white underline">Rules, models and human judgement &mdash; how LodgeiT writes tax law as Logical English</a>.
             </p>
             <div class="flex flex-wrap gap-3 text-xs font-mono">
                 <span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">Parts 3-1 and 3-3 ITAA 1997</span>
@@ -129,7 +132,7 @@
 
             <h3>What you are checking</h3>
             <p>
-                The law itself, written out as rules a machine can run: <code>cgt_a1.le</code>. It takes a CGT event A1 disposal (contract date, acquisition date, proceeds, cost-base elements, entity kind, asset classification) and gives one of three answers: a capital gain or loss and the net capital gain for the income year; &ldquo;cannot be assessed because &lt;fact&gt; is missing&rdquo;; or &ldquo;refused because &lt;provision&gt; not encoded&rdquo;. <strong>110 rules, 59 fictional scenarios, 156 embedded tests</strong>, every expected figure worked by hand from the Act (shown above each scenario). No software to run: read the rules against the Act.
+                The law itself, written out as rules a machine can run: <code>cgt_a1.le</code>. It takes a CGT event A1 disposal (contract date, acquisition date, proceeds, cost-base elements, entity kind, asset classification) and gives one of three answers: a capital gain or loss and the net capital gain for the income year; &ldquo;cannot be assessed because &lt;fact&gt; is missing&rdquo;; or &ldquo;refused because &lt;provision&gt; not encoded&rdquo;. <strong>114 rules, 62 fictional scenarios, 163 embedded tests</strong>, every expected figure worked by hand from the Act (shown above each scenario). No software to run: read the rules against the Act.
             </p>
             <p>
                 The provisions in scope are ITAA 1997 Parts 3-1 and 3-3: ss 102-5, 102-10, 102-15, 104-10, 108-10, 108-17, 108-20, 108-30, 110-25, 110-45, 110-55, 112-20, 116-20, 116-30, 118-5, 118-10, 118-20, 118-24, 118-25, 118-30, 118-37, 118-60, 118-300, Div 115; and IT(TP)A 1997 s 102-25.
@@ -144,7 +147,7 @@
                     <strong>Break-it.</strong> Construct facts within scope where the file returns a plausible figure that is wrong. Scenarios s11 (PUA at exactly $10,000), s13 (cost base vs reduced cost base gap, s 110-45(2)), s52 (leap-year anniversary, TD 2002/10), s54 (loss-year strictness) are where we looked.
                 </li>
                 <li>
-                    The 16 numbered questions in <a href="artefacts/open_questions.md" class="text-lodgeit-light hover:text-white underline"><code>open_questions.md</code></a> (answer inline).
+                    The 17 numbered questions in <a href="artefacts/open_questions.md" class="text-lodgeit-light hover:text-white underline"><code>open_questions.md</code></a> (answer inline).
                 </li>
                 <li>
                     Enter scenario s7 in the ATO CGT record keeping tool and record its figure (we could not complete this by automation &mdash; our attempt and the expected points of difference are summarised in the brief below).
@@ -173,10 +176,10 @@ loss to the non-discount gain first: 4000 -> 0, remaining 2000 against
 
             <h3>Provenance</h3>
             <p>
-                Built from the statute via Tax Genii retrieval, not from ATO worksheets; independent re-derivation by a second agent caught one defect (s 110-45(2)) before release; reasoner LogicalEnglish2 <code>bc5cb5d1&hellip;</code> on SWI-Prolog 9.0.4, 156/156 pass, slowest query 66 ms. Full trail in the bundle.
+                Built from the statute via Tax Genii retrieval, not from ATO worksheets; independent re-derivation by a second agent caught one defect (s 110-45(2)) before release; reasoner LogicalEnglish2 <code>bc5cb5d1&hellip;</code> on SWI-Prolog 9.0.4, 163/163 pass, slowest query 66 ms. Full trail in the bundle.
             </p>
             <p class="text-slate-400 text-sm">
-                Rules file: <code>rules/cgt/cgt_a1.le</code>, SHA-256 <code>c93cd35c8f45401d8505327938f72937fdc6b54438f8b0f29ebc1165e744dc45</code>. Any accepted verdict is bound to this hash. Please do not edit the file; its hash is quoted in <code>run_log.md</code> and <code>sha_chain.txt</code>, and any change breaks the evidence chain. If you find a defect, cite it &mdash; the fix lands in a later version, not in this file.
+                Rules file: <code>rules/cgt/cgt_a1.le</code>, SHA-256 <code>3cdb679a02e4cda09101cd8014b1b3db34de32be4603a1b4f5ff9b9953f2ad00</code>. Any accepted verdict is bound to this hash. Please do not edit the file; its hash is quoted in <code>run_log.md</code> and <code>sha_chain.txt</code>, and any change breaks the evidence chain. If you find a defect, cite it &mdash; the fix lands in a later version, not in this file.
             </p>
 
             <h3>The four source files</h3>
@@ -184,15 +187,28 @@ loss to the non-discount gain first: 4000 -> 0, remaining 2000 against
                 Open these directly in your browser &mdash; they are text files served from this page. Read the rules against the Act; the other three give you the hand working, the open questions, and the recorded defects.
             </p>
             <ul>
-                <li><strong><a href="artefacts/cgt_a1.le.txt" class="text-lodgeit-light hover:text-white underline"><code>cgt_a1.le</code></a></strong> &mdash; the rule file (110 rules, 59 scenarios, 156 embedded tests). Opens as text in your browser; the <a href="artefacts/cgt_a1.le" class="text-lodgeit-light hover:text-white underline">canonical <code>.le</code></a> is the same bytes if you want the native extension. Do not edit it.</li>
-                <li><strong><a href="artefacts/open_questions.md" class="text-lodgeit-light hover:text-white underline"><code>open_questions.md</code></a></strong> &mdash; 16 numbered questions for practitioners; answer inline.</li>
+                <li><strong><a href="artefacts/cgt_a1.le.txt" class="text-lodgeit-light hover:text-white underline"><code>cgt_a1.le</code></a></strong> &mdash; the rule file (114 rules, 62 scenarios, 163 embedded tests). Opens as text in your browser; the <a href="artefacts/cgt_a1.le" class="text-lodgeit-light hover:text-white underline">canonical <code>.le</code></a> is the same bytes if you want the native extension. Do not edit it.</li>
+                <li><strong><a href="artefacts/open_questions.md" class="text-lodgeit-light hover:text-white underline"><code>open_questions.md</code></a></strong> &mdash; 17 numbered questions for practitioners; answer inline.</li>
                 <li><strong><a href="artefacts/scenario_table.md" class="text-lodgeit-light hover:text-white underline"><code>scenario_table.md</code></a></strong> &mdash; every scenario, the hand working, the expected figure, and the runner result.</li>
                 <li><strong><a href="artefacts/findings_log.md" class="text-lodgeit-light hover:text-white underline"><code>findings_log.md</code></a></strong> &mdash; defects in the file this one replaces, each with the provision, the fix, and the proving scenario; plus defects found in our own drafts.</li>
             </ul>
 
+            <h3>Reviewer pack</h3>
+            <p>
+                Three short documents to take you from a cold start to a filled-in verdict. Open them directly in your browser &mdash; they are text files served from this page.
+            </p>
+            <ul>
+                <li><strong><a href="artefacts/COVER_NOTE.md" class="text-lodgeit-light hover:text-white underline"><code>COVER_NOTE.md</code></a></strong> &mdash; what the file is, what we are paying for, where to start. One page.</li>
+                <li><strong><a href="artefacts/HOW_TO_READ.md" class="text-lodgeit-light hover:text-white underline"><code>HOW_TO_READ.md</code></a></strong> &mdash; how to read <code>cgt_a1.le</code> in ten minutes: the shape of the file, how to read one rule, the conventions worth knowing.</li>
+                <li><strong><a href="artefacts/VERDICT_FORM.md" class="text-lodgeit-light hover:text-white underline"><code>VERDICT_FORM.md</code></a></strong> &mdash; the verdict form itself, one row per rule family, with the break-it and open-question prompts.</li>
+            </ul>
+            <p>
+                <strong>The deliverable is the filled-in <code>VERDICT_FORM.md</code>, attached to an email</strong> to <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a>. We hash what you send, so your verdict is bound to exactly what you submitted and to the file SHA-256 above.
+            </p>
+
             <h3>Your deliverable</h3>
             <p>
-                <strong>A verdict form per rule family</strong>, as in Bounty #11: for each family, state whether it states the law correctly, partly, or not; cite the provision; and name the scenario that proves it or the facts that break it. The rule families follow the structure of <code>cgt_a1.le</code> &mdash; the event and timing (s 104-10), the cost base and its elements (ss 110-25, 110-45, 110-55, 112-20), the proceeds (ss 116-20, 116-30), the Division 118 disregards, the Division 115 discount, and the s 102-5 method statement that assembles the net capital gain. Prose in an email is equally acceptable.
+                <strong>The filled-in <code>VERDICT_FORM.md</code>, attached to an email</strong> &mdash; one row per rule family: for each family, state whether it states the law correctly, partly, or not; cite the provision; and name the scenario that proves it or the facts that break it. The rule families follow the structure of <code>cgt_a1.le</code> &mdash; the event and timing (s 104-10), the cost base and its elements (ss 110-25, 110-45, 110-55, 112-20), the proceeds (ss 116-20, 116-30), the Division 118 disregards, the Division 115 discount, and the s 102-5 method statement that assembles the net capital gain. Free-form prose in an email is equally acceptable if you prefer it to the form.
             </p>
 
             <h3>A REJECT is worth the same as an ACCEPT</h3>
