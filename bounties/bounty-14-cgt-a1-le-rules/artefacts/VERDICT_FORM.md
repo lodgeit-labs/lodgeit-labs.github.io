@@ -1,6 +1,8 @@
 # Verdict form: Bounty #14, CGT event A1 rules
 
-**File reviewed:** `cgt_a1.le` SHA-256 `3cdb679a02e4cda09101cd8014b1b3db34de32be4603a1b4f5ff9b9953f2ad00`  
+**File reviewed:** `cgt_a1.le` v1.2, SHA-256 `3cdb679a02e4cda09101cd8014b1b3db34de32be4603a1b4f5ff9b9953f2ad00`  
+**Reasoner:** LogicalEnglish2 commit `bc5cb5d1717634d6ca131e9689f49a0762310d3e`, SWI-Prolog 9.0.4  
+**Form version:** 1.2.1 (adds §12, signature)  
 **Reviewer:** ______________________ **Credential:** ______ **Date:** ______  
 **Display on the registry:** [ ] named  [ ] initials  [ ] anonymous
 
@@ -52,3 +54,22 @@ ______________________
 ## 11. Attestation
 *I may have used AI tools to research or discuss the legislation. The verdict, findings and fact patterns above are my own professional judgement, and I have read the provisions I rely on.*  
 Signed: ______________________
+
+## 12. Signature (separate from the verdict)
+
+Sections 1–11 are your **review**: what you found. This section is a different act: whether you put your name against this exact file as stating the law. You are paid for the review whatever you answer here. You can give a FIX verdict above and still answer "yes once fixed" here; you can give an ACCEPT verdict above and still answer "no" here (for example, if you accept the rules but do not wish to be named against them).
+
+What a signature means: it binds to the file hash printed at the top of this form and to the scope stated in the file's header, for the law as retrieved on 25 October 2026. It lapses automatically when the file changes (a new hash) or when the relevant provisions are amended. It is recorded in LodgeiT's public registry against your name (or initials, or "verified practitioner", as you chose above) and the hash; it is never attached to any individual answer the file gives to a caller.
+
+**I sign `cgt_a1.le` SHA-256 `3cdb679a…2ad00` as stating the law for the scope in its header:**
+
+[ ] **Yes.**  
+[ ] **No.** (No reason required.)  
+[ ] **Yes, once findings ______ (numbers from §2–§3) are fixed.** LodgeiT will send you the revised file, its new hash, and a note matching each fix to your finding. Your signature attaches to the new hash only after you reply "confirmed" to that note; a fix that does not match your finding, or any other change, returns the question to you.
+
+Name: ______________________  
+Credential and number (TPB registration / practising certificate / CA / CPA): ______________________  
+Date: ______  
+Signed: ______________________
+
+*LodgeiT will email you a receipt quoting the hash, your name as displayed, the date and your answer. Keep it; it is the record of what you signed.*
