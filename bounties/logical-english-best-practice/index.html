@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules, models and human judgement: how LodgeiT writes tax law as Logical English | LodgeiT</title>
+    <meta name="description" content="How LodgeiT uses deterministic Logical English rules, language models, and qualified human reviewers — each doing only the job it is good at — to write Australian tax law as executable, reviewable rules.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .mark { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 0.3rem; white-space: nowrap; }
+        .mark-measured { color: #34d399; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3); }
+        .mark-reviewer { color: #4D94FF; background: rgba(77,148,255,0.12); border: 1px solid rgba(77,148,255,0.3); }
+        .mark-claim { color: #94a3b8; background: rgba(148,163,184,0.12); border: 1px solid rgba(148,163,184,0.3); }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; How we work
+            </p>
+        </div>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">How we work</p>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Rules, models and human judgement: how LodgeiT writes tax law as Logical English</span>
+            </h1>
+            <p class="text-slate-400 leading-relaxed">
+                <em>Draft public page, derived from the internal best-practice document v0.1 (28 Oct 2026). Status marks:</em>
+                <span class="mark mark-measured">[measured]</span> we ran it or counted it &middot;
+                <span class="mark mark-reviewer">[reviewer]</span> a reviewer said it in writing &middot;
+                <span class="mark mark-claim">[claim]</span> we believe it, no evidence yet.
+            </p>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 prose-lodgeit">
+
+            <h2>The idea in one paragraph</h2>
+            <p>
+                LodgeiT uses three kinds of intelligence, and each does only the job it is good at. <strong>Rules</strong> written in Logical English do the law and the arithmetic, deterministically, and say when they cannot answer. <strong>Language models</strong> explain, retrieve, ask for missing facts and draft; they never decide a figure the rules can prove. <strong>Qualified humans</strong> decide whether the rules state the law correctly, and their verdict, bound to the exact file they read, is what makes the rules trustworthy. The bounty programme is how we pay for that judgement.
+            </p>
+            <p>
+                Logical English is the executable legal specification, the surface a practitioner reviews, and the oracle our product code is checked against. It is not the production runtime.
+            </p>
+
+            <h2>Who does what</h2>
+            <table>
+                <thead>
+                    <tr><th>Task</th><th>Rules</th><th>Model</th><th>Qualified human</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>State the law as executable rules</td><td>drafts with help</td><td>drafts with help</td><td><strong>ratifies</strong></td></tr>
+                    <tr><td>Compute a figure</td><td><strong>yes</strong></td><td>never, where the rules cover it</td><td>checks by hand in review</td></tr>
+                    <tr><td>Say &ldquo;cannot be determined: missing X&rdquo;</td><td><strong>yes</strong></td><td>turns X into a question</td><td>&mdash;</td></tr>
+                    <tr><td>Refuse out-of-scope cases</td><td><strong>yes</strong></td><td>says the answer wasn&rsquo;t rule-checked</td><td>agrees the scope is right</td></tr>
+                    <tr><td>Explain an answer in plain words</td><td>supplies the proof</td><td><strong>yes</strong></td><td>&mdash;</td></tr>
+                    <tr><td>Find and read legislation</td><td>&mdash;</td><td>as a research aid</td><td><strong>reads it themselves</strong></td></tr>
+                    <tr><td>Decide the rules state the law</td><td>&mdash;</td><td><strong>never</strong></td><td><strong>yes</strong></td></tr>
+                </tbody>
+            </table>
+            <p>
+                Why the model never computes where rules exist: in one test a chain of three models reached the right answer only because the third caught an arithmetic error the second had missed. <span class="mark mark-measured">[measured]</span> Nothing deterministic checked it. The rules would have.
+            </p>
+
+            <h2>The pipeline</h2>
+            <ol>
+                <li><strong>Statute to rule file.</strong> Drafted from the Act, never from forms, worksheets or calculators. (The Division 36 work began because a product followed an ATO worksheet that diverges from s 36-15 in one kind of year. <span class="mark mark-measured">[measured]</span>)</li>
+                <li><strong>Measure.</strong> Every embedded test runs on a pinned reasoner. Rules, scenarios and tests are counted by command. Zero rules that no test reaches.</li>
+                <li><strong>Independent re-derivation.</strong> A separate agent that has not seen the expected answers works a sample of scenarios from the statute alone. On the CGT file this caught a cost-base defect (s 110-45(2)) before release. <span class="mark mark-measured">[measured]</span></li>
+                <li><strong>Human review (a bounty).</strong> Practitioners read the rules against the statute and return a verdict on a form.</li>
+                <li><strong>Revise.</strong> Every finding gets a recorded disposition: adopted, turned into a refusal, stated as a precondition, put back as a question, or rejected with a reason.</li>
+                <li><strong>Review again</strong> if the file changed materially.</li>
+                <li><strong>Pin.</strong> The accepted file is identified by its SHA-256 and the reasoner by its full commit, archived.</li>
+                <li><strong>Use.</strong> Products and Tax Genii run the pinned file and show its SHA with every answer that used it, labelled &ldquo;under review&rdquo; until the verdicts are in.</li>
+            </ol>
+
+            <h2>What a reviewable rule file looks like</h2>
+            <ul>
+                <li><strong>Three-way answers.</strong> A proven figure; or &ldquo;cannot be assessed&rdquo;, naming the missing fact; or refused, with the reason. Never a guessed figure. Facts that change the answer (residency, asset character) are required inputs, not defaults.</li>
+                <li><strong>A declared scope</strong> in the header, and a refusal with a reason for everything outside it.</li>
+                <li><strong>One plain comment per rule</strong>, &ldquo;If &hellip; then &hellip;&rdquo;, naming the subsection. The one readability aid a reviewer asked for by name. <span class="mark mark-reviewer">[reviewer]</span></li>
+                <li><strong>What is not law is marked</strong> (&ldquo;Mechanical&rdquo;, &ldquo;Implementation note&rdquo;) so reviewers know what not to ratify.</li>
+                <li><strong>Expected figures come from the statute</strong>, worked by hand before the file is run, with the working shown. The file&rsquo;s output is never copied into its own tests.</li>
+                <li><strong>Counts are measured</strong>, with the command stated.</li>
+                <li><strong>Rule shape is measured too.</strong> A file can be legally right and still not run; memoisation, for example, made Division 36 eight times slower and made the CGT file possible at all. <span class="mark mark-measured">[measured]</span> Each file is measured, not assumed.</li>
+                <li><strong>No real client data.</strong> Fictional taxpayers, round figures.</li>
+            </ul>
+
+            <h2>The human review: why it is paid, what it asks</h2>
+            <p>
+                Reading rules against a statute is slow and unfamiliar even for experienced practitioners; round one of Division 36, about 90 lines, took one reviewer four hours. <span class="mark mark-reviewer">[reviewer]</span> The fee is set to the scope and does not depend on the verdict: <strong>a REJECT is worth the same as an ACCEPT.</strong> A polite approval of something wrong is the one outcome we cannot use.
+            </p>
+            <p>
+                We ask, rule by rule, whether the comment states the subsection correctly and whether the rule does what the comment says; for scenarios traced by hand; for unstated assumptions and cases that should refuse but don&rsquo;t; and, the question we value most, <strong>a fact pattern where the rules give a plausible figure that is wrong.</strong> We do not ask anyone to install software or read code.
+            </p>
+
+            <h2>AI and the reviewer</h2>
+            <p>
+                Reviewers may use AI to find provisions or test their understanding. What we pay for is their own qualified judgement. The review is designed so a model-only verdict is not enough: the break-it fact pattern is theirs and we run it; the form asks which provisions they read and which scenarios they traced; every verdict gets a paid follow-up round, which is where understanding shows (in Division 36 round one, two of five verdicts changed after follow-up <span class="mark mark-measured">[measured]</span>); and the form carries an explicit attestation.
+            </p>
+
+            <h2>Words we use</h2>
+            <p>
+                A file is &ldquo;under review&rdquo; until the verdicts are in and every finding is dispositioned; never &ldquo;certified&rdquo; before then. A difference from an ATO tool is &ldquo;a gap we have raised&rdquo;, not &ldquo;the ATO is wrong&rdquo;.
+            </p>
+
+            <h2>Current files</h2>
+            <ul>
+                <li>Division 36 loss sequencing &mdash; Bounties <a href="/bounties/bounty-11-div36-loss-sequencing-le-rules/" class="text-lodgeit-light hover:text-white underline">#11</a> (closed) and <a href="/bounties/bounty-12-div36-loss-sequencing-revision-2/" class="text-lodgeit-light hover:text-white underline">#12</a> (in review).</li>
+                <li>CGT event A1 and the net capital gain method statement &mdash; Bounty <a href="/bounties/bounty-14-cgt-a1-le-rules/" class="text-lodgeit-light hover:text-white underline">#14</a> (open).</li>
+            </ul>
+
+        </article>
+
+        <!-- Nav back -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <div class="flex justify-between items-center">
+                <a href="/bounties/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">
+                    &larr; All bounties
+                </a>
+                <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

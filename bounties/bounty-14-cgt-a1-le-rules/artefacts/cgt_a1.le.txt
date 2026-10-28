@@ -74,13 +74,16 @@ the target language is: prolog.
 %
 % ANSWERS are three-way: a figure; "cannot be assessed because <fact> is
 %   missing" for a core input not stated; or "refused because <reason>".
+%   Core inputs include the taxpayer's residency and the asset's character
+%   (collectable / personal use asset / neither): both must be stated, since
+%   an omitted fact would otherwise default silently to the common case.
 %
 % REASONER PIN: LogicalEnglish2 commit
 %   bc5cb5d1717634d6ca131e9689f49a0762310d3e (24 Oct 2026), SWI-Prolog 9.0.4.
 %   (The brief's pin 53c0021 is no longer in upstream history; see run log.)
 % MEASURED COUNTS (commands in the run log, 25 Oct 2026):
-%   templates 96, rules 110 (facts and rules under the knowledge base header),
-%   scenarios 59, queries 16, embedded tests 156 (all pass), untested_predicate 0.
+%   templates 98, rules 114 (facts and rules under the knowledge base header),
+%   scenarios 62, queries 16, embedded tests 163 (all pass), untested_predicate 0.
 % ============================================================================
 
 the templates are:
@@ -92,6 +95,7 @@ the templates are:
 *an asset* was acquired by *a taxpayer* on *a date*; undefined.
 *a disposal* is of CGT event type *a type*; undefined.
 *a taxpayer* uses a substituted accounting period; undefined.
+*a taxpayer* was an Australian resident and not a temporary resident throughout the ownership of *an asset*; undefined.
 
 % --- Scenario inputs: capital proceeds (s 116-20) ------------------------------
 *a disposal* has money proceeds of *an amount*; undefined.
@@ -115,6 +119,7 @@ the templates are:
 % --- Scenario inputs: classification and exemptions --------------------------
 *an asset* is a collectable; undefined.
 *an asset* is a personal use asset; undefined.
+*an asset* is neither a collectable nor a personal use asset; undefined.
 *an asset* is land or a stratum unit or a building or structure that is a separate CGT asset under Subdivision 108-D; undefined.
 *an asset* is a car or motor cycle or similar vehicle; undefined.
 *an asset* is a decoration awarded for valour or brave conduct; undefined.
@@ -210,6 +215,7 @@ the knowledge base cgt_a1 includes:
 a date is in the income year a year
     if prolog (the date = date(Y1, M1, _), M1 =< 6, the year = Y1).
 
+% Mechanical: a date in July to December belongs to the income year ending the following 30 June.
 a date is in the income year a year
     if prolog (the date = date(Y1, M1, _), M1 > 6, plus(Y1, 1, Y2), the year = Y2).
 
@@ -228,63 +234,77 @@ a disposal is refused because Subdivision 118-B main residence not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the asset is a dwelling that was the main residence of the taxpayer.
 
+% If the taxpayer claims a small business concession then the disposal is refused: step 4 of s 102-5 (Subdivs 152-C, D, E) is not encoded.
 a disposal is refused because Division 152 small business concessions not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer claims a small business CGT concession for the disposal.
 
+% If the taxpayer chooses a roll-over then the disposal is refused: Divisions 122 to 126 are not encoded.
 a disposal is refused because roll-overs not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer chooses a roll-over for the disposal.
 
+% If the asset passed from a deceased estate then the disposal is refused: Division 128 (cost base and acquisition rules on death) is not encoded.
 a disposal is refused because Division 128 deceased estates not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the asset passed to the taxpayer as a beneficiary or legal personal representative of a deceased estate.
 
+% If the taxpayer is a foreign or temporary resident at the time of the event then the disposal is refused: Div 855 (taxable Australian property) and Subdiv 768-R are not encoded.
 a disposal is refused because Division 855 and Subdivision 768-R foreign or temporary resident at the time of the event not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer is a foreign resident or temporary resident at the time of the disposal.
 
+% If the discount testing period started on or before 8 May 2012 and the individual was a foreign or temporary resident during it then the disposal is refused: s 115-115(3) to (6) are not encoded.
 a disposal is refused because subsections 115-115(3) to (6) discount testing period starting on or before 8 May 2012 not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
     and the asset was acquired by the taxpayer on a date
     and the date is before or equal to 2012-05-08.
 
+% If a trust or superannuation entity has a foreign or temporary residency period then the disposal is refused: s 115-120 (trustee percentage) is not encoded.
 a disposal is refused because section 115-120 and trusts or superannuation entities with foreign or temporary residency not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
     and it is not the case that
         the taxpayer is an entity of kind individual.
 
+% If the taxpayer chose indexation then the disposal is refused: Division 114 (frozen indexation) is not encoded; s 115-20 then needs the choice.
 a disposal is refused because Division 114 indexation not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer chose indexation for the asset.
 
+% If the disposal is stated to be a CGT event other than A1 then it is refused: only s 104-10 is encoded.
 a disposal is refused because CGT event other than a1 not encoded
     if the disposal is of CGT event type a type
     and the type is different from a1.
 
+% If the taxpayer uses a substituted accounting period then the disposal is refused: the income-year rule assumes a 30 June year end.
 a disposal is refused because substituted accounting period not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer uses a substituted accounting period.
 
+% If the asset is a lease the taxpayer granted then the disposal is refused: s 104-10(5)(b) and Subdiv 104-F (events F1 to F5) are not encoded.
 a disposal is refused because paragraph 104-10(5)(b) and Subdivision 104-F lease granted by the taxpayer not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the asset is a lease granted by the taxpayer.
 
+% If a Div 40/328 depreciating asset was used for a non-taxable purpose then the disposal is refused: the gain arises under event K7 (s 104-235), not A1.
 a disposal is refused because CGT event K7 depreciating asset used for a non-taxable purpose not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the asset is a depreciating asset whose decline in value was worked out under Division 40 or Division 328
     and the asset was used for a purpose other than a taxable purpose.
 
+% If the taxpayer is a beneficiary presently entitled to a trust capital gain then the disposal is refused: Subdiv 115-C is not encoded.
 a disposal is refused because Subdivision 115-C trust gains attributed to beneficiaries not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer is a beneficiary presently entitled to a capital gain of a trust.
 
+% If the taxpayer is a life insurance company then the disposal is refused: s 115-10(d), s 115-100(b)(ii) and Div 320 are not encoded.
 a disposal is refused because life insurance companies not encoded
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer is a life insurance company.
 
+% If the entity kind is not individual, company, trust or complying superannuation entity then the disposal is refused: s 115-10 and s 115-100 are encoded for those four only.
 a disposal is refused because entity kind not known to this file
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer is an entity of kind a kind
@@ -299,6 +319,7 @@ a disposal is refused because subsection 108-20(3) land or stratum unit or separ
     and the asset is a personal use asset
     and the asset is land or a stratum unit or a building or structure that is a separate CGT asset under Subdivision 108-D.
 
+% If the event happened on 21 September 1999 then the disposal is refused: s 115-15 turns on 11.45 am ACT legal time, and the file has no time of day.
 a disposal is refused because section 115-15 event on 21 September 1999 needs the time of day
     if the disposal has contract date 1999-09-21.
 
@@ -311,21 +332,25 @@ a disposal cannot be assessed because the taxpayer and asset of the disposal is 
     and it is not the case that
         the disposal is a disposal of an asset by a taxpayer.
 
+% Mechanical: the contract date fixes the time of the event (s 104-10(3)) and the income year; without it nothing can be assessed.
 a disposal cannot be assessed because the contract date of the disposal is missing
     if the disposal is a disposal of an asset by a taxpayer
     and it is not the case that
         the disposal has contract date a date.
 
+% Mechanical: the acquisition date decides pre-CGT status (s 104-10(5)), the third element (s 110-25(4)), s 110-45(2) and the 12-month test (s 115-25).
 a disposal cannot be assessed because the acquisition date of the asset is missing
     if the disposal is a disposal of an asset by a taxpayer
     and it is not the case that
         the asset was acquired by the taxpayer on a date.
 
+% Mechanical: capital proceeds (s 116-20) need the money received, even if nil.
 a disposal cannot be assessed because the money proceeds of the disposal is missing
     if the disposal is a disposal of an asset by a taxpayer
     and it is not the case that
         the disposal has money proceeds of an amount.
 
+% Mechanical: the first element (s 110-25(2)) is needed unless s 112-20 substitutes market value.
 a disposal cannot be assessed because the first element cost of the asset is missing
     if the disposal is a disposal of an asset by a taxpayer
     and it is not the case that
@@ -335,24 +360,28 @@ a disposal cannot be assessed because the first element cost of the asset is mis
     and it is not the case that
         the taxpayer did not deal at arm s length in acquiring the asset.
 
+% Mechanical: when s 112-20(1)(a) applies (no consideration) the market value at acquisition is the first element.
 a disposal cannot be assessed because the market value of the asset when acquired is missing
     if the disposal is a disposal of an asset by a taxpayer
     and the asset was acquired for no consideration
     and it is not the case that
         the asset had a market value of an amount when acquired.
 
+% Mechanical: when s 112-20(1)(c) applies (not at arm's length) the market value at acquisition is the first element.
 a disposal cannot be assessed because the market value of the asset when acquired is missing
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer did not deal at arm s length in acquiring the asset
     and it is not the case that
         the asset had a market value of an amount when acquired.
 
+% Mechanical: when s 116-30(2) applies (not at arm's length) the market value at the event is the capital proceeds.
 a disposal cannot be assessed because the market value of the asset at the time of the disposal is missing
     if the disposal is a disposal of an asset by a taxpayer
     and the disposal was not at arm s length
     and it is not the case that
         the asset had a market value of an amount at the time of the disposal.
 
+% Mechanical: when s 116-30(1) applies (no proceeds) the market value at the event is the capital proceeds.
 a disposal cannot be assessed because the market value of the asset at the time of the disposal is missing
     if the disposal is a disposal of an asset by a taxpayer
     and the disposal has money proceeds of a number M
@@ -362,11 +391,50 @@ a disposal cannot be assessed because the market value of the asset at the time 
     and it is not the case that
         the asset had a market value of an amount at the time of the disposal.
 
+% Mechanical: residency changes the answer (Div 855 refusal; s 115-115
+% apportionment), so it must be stated one way or the other: resident
+% throughout, foreign or temporary resident at the event, or foreign or
+% temporary during part of the discount testing period.
+a disposal cannot be assessed because the residency status of the taxpayer is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the taxpayer was an Australian resident and not a temporary resident throughout the ownership of the asset
+    and it is not the case that
+        the taxpayer is a foreign resident or temporary resident at the time of the disposal
+    and it is not the case that
+        the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal.
+
+% Mechanical: whether the asset is a collectable (s 108-10), a personal use
+% asset (s 108-20) or neither changes the cost base, the exemptions and the
+% loss rules, so it must be stated.
+a disposal cannot be assessed because the character of the asset as collectable or personal use asset or neither is missing
+    if the disposal is a disposal of an asset by a taxpayer
+    and it is not the case that
+        the asset is a collectable
+    and it is not the case that
+        the asset is a personal use asset
+    and it is not the case that
+        the asset is neither a collectable nor a personal use asset.
+
+% Mechanical: contradictory asset character is refused rather than resolved.
+a disposal is refused because contradictory asset character stated as collectable or personal use asset and also neither
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset is neither a collectable nor a personal use asset
+    and the asset is a collectable.
+
+% Mechanical: the same, where the contradiction is with "personal use asset".
+a disposal is refused because contradictory asset character stated as collectable or personal use asset and also neither
+    if the disposal is a disposal of an asset by a taxpayer
+    and the asset is neither a collectable nor a personal use asset
+    and the asset is a personal use asset.
+
+% Mechanical: the entity kind decides discount eligibility (s 115-10) and percentage (s 115-100).
 a disposal cannot be assessed because the entity kind of the taxpayer is missing
     if the disposal is a disposal of an asset by a taxpayer
     and it is not the case that
         the taxpayer is an entity of kind a kind.
 
+% Mechanical: s 115-115(2) needs the count of Australian-resident days in the discount testing period.
 a disposal cannot be assessed because the number of Australian resident days in the discount testing period is missing
     if the disposal is a disposal of an asset by a taxpayer
     and the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal
@@ -463,6 +531,7 @@ the third element of the cost base of an asset is 0
     if a disposal is a disposal of the asset by a taxpayer
     and the asset is a collectable.
 
+% If the asset is a personal use asset then the third element is excluded (s 108-30).
 the third element of the cost base of an asset is 0
     if a disposal is a disposal of the asset by a taxpayer
     and the asset is a personal use asset.
@@ -659,11 +728,13 @@ the capital gain or loss from a disposal is disregarded because subsection 118-3
     and the disposal results from receiving a reimbursement or payment of expenses under a scheme
     and the scheme is a scheme established under an enactment by an Australian government agency or a local governing body or a foreign government agency.
 
+% If the reimbursement was under the M4/M5 Cashback Scheme then the gain or loss is disregarded (s 118-37(2)(d)).
 the capital gain or loss from a disposal is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme
     if the disposal is assessable
     and the disposal results from receiving a reimbursement or payment of expenses under a scheme
     and the scheme is the M4/M5 Cashback Scheme.
 
+% If the reimbursement was under the Unlawful Termination Assistance Scheme or the Alternative Dispute Resolution Assistance Scheme then the gain or loss is disregarded (s 118-37(2)(e)).
 the capital gain or loss from a disposal is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme
     if the disposal is assessable
     and the disposal results from receiving a reimbursement or payment of expenses under a scheme
@@ -820,6 +891,7 @@ the fraction of a discount capital gain from a disposal that remains after the d
     and it is not the case that
         the taxpayer was a foreign resident or temporary resident during part of the discount testing period of the disposal.
 
+% If the discount capital gain is made by a trust (other than a complying superannuation entity) then the discount percentage is 50% (s 115-100(a)(ii)).
 the fraction of a discount capital gain from a disposal that remains after the discount is 0.5
     if the disposal gives a discount capital gain
     and the disposal is a disposal of an asset by a taxpayer
@@ -869,6 +941,7 @@ the net capital gain of a taxpayer for the income year a year cannot be worked o
     and the disposal is a disposal of an asset by the taxpayer
     and the disposal is refused because a reason.
 
+% If any disposal of the year cannot be assessed then the year's net capital gain cannot be worked out: s 102-5 sums every gain of the year.
 the net capital gain of a taxpayer for the income year a year cannot be worked out because missing input on one disposal in that income year
     if the taxpayer has a disposal in the income year the year
     and the disposal is a disposal of an asset by the taxpayer
@@ -889,6 +962,7 @@ a taxpayer has a mixed discount percentage problem for a year
     and a number T2 = T1 + CL
     and T2 > 0.
 
+% If the mixed-percentage problem arises then the year is refused: the order of applying losses is the taxpayer's choice (s 102-5 step 1 note 1, step 2 note 2).
 the net capital gain of a taxpayer for the income year a year cannot be worked out because taxpayer choice of loss order across discount gains with different percentages
     if the taxpayer has a mixed discount percentage problem for the year.
 
@@ -1010,6 +1084,7 @@ the prior year net capital losses available to a taxpayer for a year are an amou
             the taxpayer has an unapplied net capital loss of the loss from the income year a prior year
             and the prior year < the year.
 
+% Step 2 (s 102-5(1)): the prior year losses reduce the non-discount amounts first, then the discount amounts (the taxpayer's choice; step 2 note 2).
 the gains of a taxpayer for a year after step 2 are a first amount non-discount and a second amount discount
     if the gains of the taxpayer for the year after step 1 are a number GN non-discount and a number GD discount
     and the prior year net capital losses available to the taxpayer for the year are a number PL
@@ -1036,6 +1111,7 @@ the prior year net capital losses of a taxpayer that remain unapplied after a ye
 the discounted gains of a taxpayer for a year are 0
     if the gains of the taxpayer for the year after step 2 are a number GN non-discount and 0 discount.
 
+% Step 3 (s 102-5(1)) where discount gains remain: each is reduced by its discount percentage (s 115-100).
 the discounted gains of a taxpayer for a year are an amount
     if the gains of the taxpayer for the year after step 2 are a number GN non-discount and a number GD discount
     and GD > 0
@@ -1074,54 +1150,67 @@ the net capital gain of a taxpayer for the income year a year is an amount
 the property proceeds of a disposal are an amount
     if the disposal has property proceeds with market value of the amount.
 
+% Implementation note (not law): no property proceeds stated means nil.
 the property proceeds of a disposal are 0
     if the disposal is a disposal of an asset by a taxpayer
     and it is not the case that
         the disposal has property proceeds with market value of an amount.
 
+% Implementation note (not law): second element (s 110-25(3), s 110-35) as stated.
 the incidental costs of an asset are an amount
     if the asset has incidental costs of the amount.
 
+% Implementation note (not law): no incidental costs stated means nil.
 the incidental costs of an asset are 0
     if a disposal is a disposal of the asset by a taxpayer
     and it is not the case that
         the asset has incidental costs of an amount.
 
+% Implementation note (not law): fourth element (s 110-25(5)) as stated.
 the capital improvement costs of an asset are an amount
     if the asset has capital improvement costs of the amount.
 
+% Implementation note (not law): no fourth element stated means nil.
 the capital improvement costs of an asset are 0
     if a disposal is a disposal of the asset by a taxpayer
     and it is not the case that
         the asset has capital improvement costs of an amount.
 
+% Implementation note (not law): fifth element (s 110-25(6)) as stated.
 the title costs of an asset are an amount
     if the asset has title costs of the amount.
 
+% Implementation note (not law): no fifth element stated means nil.
 the title costs of an asset are 0
     if a disposal is a disposal of the asset by a taxpayer
     and it is not the case that
         the asset has title costs of an amount.
 
+% Implementation note (not law): net input tax credits (s 103-30) as stated.
 the net input tax credits of an asset are an amount
     if the asset has net input tax credits of the amount.
 
+% Implementation note (not law): no input tax credits stated means nil.
 the net input tax credits of an asset are 0
     if a disposal is a disposal of the asset by a taxpayer
     and it is not the case that
         the asset has net input tax credits of an amount.
 
+% Implementation note (not law): amounts deducted or deductible (s 110-45(2), s 110-55(4)) as stated.
 the deducted amounts of an asset are an amount
     if the asset has deducted amounts of the amount.
 
+% Implementation note (not law): no deducted amounts stated means nil.
 the deducted amounts of an asset are 0
     if a disposal is a disposal of the asset by a taxpayer
     and it is not the case that
         the asset has deducted amounts of an amount.
 
+% Implementation note (not law): the amount otherwise assessable (s 118-20) as stated.
 the amount of the gain from a disposal otherwise assessable is an amount
     if the amount of the gain from the disposal is included in assessable income under another provision.
 
+% Implementation note (not law): nothing otherwise assessable stated means nil.
 the amount of the gain from a disposal otherwise assessable is 0
     if the disposal is a disposal of an asset by a taxpayer
     and it is not the case that
@@ -1132,6 +1221,7 @@ the minimum of a first number and a second number is a third number
     if the first number =< the second number
     and the third number = the first number.
 
+% Implementation note (not law): the smaller of two numbers (second clause: the second is smaller).
 the minimum of a first number and a second number is a third number
     if the first number > the second number
     and the third number = the second number.
@@ -1153,6 +1243,8 @@ scenario s1 shares is:
     d1 has money proceeds of 15000.
     shares one has first element cost of 10000.
     shares one has incidental costs of 200.
+    shares one is neither a collectable nor a personal use asset.
+    alpha was an Australian resident and not a temporary resident throughout the ownership of shares one.
     cost base expects answers ["the cost base of shares one is 10200"].
     gain expects answers ["d1 gives a capital gain of 4800"].
     discount expects answers ["d1 gives a discount capital gain"].
@@ -1171,6 +1263,8 @@ scenario s2 shares on anniversary is:
     d1 has money proceeds of 15000.
     shares one has first element cost of 10000.
     shares one has incidental costs of 200.
+    shares one is neither a collectable nor a personal use asset.
+    alpha was an Australian resident and not a temporary resident throughout the ownership of shares one.
     discount expects answers [].
     discount fail expects answers ["d1 fails the discount test because subsection 115-25(1) asset not acquired at least 12 months before the event"].
     net gain expects answers ["the net capital gain of alpha for the income year 2025 is 4800.00"].
@@ -1187,6 +1281,8 @@ scenario s3 loss is:
     d1 has money proceeds of 15000.
     shares two has first element cost of 20000.
     shares two has incidental costs of 100.
+    shares two is neither a collectable nor a personal use asset.
+    beta was an Australian resident and not a temporary resident throughout the ownership of shares two.
     loss expects answers ["d1 gives a capital loss of 5100"].
     net loss expects answers ["the net capital loss of beta for the income year 2025 is 5100"].
     net gain expects answers [].
@@ -1206,6 +1302,8 @@ scenario s4 company is:
     warehouse has first element cost of 500000.
     warehouse has incidental costs of 10000.
     warehouse has costs of ownership of 30000.
+    warehouse is neither a collectable nor a personal use asset.
+    gamma co was an Australian resident and not a temporary resident throughout the ownership of warehouse.
     cost base expects answers ["the cost base of warehouse is 540000"].
     gain expects answers ["d1 gives a capital gain of 160000"].
     discount fail expects answers ["d1 fails the discount test because section 115-10 company taxpayer"].
@@ -1222,6 +1320,8 @@ scenario s5 super fund is:
     units one was acquired by delta fund on 2022-05-05.
     d1 has money proceeds of 69000.
     units one has first element cost of 60000.
+    units one is neither a collectable nor a personal use asset.
+    delta fund was an Australian resident and not a temporary resident throughout the ownership of units one.
     fraction expects answers ["the fraction of a discount capital gain from d1 that remains after the discount is 0.67"].
     net gain expects answers ["the net capital gain of delta fund for the income year 2025 is 6000.00"].
 
@@ -1235,6 +1335,8 @@ scenario s6 trust is:
     d1 has money proceeds of 15000.
     shares one has first element cost of 10000.
     shares one has incidental costs of 200.
+    shares one is neither a collectable nor a personal use asset.
+    epsilon trust was an Australian resident and not a temporary resident throughout the ownership of shares one.
     net gain expects answers ["the net capital gain of epsilon trust for the income year 2025 is 2400.00"].
 
 % --- S7. Ordering: a loss against a non-discount gain and a discount gain -----
@@ -1261,6 +1363,12 @@ scenario s7 ordering is:
     shares four was acquired by zeta on 2021-01-01.
     d3 has money proceeds of 6000.
     shares four has first element cost of 12000.
+    land one is neither a collectable nor a personal use asset.
+    zeta was an Australian resident and not a temporary resident throughout the ownership of land one.
+    shares three is neither a collectable nor a personal use asset.
+    zeta was an Australian resident and not a temporary resident throughout the ownership of shares three.
+    shares four is neither a collectable nor a personal use asset.
+    zeta was an Australian resident and not a temporary resident throughout the ownership of shares four.
     gain expects answers ["d1 gives a capital gain of 20000", "d2 gives a capital gain of 4000"].
     loss expects answers ["d3 gives a capital loss of 6000"].
     discount expects answers ["d1 gives a discount capital gain"].
@@ -1293,6 +1401,10 @@ scenario s8 collectables is:
     shares five was acquired by eta on 2023-05-05.
     d3 has money proceeds of 1500.
     shares five has first element cost of 1000.
+    eta was an Australian resident and not a temporary resident throughout the ownership of painting.
+    eta was an Australian resident and not a temporary resident throughout the ownership of coin.
+    shares five is neither a collectable nor a personal use asset.
+    eta was an Australian resident and not a temporary resident throughout the ownership of shares five.
     gain expects answers ["d1 gives a capital gain of 200", "d3 gives a capital gain of 500"].
     loss expects answers ["d2 gives a capital loss of 400"].
     collectable loss carried expects answers ["the net capital loss from collectables of eta for the income year 2025 is 200"].
@@ -1312,6 +1424,8 @@ scenario s9 prior losses is:
     land one has first element cost of 10000.
     theta has an unapplied net capital loss of 5000 from the income year 2022.
     theta has an unapplied net capital loss of 3000 from the income year 2023.
+    land one is neither a collectable nor a personal use asset.
+    theta was an Australian resident and not a temporary resident throughout the ownership of land one.
     net gain expects answers ["the net capital gain of theta for the income year 2025 is 6000.00"].
     prior losses carried expects answers ["the prior year net capital losses of theta that remain unapplied after 2025 are 0"].
 
@@ -1328,6 +1442,8 @@ scenario s10 prior losses exceed is:
     d1 has money proceeds of 30000.
     land one has first element cost of 10000.
     theta has an unapplied net capital loss of 25000 from the income year 2022.
+    land one is neither a collectable nor a personal use asset.
+    theta was an Australian resident and not a temporary resident throughout the ownership of land one.
     net gain expects answers ["the net capital gain of theta for the income year 2025 is 0"].
     net loss expects answers [].
     prior losses carried expects answers ["the prior year net capital losses of theta that remain unapplied after 2025 are 5000"].
@@ -1358,6 +1474,9 @@ scenario s11 personal use assets is:
     boat three was acquired by iota on 2024-09-01.
     d3 has money proceeds of 15000.
     boat three has first element cost of 20000.
+    iota was an Australian resident and not a temporary resident throughout the ownership of boat one.
+    iota was an Australian resident and not a temporary resident throughout the ownership of boat two.
+    iota was an Australian resident and not a temporary resident throughout the ownership of boat three.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-10(3) personal use asset gain with first element 10000 or less", "the capital gain or loss from d3 is disregarded because subsection 108-20(1) personal use asset loss"].
     gain expects answers ["d2 gives a capital gain of 5000"].
     loss expects answers [].
@@ -1383,6 +1502,8 @@ scenario s12 collectable boundary is:
     d2 has money proceeds of 900.
     coin two has first element cost of 501.
     coin two has costs of ownership of 100.
+    kappa was an Australian resident and not a temporary resident throughout the ownership of coin one.
+    kappa was an Australian resident and not a temporary resident throughout the ownership of coin two.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-10(1) collectable with first element 500 or less"].
     cost base expects answers ["the cost base of coin one is 500", "the cost base of coin two is 501"].
     gain expects answers ["d2 gives a capital gain of 399"].
@@ -1422,6 +1543,14 @@ scenario s13 nil and one dollar is:
     d4 has money proceeds of 100.
     building two has first element cost of 120.
     building two has deducted amounts of 30.
+    shares six is neither a collectable nor a personal use asset.
+    lambda was an Australian resident and not a temporary resident throughout the ownership of shares six.
+    shares seven is neither a collectable nor a personal use asset.
+    lambda was an Australian resident and not a temporary resident throughout the ownership of shares seven.
+    building one is neither a collectable nor a personal use asset.
+    lambda was an Australian resident and not a temporary resident throughout the ownership of building one.
+    building two is neither a collectable nor a personal use asset.
+    lambda was an Australian resident and not a temporary resident throughout the ownership of building two.
     cost base expects answers ["the cost base of shares six is 1000", "the cost base of shares seven is 1000", "the cost base of building one is 90", "the cost base of building two is 120"].
     reduced cost base expects answers ["the reduced cost base of shares six is 1000", "the reduced cost base of shares seven is 1000", "the reduced cost base of building one is 90", "the reduced cost base of building two is 90"].
     gain expects answers ["d2 gives a capital gain of 1", "d3 gives a capital gain of 10"].
@@ -1448,6 +1577,10 @@ scenario s14 otherwise assessable is:
     d2 has money proceeds of 150000.
     lot two has first element cost of 100000.
     20000 of the gain from d2 is included in assessable income under another provision.
+    lot one is neither a collectable nor a personal use asset.
+    mu was an Australian resident and not a temporary resident throughout the ownership of lot one.
+    lot two is neither a collectable nor a personal use asset.
+    mu was an Australian resident and not a temporary resident throughout the ownership of lot two.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-20(2) gain reduced to zero by the amount otherwise assessable"].
     gain expects answers ["d2 gives a capital gain of 30000"].
     net gain expects answers ["the net capital gain of mu for the income year 2025 is 30000.00"].
@@ -1468,6 +1601,8 @@ scenario s15 market value substitution is:
     d1 was not at arm s length.
     d1 has money proceeds of 100000.
     house one had a market value of 450000 at the time of d1.
+    house one is neither a collectable nor a personal use asset.
+    nu was an Australian resident and not a temporary resident throughout the ownership of house one.
     proceeds expects answers ["the capital proceeds from d1 are 450000"].
     cost base expects answers ["the cost base of house one is 300000"].
     gain expects answers ["d1 gives a capital gain of 150000"].
@@ -1486,6 +1621,8 @@ scenario s16 gst and property proceeds is:
     d1 has property proceeds with market value of 300.
     machine one has first element cost of 1100.
     machine one has net input tax credits of 100.
+    machine one is neither a collectable nor a personal use asset.
+    xi co was an Australian resident and not a temporary resident throughout the ownership of machine one.
     proceeds expects answers ["the capital proceeds from d1 are 1500"].
     cost base expects answers ["the cost base of machine one is 1000"].
     gain expects answers ["d1 gives a capital gain of 500"].
@@ -1513,6 +1650,12 @@ scenario s17 pre cgt is:
     shares nine was acquired by omicron on 1985-09-20.
     d3 has money proceeds of 500.
     shares nine has first element cost of 100.
+    stamps is neither a collectable nor a personal use asset.
+    omicron was an Australian resident and not a temporary resident throughout the ownership of stamps.
+    shares eight is neither a collectable nor a personal use asset.
+    omicron was an Australian resident and not a temporary resident throughout the ownership of shares eight.
+    shares nine is neither a collectable nor a personal use asset.
+    omicron was an Australian resident and not a temporary resident throughout the ownership of shares nine.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because paragraph 104-10(5)(a) asset acquired before 20 September 1985", "the capital gain or loss from d2 is disregarded because paragraph 104-10(5)(a) asset acquired before 20 September 1985"].
     gain expects answers ["d3 gives a capital gain of 400"].
     net gain expects answers ["the net capital gain of omicron for the income year 2025 is 200.00"].
@@ -1538,6 +1681,10 @@ scenario s18 norfolk island is:
     asset two would have been exempt from CGT under the Norfolk Island law as it applied before 1 July 2016.
     d2 has money proceeds of 500.
     asset two has first element cost of 100.
+    asset one is neither a collectable nor a personal use asset.
+    colin was an Australian resident and not a temporary resident throughout the ownership of asset one.
+    asset two is neither a collectable nor a personal use asset.
+    colin was an Australian resident and not a temporary resident throughout the ownership of asset two.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because Norfolk Island transitional rule asset acquired by a Norfolk Island resident before 24 October 2015"].
     gain expects answers ["d2 gives a capital gain of 400"].
     net gain expects answers ["the net capital gain of colin for the income year 2025 is 200.00"].
@@ -1567,6 +1714,12 @@ scenario s19 cars and medals is:
     medal two was acquired by pi on 2024-09-01.
     d3 has money proceeds of 3000.
     medal two has first element cost of 1000.
+    car one is neither a collectable nor a personal use asset.
+    pi was an Australian resident and not a temporary resident throughout the ownership of car one.
+    medal one is neither a collectable nor a personal use asset.
+    pi was an Australian resident and not a temporary resident throughout the ownership of medal one.
+    medal two is neither a collectable nor a personal use asset.
+    pi was an Australian resident and not a temporary resident throughout the ownership of medal two.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because paragraph 118-5(a) car or motor cycle or similar vehicle", "the capital gain or loss from d2 is disregarded because paragraph 118-5(b) valour decoration not paid for"].
     gain expects answers ["d3 gives a capital gain of 2000"].
     net gain expects answers ["the net capital gain of pi for the income year 2025 is 2000.00"].
@@ -1598,6 +1751,12 @@ scenario s20 depreciating and stock is:
     stock is trading stock of rho at the time of d3.
     d3 has money proceeds of 5000.
     stock has first element cost of 4000.
+    tractor is neither a collectable nor a personal use asset.
+    rho was an Australian resident and not a temporary resident throughout the ownership of tractor.
+    fridge is neither a collectable nor a personal use asset.
+    rho was an Australian resident and not a temporary resident throughout the ownership of fridge.
+    stock is neither a collectable nor a personal use asset.
+    rho was an Australian resident and not a temporary resident throughout the ownership of stock.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because section 118-24 depreciating asset", "the capital gain or loss from d3 is disregarded because section 118-25 trading stock"].
     refused expects answers ["d2 is refused because CGT event K7 depreciating asset used for a non-taxable purpose not encoded"].
     cannot expects answers ["the net capital gain of rho for the income year 2025 cannot be worked out because refusal of one disposal in that income year"].
@@ -1643,6 +1802,16 @@ scenario s21 compensation is:
     rebate claim has first element cost of 0.
     d5 results from receiving a reimbursement or payment of expenses under council scheme.
     council scheme is a scheme established under an enactment by an Australian government agency or a local governing body or a foreign government agency.
+    claim one is neither a collectable nor a personal use asset.
+    sigma was an Australian resident and not a temporary resident throughout the ownership of claim one.
+    claim two is neither a collectable nor a personal use asset.
+    sigma was an Australian resident and not a temporary resident throughout the ownership of claim two.
+    ticket one is neither a collectable nor a personal use asset.
+    sigma was an Australian resident and not a temporary resident throughout the ownership of ticket one.
+    toll claim is neither a collectable nor a personal use asset.
+    sigma was an Australian resident and not a temporary resident throughout the ownership of toll claim.
+    rebate claim is neither a collectable nor a personal use asset.
+    sigma was an Australian resident and not a temporary resident throughout the ownership of rebate claim.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because subparagraph 118-37(1)(a)(i) compensation for a wrong or injury in the occupation", "the capital gain or loss from d2 is disregarded because subparagraph 118-37(1)(a)(ii) compensation for a wrong or injury or illness suffered personally", "the capital gain or loss from d3 is disregarded because paragraph 118-37(1)(c) gambling or a game or a competition with prizes", "the capital gain or loss from d4 is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme", "the capital gain or loss from d5 is disregarded because subsection 118-37(2) reimbursement of expenses under a listed scheme"].
     gain expects answers [].
     net gain expects answers ["the net capital gain of sigma for the income year 2025 is 0"].
@@ -1675,6 +1844,12 @@ scenario s22 gifts and policies is:
     policy two was acquired by tau on 2024-09-01.
     d3 has money proceeds of 100000.
     policy two has first element cost of 80000.
+    painting two is neither a collectable nor a personal use asset.
+    tau was an Australian resident and not a temporary resident throughout the ownership of painting two.
+    policy one is neither a collectable nor a personal use asset.
+    tau was an Australian resident and not a temporary resident throughout the ownership of policy one.
+    policy two is neither a collectable nor a personal use asset.
+    tau was an Australian resident and not a temporary resident throughout the ownership of policy two.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-60(1) testamentary gift deductible under section 30-15", "the capital gain or loss from d2 is disregarded because section 118-300 life policy or annuity interest of the original owner or acquired for no consideration"].
     gain expects answers ["d3 gives a capital gain of 20000"].
     net gain expects answers ["the net capital gain of tau for the income year 2025 is 20000.00"].
@@ -1693,6 +1868,7 @@ scenario s23 foreign resident part period is:
     flat one has first element cost of 50000.
     upsilon was a foreign resident or temporary resident during part of the discount testing period of d1.
     upsilon was an Australian resident for 1000 of the days of the discount testing period of d1.
+    flat one is neither a collectable nor a personal use asset.
     fraction expects answers ["the fraction of a discount capital gain from d1 that remains after the discount is 0.7263"].
     net gain expects answers ["the net capital gain of upsilon for the income year 2025 is 7263.27"].
 
@@ -1714,6 +1890,9 @@ scenario s24 mixed percentages is:
     shares ten was acquired by upsilon on 2021-01-01.
     d2 has money proceeds of 2000.
     shares ten has first element cost of 3000.
+    flat one is neither a collectable nor a personal use asset.
+    shares ten is neither a collectable nor a personal use asset.
+    upsilon was an Australian resident and not a temporary resident throughout the ownership of shares ten.
     cannot expects answers ["the net capital gain of upsilon for the income year 2025 cannot be worked out because taxpayer choice of loss order across discount gains with different percentages"].
     net gain expects answers [].
 
@@ -1732,6 +1911,10 @@ scenario s25 year boundary is:
     shares twelve was acquired by phi on 2025-01-01.
     d2 has money proceeds of 2000.
     shares twelve has first element cost of 1000.
+    shares eleven is neither a collectable nor a personal use asset.
+    phi was an Australian resident and not a temporary resident throughout the ownership of shares eleven.
+    shares twelve is neither a collectable nor a personal use asset.
+    phi was an Australian resident and not a temporary resident throughout the ownership of shares twelve.
     net gain expects answers ["the net capital gain of phi for the income year 2025 is 1000.00", "the net capital gain of phi for the income year 2026 is 1000.00"].
 
 % --- S26. Prior year collectable losses (s 108-10(4)) and current collectable
@@ -1748,6 +1931,7 @@ scenario s26 prior collectable loss is:
     d1 has money proceeds of 3000.
     vase has first element cost of 2000.
     chi has an unapplied net capital loss from collectables of 300 from the income year 2023.
+    chi was an Australian resident and not a temporary resident throughout the ownership of vase.
     net gain expects answers ["the net capital gain of chi for the income year 2025 is 700.00"].
     collectable loss carried expects answers [].
 
@@ -1768,6 +1952,9 @@ scenario s27 collectable loss quarantined is:
     shares five was acquired by psi on 2024-09-01.
     d2 has money proceeds of 1500.
     shares five has first element cost of 1000.
+    psi was an Australian resident and not a temporary resident throughout the ownership of coin.
+    shares five is neither a collectable nor a personal use asset.
+    psi was an Australian resident and not a temporary resident throughout the ownership of shares five.
     net gain expects answers ["the net capital gain of psi for the income year 2025 is 500.00"].
     collectable loss carried expects answers ["the net capital loss from collectables of psi for the income year 2025 is 400"].
     net loss expects answers [].
@@ -1790,6 +1977,10 @@ scenario s28 net loss with prior loss is:
     d2 has money proceeds of 1000.
     shares fourteen has first element cost of 5000.
     omega has an unapplied net capital loss of 2000 from the income year 2023.
+    shares thirteen is neither a collectable nor a personal use asset.
+    omega was an Australian resident and not a temporary resident throughout the ownership of shares thirteen.
+    shares fourteen is neither a collectable nor a personal use asset.
+    omega was an Australian resident and not a temporary resident throughout the ownership of shares fourteen.
     net loss expects answers ["the net capital loss of omega for the income year 2025 is 3000"].
     net gain expects answers [].
     prior losses carried expects answers ["the prior year net capital losses of omega that remain unapplied after 2025 are 2000"].
@@ -1803,6 +1994,8 @@ scenario s29 refuse main residence is:
     d1 has money proceeds of 900000.
     home one has first element cost of 400000.
     home one is a dwelling that was the main residence of r1.
+    home one is neither a collectable nor a personal use asset.
+    r1 was an Australian resident and not a temporary resident throughout the ownership of home one.
     refused expects answers ["d1 is refused because Subdivision 118-B main residence not encoded"].
     gain expects answers [].
     cannot expects answers ["the net capital gain of r1 for the income year 2025 cannot be worked out because refusal of one disposal in that income year"].
@@ -1815,6 +2008,8 @@ scenario s30 refuse small business is:
     d1 has money proceeds of 900000.
     goodwill one has first element cost of 0.
     r2 claims a small business CGT concession for d1.
+    goodwill one is neither a collectable nor a personal use asset.
+    r2 was an Australian resident and not a temporary resident throughout the ownership of goodwill one.
     refused expects answers ["d1 is refused because Division 152 small business concessions not encoded"].
     gain expects answers [].
 
@@ -1826,6 +2021,8 @@ scenario s31 refuse rollover is:
     d1 has money proceeds of 9000.
     shares fifteen has first element cost of 4000.
     r3 chooses a roll-over for d1.
+    shares fifteen is neither a collectable nor a personal use asset.
+    r3 was an Australian resident and not a temporary resident throughout the ownership of shares fifteen.
     refused expects answers ["d1 is refused because roll-overs not encoded"].
     gain expects answers [].
 
@@ -1837,6 +2034,8 @@ scenario s32 refuse deceased estate is:
     d1 has money proceeds of 90000.
     inherited land has first element cost of 40000.
     inherited land passed to r4 as a beneficiary or legal personal representative of a deceased estate.
+    inherited land is neither a collectable nor a personal use asset.
+    r4 was an Australian resident and not a temporary resident throughout the ownership of inherited land.
     refused expects answers ["d1 is refused because Division 128 deceased estates not encoded"].
     gain expects answers [].
 
@@ -1848,6 +2047,7 @@ scenario s33 refuse foreign resident at event is:
     d1 has money proceeds of 9000.
     shares sixteen has first element cost of 4000.
     r5 is a foreign resident or temporary resident at the time of d1.
+    shares sixteen is neither a collectable nor a personal use asset.
     refused expects answers ["d1 is refused because Division 855 and Subdivision 768-R foreign or temporary resident at the time of the event not encoded"].
     gain expects answers [].
 
@@ -1860,6 +2060,7 @@ scenario s34 refuse pre 2012 foreign period is:
     shares seventeen has first element cost of 4000.
     r6 was a foreign resident or temporary resident during part of the discount testing period of d1.
     r6 was an Australian resident for 3000 of the days of the discount testing period of d1.
+    shares seventeen is neither a collectable nor a personal use asset.
     refused expects answers ["d1 is refused because subsections 115-115(3) to (6) discount testing period starting on or before 8 May 2012 not encoded"].
     gain expects answers [].
 
@@ -1871,6 +2072,8 @@ scenario s35 refuse indexation is:
     d1 has money proceeds of 9000.
     shares eighteen has first element cost of 4000.
     r7 chose indexation for shares eighteen.
+    shares eighteen is neither a collectable nor a personal use asset.
+    r7 was an Australian resident and not a temporary resident throughout the ownership of shares eighteen.
     refused expects answers ["d1 is refused because Division 114 indexation not encoded"].
     gain expects answers [].
 
@@ -1882,6 +2085,8 @@ scenario s36 refuse other event is:
     d1 has money proceeds of 9000.
     option one has first element cost of 4000.
     d1 is of CGT event type c2.
+    option one is neither a collectable nor a personal use asset.
+    r8 was an Australian resident and not a temporary resident throughout the ownership of option one.
     refused expects answers ["d1 is refused because CGT event other than a1 not encoded"].
     gain expects answers [].
 
@@ -1893,6 +2098,8 @@ scenario s37 event type a1 stated is:
     d1 has money proceeds of 9000.
     shares nineteen has first element cost of 4000.
     d1 is of CGT event type a1.
+    shares nineteen is neither a collectable nor a personal use asset.
+    r8 was an Australian resident and not a temporary resident throughout the ownership of shares nineteen.
     refused expects answers [].
     gain expects answers ["d1 gives a capital gain of 5000"].
 
@@ -1904,6 +2111,8 @@ scenario s38 refuse substituted period is:
     shares twenty was acquired by r9 co on 2020-01-01.
     d1 has money proceeds of 9000.
     shares twenty has first element cost of 4000.
+    shares twenty is neither a collectable nor a personal use asset.
+    r9 co was an Australian resident and not a temporary resident throughout the ownership of shares twenty.
     refused expects answers ["d1 is refused because substituted accounting period not encoded"].
     gain expects answers [].
 
@@ -1915,6 +2124,8 @@ scenario s39 refuse lease granted is:
     d1 has money proceeds of 9000.
     lease one has first element cost of 4000.
     lease one is a lease granted by r10.
+    lease one is neither a collectable nor a personal use asset.
+    r10 was an Australian resident and not a temporary resident throughout the ownership of lease one.
     refused expects answers ["d1 is refused because paragraph 104-10(5)(b) and Subdivision 104-F lease granted by the taxpayer not encoded"].
     gain expects answers [].
 
@@ -1926,6 +2137,8 @@ scenario s40 refuse trust beneficiary is:
     shares twenty one was acquired by r11 on 2020-01-01.
     d1 has money proceeds of 9000.
     shares twenty one has first element cost of 4000.
+    shares twenty one is neither a collectable nor a personal use asset.
+    r11 was an Australian resident and not a temporary resident throughout the ownership of shares twenty one.
     refused expects answers ["d1 is refused because Subdivision 115-C trust gains attributed to beneficiaries not encoded"].
     gain expects answers [].
 
@@ -1948,6 +2161,12 @@ scenario s41 refuse life company and unknown kind is:
     shares twenty four was acquired by r12 co on 1990-01-01.
     d3 has money proceeds of 9000.
     shares twenty four has first element cost of 4000.
+    shares twenty two is neither a collectable nor a personal use asset.
+    r12 co was an Australian resident and not a temporary resident throughout the ownership of shares twenty two.
+    shares twenty three is neither a collectable nor a personal use asset.
+    r13 was an Australian resident and not a temporary resident throughout the ownership of shares twenty three.
+    shares twenty four is neither a collectable nor a personal use asset.
+    r12 co was an Australian resident and not a temporary resident throughout the ownership of shares twenty four.
     refused expects answers ["d1 is refused because life insurance companies not encoded", "d2 is refused because entity kind not known to this file", "d3 is refused because life insurance companies not encoded", "d3 is refused because section 115-15 event on 21 September 1999 needs the time of day"].
     gain expects answers [].
 
@@ -1958,6 +2177,8 @@ scenario s42 missing contract date is:
     shares one was acquired by m1 on 2020-01-01.
     d1 has money proceeds of 9000.
     shares one has first element cost of 4000.
+    shares one is neither a collectable nor a personal use asset.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of shares one.
     missing expects answers ["d1 cannot be assessed because the contract date of the disposal is missing"].
     gain expects answers [].
 
@@ -1967,6 +2188,8 @@ scenario s43 missing acquisition date is:
     d1 has contract date 2025-03-01.
     d1 has money proceeds of 9000.
     shares one has first element cost of 4000.
+    shares one is neither a collectable nor a personal use asset.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of shares one.
     missing expects answers ["d1 cannot be assessed because the acquisition date of the asset is missing"].
     gain expects answers [].
     cannot expects answers ["the net capital gain of m1 for the income year 2025 cannot be worked out because missing input on one disposal in that income year"].
@@ -1977,6 +2200,8 @@ scenario s44 missing proceeds is:
     d1 has contract date 2025-03-01.
     shares one was acquired by m1 on 2020-01-01.
     shares one has first element cost of 4000.
+    shares one is neither a collectable nor a personal use asset.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of shares one.
     missing expects answers ["d1 cannot be assessed because the money proceeds of the disposal is missing"].
     gain expects answers [].
 
@@ -1986,6 +2211,8 @@ scenario s45 missing first element is:
     d1 has contract date 2025-03-01.
     shares one was acquired by m1 on 2020-01-01.
     d1 has money proceeds of 9000.
+    shares one is neither a collectable nor a personal use asset.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of shares one.
     missing expects answers ["d1 cannot be assessed because the first element cost of the asset is missing"].
     gain expects answers [].
 
@@ -1996,6 +2223,8 @@ scenario s46 missing market value at acquisition is:
     shares one was acquired by m1 on 2020-01-01.
     shares one was acquired for no consideration.
     d1 has money proceeds of 9000.
+    shares one is neither a collectable nor a personal use asset.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of shares one.
     missing expects answers ["d1 cannot be assessed because the market value of the asset when acquired is missing"].
     gain expects answers [].
 
@@ -2007,6 +2236,8 @@ scenario s47 missing market value at disposal is:
     d1 has money proceeds of 9000.
     d1 was not at arm s length.
     shares one has first element cost of 4000.
+    shares one is neither a collectable nor a personal use asset.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of shares one.
     missing expects answers ["d1 cannot be assessed because the market value of the asset at the time of the disposal is missing"].
     gain expects answers [].
 
@@ -2016,6 +2247,8 @@ scenario s48 missing entity kind is:
     shares one was acquired by m2 on 2020-01-01.
     d1 has money proceeds of 9000.
     shares one has first element cost of 4000.
+    shares one is neither a collectable nor a personal use asset.
+    m2 was an Australian resident and not a temporary resident throughout the ownership of shares one.
     missing expects answers ["d1 cannot be assessed because the entity kind of the taxpayer is missing"].
     gain expects answers [].
 
@@ -2028,6 +2261,7 @@ scenario s49 missing resident days and disposal link is:
     shares one has first element cost of 4000.
     m1 was a foreign resident or temporary resident during part of the discount testing period of d1.
     d2 has contract date 2025-03-01.
+    shares one is neither a collectable nor a personal use asset.
     missing expects answers ["d1 cannot be assessed because the number of Australian resident days in the discount testing period is missing", "d2 cannot be assessed because the taxpayer and asset of the disposal is missing"].
     gain expects answers [].
 
@@ -2050,6 +2284,10 @@ scenario s50 ownership costs boundary is:
     d2 has money proceeds of 2000.
     lot b has first element cost of 1000.
     lot b has costs of ownership of 100.
+    lot a is neither a collectable nor a personal use asset.
+    b1 was an Australian resident and not a temporary resident throughout the ownership of lot a.
+    lot b is neither a collectable nor a personal use asset.
+    b1 was an Australian resident and not a temporary resident throughout the ownership of lot b.
     cost base expects answers ["the cost base of lot a is 1000", "the cost base of lot b is 1100"].
     net gain expects answers ["the net capital gain of b1 for the income year 2025 is 950.00"].
 
@@ -2070,6 +2308,10 @@ scenario s51 discount start date is:
     parcel y was acquired by b2 on 1990-01-01.
     d2 has money proceeds of 300.
     parcel y has first element cost of 100.
+    parcel x is neither a collectable nor a personal use asset.
+    b2 was an Australian resident and not a temporary resident throughout the ownership of parcel x.
+    parcel y is neither a collectable nor a personal use asset.
+    b2 was an Australian resident and not a temporary resident throughout the ownership of parcel y.
     discount fail expects answers ["d1 fails the discount test because section 115-15 event before 21 September 1999"].
     discount expects answers ["d2 gives a discount capital gain"].
     net gain expects answers ["the net capital gain of b2 for the income year 2000 is 300.00"].
@@ -2103,6 +2345,14 @@ scenario s52 leap year anniversary is:
     parcel s was acquired by b3 on 2023-03-01.
     d4 has money proceeds of 300.
     parcel s has first element cost of 100.
+    parcel p is neither a collectable nor a personal use asset.
+    b3 was an Australian resident and not a temporary resident throughout the ownership of parcel p.
+    parcel q is neither a collectable nor a personal use asset.
+    b3 was an Australian resident and not a temporary resident throughout the ownership of parcel q.
+    parcel r is neither a collectable nor a personal use asset.
+    b3 was an Australian resident and not a temporary resident throughout the ownership of parcel r.
+    parcel s is neither a collectable nor a personal use asset.
+    b3 was an Australian resident and not a temporary resident throughout the ownership of parcel s.
     discount expects answers ["d2 gives a discount capital gain", "d4 gives a discount capital gain"].
     net gain expects answers ["the net capital gain of b3 for the income year 2025 is 300.00", "the net capital gain of b3 for the income year 2024 is 300.00"].
 
@@ -2123,6 +2373,9 @@ scenario s53 general loss against collectable gain is:
     shares five was acquired by b4 on 2024-09-01.
     d2 has money proceeds of 700.
     shares five has first element cost of 1000.
+    b4 was an Australian resident and not a temporary resident throughout the ownership of vase.
+    shares five is neither a collectable nor a personal use asset.
+    b4 was an Australian resident and not a temporary resident throughout the ownership of shares five.
     net gain expects answers ["the net capital gain of b4 for the income year 2025 is 700.00"].
 
 % --- S54. A net capital loss "from" a year applies only to later years ------
@@ -2142,6 +2395,10 @@ scenario s54 loss year strictness is:
     d2 has money proceeds of 2000.
     parcel u has first element cost of 1000.
     b5 has an unapplied net capital loss of 400 from the income year 2025.
+    parcel t is neither a collectable nor a personal use asset.
+    b5 was an Australian resident and not a temporary resident throughout the ownership of parcel t.
+    parcel u is neither a collectable nor a personal use asset.
+    b5 was an Australian resident and not a temporary resident throughout the ownership of parcel u.
     net gain expects answers ["the net capital gain of b5 for the income year 2025 is 1000.00", "the net capital gain of b5 for the income year 2026 is 600.00"].
     prior losses carried expects answers ["the prior year net capital losses of b5 that remain unapplied after 2025 are 0", "the prior year net capital losses of b5 that remain unapplied after 2026 are 0"].
 
@@ -2157,6 +2414,8 @@ scenario s55 nil proceeds market value is:
     d1 has money proceeds of 0.
     parcel v had a market value of 5000 at the time of d1.
     parcel v has first element cost of 1000.
+    parcel v is neither a collectable nor a personal use asset.
+    b6 was an Australian resident and not a temporary resident throughout the ownership of parcel v.
     proceeds expects answers ["the capital proceeds from d1 are 5000"].
     net gain expects answers ["the net capital gain of b6 for the income year 2025 is 2000.00"].
 
@@ -2167,6 +2426,8 @@ scenario s56 nil proceeds no market value is:
     parcel v was acquired by b6 on 2015-01-01.
     d1 has money proceeds of 0.
     parcel v has first element cost of 1000.
+    parcel v is neither a collectable nor a personal use asset.
+    b6 was an Australian resident and not a temporary resident throughout the ownership of parcel v.
     missing expects answers ["d1 cannot be assessed because the market value of the asset at the time of the disposal is missing"].
     net gain expects answers [].
 
@@ -2180,6 +2441,7 @@ scenario s57 trust foreign period refused is:
     parcel w has first element cost of 1000.
     b7 trust was a foreign resident or temporary resident during part of the discount testing period of d1.
     b7 trust was an Australian resident for 500 of the days of the discount testing period of d1.
+    parcel w is neither a collectable nor a personal use asset.
     refused expects answers ["d1 is refused because section 115-120 and trusts or superannuation entities with foreign or temporary residency not encoded"].
     net gain expects answers [].
 
@@ -2196,6 +2458,7 @@ scenario s58 collectable no consideration is:
     brooch was acquired for no consideration.
     brooch had a market value of 400 when acquired.
     d1 has money proceeds of 900.
+    b8 was an Australian resident and not a temporary resident throughout the ownership of brooch.
     disregarded expects answers ["the capital gain or loss from d1 is disregarded because subsection 118-10(1) collectable with first element 500 or less"].
     net gain expects answers ["the net capital gain of b8 for the income year 2025 is 0"].
 
@@ -2209,9 +2472,47 @@ scenario s59 land as personal use asset refused is:
     block one was acquired by b9 on 2020-01-01.
     d1 has money proceeds of 12000.
     block one has first element cost of 9000.
+    b9 was an Australian resident and not a temporary resident throughout the ownership of block one.
     refused expects answers ["d1 is refused because subsection 108-20(3) land or stratum unit or separate building cannot be a personal use asset"].
     disregarded expects answers [].
     net gain expects answers [].
+
+% --- S60, S61. Residency and asset character must be stated ---------------
+scenario s60 missing residency is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m1 on 2020-01-01.
+    d1 has money proceeds of 9000.
+    shares one has first element cost of 4000.
+    shares one is neither a collectable nor a personal use asset.
+    missing expects answers ["d1 cannot be assessed because the residency status of the taxpayer is missing"].
+    gain expects answers [].
+    net gain expects answers [].
+
+scenario s61 missing asset character is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of shares one by m1.
+    d1 has contract date 2025-03-01.
+    shares one was acquired by m1 on 2020-01-01.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of shares one.
+    d1 has money proceeds of 9000.
+    shares one has first element cost of 4000.
+    missing expects answers ["d1 cannot be assessed because the character of the asset as collectable or personal use asset or neither is missing"].
+    gain expects answers [].
+
+scenario s62 contradictory asset character is:
+    m1 is an entity of kind individual.
+    d1 is a disposal of coin one by m1.
+    d1 has contract date 2025-03-01.
+    coin one was acquired by m1 on 2020-01-01.
+    m1 was an Australian resident and not a temporary resident throughout the ownership of coin one.
+    d1 has money proceeds of 9000.
+    coin one has first element cost of 4000.
+    coin one is a collectable.
+    coin one is neither a collectable nor a personal use asset.
+    refused expects answers ["d1 is refused because contradictory asset character stated as collectable or personal use asset and also neither"].
+    gain expects answers [].
 
 query gain is:
     which disposal gives a capital gain of which amount.

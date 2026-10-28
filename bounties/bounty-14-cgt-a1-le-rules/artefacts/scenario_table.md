@@ -1,4 +1,4 @@
-# Scenario table [run] (final file `cgt_a1.le`, 25 Oct 2026)
+# Scenario table [run] (final file `cgt_a1.le` v1.2, 28 Oct 2026)
 
 Each expected figure was worked by hand from the Act before the run (working column, with the provision). Result is the test runner's verdict on every expectation of the scenario.
 
@@ -63,3 +63,6 @@ Each expected figure was worked by hand from the Act before the run (working col
 | s57 trust foreign period refused | 1 | (refusal / missing-input case: see expected answers) | refused: d1 is refused because section 115-120 and trusts or superannuation entities with foreign or temporary residency not encoded<br>net gain: [] | PASS |
 | s58 collectable no consideration | 1 | [statute]: market value 400 when acquired is the first element; 400 is 500 or less: the gain is disregarded. Net capital gain 0. | disregarded: the capital gain or loss from d1 is disregarded because subsection 118-10(1) collectable with first element 500 or less<br>net gain: the net capital gain of b8 for the income year 2025 is 0 | PASS |
 | s59 land as personal use asset refused | 1 | (refusal / missing-input case: see expected answers) | refused: d1 is refused because subsection 108-20(3) land or stratum unit or separate building cannot be a personal use asset<br>disregarded: []<br>net gain: [] | PASS |
+| s60 missing residency | 1 | (refusal / missing-input case: see expected answers) | missing: d1 cannot be assessed because the residency status of the taxpayer is missing<br>gain: []<br>net gain: [] | PASS |
+| s61 missing asset character | 1 | (refusal / missing-input case: see expected answers) | missing: d1 cannot be assessed because the character of the asset as collectable or personal use asset or neither is missing<br>gain: [] | PASS |
+| s62 contradictory asset character | 1 | (refusal / missing-input case: see expected answers) | refused: d1 is refused because contradictory asset character stated as collectable or personal use asset and also neither<br>gain: [] | PASS |
