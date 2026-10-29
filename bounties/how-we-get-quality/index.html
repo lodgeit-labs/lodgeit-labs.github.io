@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How we get quality: the programme as a game | LodgeiT</title>
+    <meta name="description" content="How the LodgeiT review programme is arranged so the easiest way to earn is also the way that improves the rules — and the attacks it is built to blunt.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .mark { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 0.3rem; white-space: nowrap; }
+        .mark-measured { color: #34d399; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3); }
+        .mark-reviewer { color: #4D94FF; background: rgba(77,148,255,0.12); border: 1px solid rgba(77,148,255,0.3); }
+        .mark-claim { color: #94a3b8; background: rgba(148,163,184,0.12); border: 1px solid rgba(148,163,184,0.3); }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+                <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; How we get quality
+            </p>
+        </div>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">The programme</p>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">How we get quality: the programme as a game</span>
+            </h1>
+            <p class="text-slate-400 leading-relaxed">
+                <em>See also <a href="/bounties/logical-english-best-practice/" class="text-lodgeit-light hover:text-white underline">How we work</a>, <a href="/bounties/how-we-pay/" class="text-lodgeit-light hover:text-white underline">How we pay</a>, <a href="/bounties/from-bounties-to-ownership/" class="text-lodgeit-light hover:text-white underline">From bounties to ownership</a>.</em>
+            </p>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 prose-lodgeit">
+
+            <p>A rule file is only as good as the people who tried to break it. This page explains how the programme is arranged so that the easiest way to earn is also the way that improves the rules, and why each rule of the programme is there.</p>
+            <h2>The things that must be true</h2>
+            <ol>
+                <li><strong>Every rule carries its provision.</strong> A reviewer checks a sentence against a section, not a system against an intuition.</li>
+                <li><strong>Every expected figure is derived by hand from the Act before the engine runs.</strong> The file must agree with the derivation, never the reverse. On the CGT file, an independent re-derivation from the statute caught a missing provision (s 110-45(2)) before publication; a second read caught two inputs that defaulted silently. Both took under an hour.</li>
+                <li><strong>The file is identified by its hash and its reasoner version.</strong> What was reviewed is what runs. Change one character and it is a different file with no signatures.</li>
+                <li><strong>The answer is one of three: a figure with its chain of provisions; "cannot be assessed because X is missing"; or a refusal with the reason.</strong> There is no fourth option. A file that guesses cannot be reviewed, because the reviewer cannot tell a guess from a derivation.</li>
+                <li><strong>Status is computed from the registry, never typed.</strong> Unreviewed, Reviewed (one signature), Ratified (two, at least one currently licensed), Disputed (an open bonded finding). No one at LodgeiT can set a tier by hand, and the file's answers show its tier wherever it runs.</li>
+            </ol>
+            <h2>Why the money is shaped the way it is</h2>
+            <p><strong>Pay for the finding, not the praise.</strong> If reviewers were paid only when they approved, the cheapest review would be a signature. So the fee is for the hours, the bonus is for the defect, and the signature is a separate question with its own, smaller fee. A reviewer who says "no" has lost nothing.</p>
+            <p><strong>Keep the review and the signature apart.</strong> A verdict says what you found; a signature says you put your name to the file. Five reviewers returned verdicts on our Division 36 file across two rounds and not one was ever asked to sign a hash, so the deployed file had no signatures. The form now asks. We learned this the slow way and publish it so you do not have to.</p>
+            <p><strong>Small units.</strong> A six-hour review sits unclaimed; a ninety-minute family review gets done on a Tuesday evening. Four people can work on one file at once, and defects arrive in weeks instead of quarters. Prices are tuned on two numbers: days from publication to first claim, and days from claim to verdict.</p>
+            <p><strong>Grade the findings.</strong> A wrong figure in scope matters more than a typo. Grading keeps the bonus pointed at what would hurt a user, and stops the programme rewarding volume of nitpicks.</p>
+            <p><strong>The signature binds a public credential.</strong> A practitioner who signs on someone else's say-so still has their registration or certificate number on a public row against that hash. In a small profession, that is enough.</p>
+            <h2>The attacks, and what blunts them</h2>
+            <p>We assume some participants will try to earn without improving the rules. The programme is built so that each shortcut costs more than it pays.</p>
+            <table>
+                <thead>
+                    <tr><th>Shortcut</th><th>Why it does not pay</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Sign without reading</td><td>The fee for signing is small; the signature carries your credential publicly; any later defect is attributable to that signature.</td></tr>
+                    <tr><td>Paste a model's review</td><td>Accepted findings are paid however they were found, so this is allowed and must be disclosed. But the flat fee needs the family rows completed with references picked from the file and logged runs against its scenarios; a pasted review has none. Rejected findings stay on your record.</td></tr>
+                    <tr><td>Flood with trivial findings</td><td>Grade 4 pays least; rejected findings are returned, not paid; a low acceptance rate closes the larger bounties to you.</td></tr>
+                    <tr><td>Author and reviewer collude</td><td>Authors cannot sign their own files, and findings against a file are funded by the programme, not by the author, so there is nothing to split.</td></tr>
+                    <tr><td>Two reviewers disagree</td><td>The file drops to Disputed, not to "whoever signed last". A third credentialed reviewer adjudicates. A diverging interpretation on a point with no ruling or authority is recorded as a scope note, not a defect.</td></tr>
+                    <tr><td>File an unfounded dispute to stall a file</td><td>A dispute at the top grades needs a small bond, forfeited if the finding is ruled frivolous. The file keeps running while it is Disputed; only its label changes.</td></tr>
+                    <tr><td>Ship a file that refuses most questions so it is never wrong</td><td>Refusals earn the file's maintainers nothing. Coverage is a stated scope in the header and part of what reviewers check (grade 3: cases it should refuse but answers; and the reverse).</td></tr>
+                </tbody>
+            </table>
+            <h2>Who may review</h2>
+            <p>Registered tax and BAS agents; Australian legal practitioners (checked against the state register; tax lawyers are generally not on the TPB register and do not need to be); CA ANZ, CPA Australia and IPA members who are not registered agents; and former practitioners admitted on evidence. New reviewers start with a single family or break-it cases; sign-off rounds open at two accepted findings or one clean family review with runs behind it. Everyone builds a public profile from records: bounties completed, findings accepted, signatures and their status.</p>
+            <h2>What we publish</h2>
+            <p>Every review in full, with the reviewer's chosen attribution. Every finding accepted, with the provision and the fix. Every signature, with the hash. The run log, the findings log and the hand-worked expected answers for every scenario. The registry is append-only: rows are superseded or withdrawn with a date, never deleted. If you want to know who checked a file and what they found, it is on the page.</p>
+
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

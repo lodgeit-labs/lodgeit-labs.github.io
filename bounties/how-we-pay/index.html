@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How we pay reviewers today | LodgeiT</title>
+    <meta name="description" content="How LodgeiT pays reviewers: a flat fee for the review whatever you find, a graded bonus for accepted findings, and a separate, smaller fee for signing a file's hash.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .mark { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 0.3rem; white-space: nowrap; }
+        .mark-measured { color: #34d399; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3); }
+        .mark-reviewer { color: #4D94FF; background: rgba(77,148,255,0.12); border: 1px solid rgba(77,148,255,0.3); }
+        .mark-claim { color: #94a3b8; background: rgba(148,163,184,0.12); border: 1px solid rgba(148,163,184,0.3); }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+                <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; How we pay
+            </p>
+        </div>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">The programme</p>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">How we pay reviewers today</span>
+            </h1>
+            <p class="text-slate-400 leading-relaxed">
+                <em>See also <a href="/bounties/logical-english-best-practice/" class="text-lodgeit-light hover:text-white underline">How we work</a>, <a href="/bounties/how-we-get-quality/" class="text-lodgeit-light hover:text-white underline">How we get quality</a>, <a href="/bounties/from-bounties-to-ownership/" class="text-lodgeit-light hover:text-white underline">From bounties to ownership</a>.</em>
+            </p>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 prose-lodgeit">
+
+            <p>Every bounty on this site pays for the same three things, kept separate because they are different acts.</p>
+            <h2>1. The review: a flat fee, whatever you find</h2>
+            <p>You are paid the bounty's stated fee for a completed review. A review that finds nothing earns the same as one that finds three defects. A REJECT verdict earns the same as an ACCEPT. We pay for the hours and the attention; the verdict is yours.</p>
+            <p>A completed review means the verdict form filled in for your part of the file, with rule references picked from the file itself and the scenarios you traced named. On rule-file bounties that also means at least two fact patterns run through the file ("try it") so we can see the review engaged with the rules, not just the prose.</p>
+            <h2>2. The finding: a graded bonus, paid on acceptance</h2>
+            <p>A finding is a specific defect: this rule, this provision, this is wrong, this is what the Act requires. Accepted findings earn a bonus on top of the fee, graded by what they would have cost a user:</p>
+            <table>
+                <thead>
+                    <tr><th>Grade</th><th>What it is</th><th>Typical bonus</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>A plausible wrong figure on an in-scope fact pattern</td><td>highest</td></tr>
+                    <tr><td>2</td><td>A fact the Act requires that the file silently defaulted</td><td></td></tr>
+                    <tr><td>3</td><td>A case the file should refuse but answers</td><td></td></tr>
+                    <tr><td>4</td><td>A test, comment or documentation defect</td><td>lowest</td></tr>
+                </tbody>
+            </table>
+            <p>The bounty page states the bonus per grade. A finding is accepted when we reproduce it on the file's published hash; it then goes into the findings log with your name (or initials, or "verified practitioner", as you choose) and the fix rolls the file to a new version. Findings we cannot reproduce are returned to you with the reason; they are not published and they do not count against you beyond our own records.</p>
+            <p>Break-it bounties are findings bounties with no review attached: construct a fact pattern within scope where the file returns a plausible wrong figure, and be paid per accepted case.</p>
+            <h2>3. The signature: a separate question, and a separate fee</h2>
+            <p>At the end of every rule-file review is a question that is not part of the verdict: <em>do you sign this exact file, identified by its hash, as stating the law for the scope in its header?</em> Yes, no, or yes once named findings are fixed. You are paid for the review whatever you answer. "No" needs no reason.</p>
+            <p>Because a signature covers the whole file, family-sized reviews usually end with "no" and the signatures come from a short sign-off bounty after the fixes are in: one more read of the whole revised file, one hour, its own fee. Two signatures from different verified practitioners, at least one of them currently licensed, make a file <strong>Ratified</strong>. One makes it <strong>Reviewed</strong>. None makes it what it is: unreviewed, and labelled so wherever it runs.</p>
+            <p>A signature binds to the hash. When the file changes, the signature lapses and the new file starts at zero. Your name appears in the public registry against the hash you signed, never against any individual answer the file gives to anyone.</p>
+            <h2>What a bounty page tells you</h2>
+            <p>Fee for the review; bonus per finding grade; whether there is a sign-off round and its fee; expected hours; who may claim it (registered agents, legal practitioners, CA/CPA/IPA members, former practitioners); the file's hash and reasoner version; and the deadline. Prices move: if a bounty sits unclaimed we raise it, and we say so on the page.</p>
+            <h2>Getting paid</h2>
+            <p>On acceptance, the portal (or until it exists, our support team) sends you a payment reference and the amounts, ex GST and with GST if you are registered. You invoice us against the reference; we run payouts monthly. Named credit on the published review and in the registry is the default; you can choose initials or "verified practitioner" instead.</p>
+
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
