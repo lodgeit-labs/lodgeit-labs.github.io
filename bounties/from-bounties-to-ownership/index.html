@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From bounties to ownership: where this is going | LodgeiT</title>
+    <meta name="description" content="Where the LodgeiT review programme is going: from one-off bounties toward a counted, metered share for the people who make a rule file trustworthy. Intent, not an offer.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .mark { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 0.3rem; white-space: nowrap; }
+        .mark-measured { color: #34d399; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3); }
+        .mark-reviewer { color: #4D94FF; background: rgba(77,148,255,0.12); border: 1px solid rgba(77,148,255,0.3); }
+        .mark-claim { color: #94a3b8; background: rgba(148,163,184,0.12); border: 1px solid rgba(148,163,184,0.3); }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+                <!-- Breadcrumb -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; From bounties to ownership
+            </p>
+        </div>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">The programme</p>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">From bounties to ownership: where this is going</span>
+            </h1>
+            <p class="text-slate-400 leading-relaxed">
+                <em>See also <a href="/bounties/logical-english-best-practice/" class="text-lodgeit-light hover:text-white underline">How we work</a>, <a href="/bounties/how-we-pay/" class="text-lodgeit-light hover:text-white underline">How we pay</a>, <a href="/bounties/how-we-get-quality/" class="text-lodgeit-light hover:text-white underline">How we get quality</a>. This page describes intent. The parts that touch professional regulation are themselves under review (Bounty #15); nothing here is an offer.</em>
+            </p>
+        </section>
+
+        <!-- Body -->
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 prose-lodgeit">
+
+            <h2>Today</h2>
+            <p>A bounty is a one-off. You review, you find, perhaps you sign; you are paid; the file improves; the relationship ends until the next bounty. That is the right way to start, and it is how every file on this site has been built. It has one weakness: the people who made a file trustworthy have no stake in it staying trustworthy.</p>
+            <h2>Where we want to get to</h2>
+            <p>Rule files will be used. Tax Genii will answer questions with them; other software will call them through a metered interface; each use will be a small, counted event tied to the exact file hash that answered. Once use is counted, it can be shared.</p>
+            <p>The intent is that the people who make a file trustworthy hold a share in its use:</p>
+            <ul>
+                <li><strong>The maintainer</strong> who wrote the file and keeps it current when the law changes earns on every use while the file is current and signed, and stops earning when it lapses. Upkeep is paid for by the same stream that pays for authorship.</li>
+                <li><strong>The signers</strong> who put their credential against a hash earn a share on every use of that hash for its effective period. The share accrues into escrow and vests only if no serious defect is upheld against that hash in the period. A defect found later is paid to the finder out of that escrow. A careful signature earns; a careless one funds the person who caught it.</li>
+                <li><strong>The finder</strong> remains the best-paid act per hour, because finding is what the whole structure exists to reward.</li>
+                <li><strong>The programme</strong> keeps a share for running the engines, adjudicating disputes, and funding a floor for the long tail of rules that are correct, necessary and rarely used, so that those files are maintained too.</li>
+            </ul>
+            <p>Three rules follow from this and will not change:</p>
+            <ol>
+                <li><strong>Your name goes on the hash in the registry, never on an answer.</strong> A caller sees the file's hash and tier; who signed it is public in the registry, not stamped on their calculation. This is the line between attesting to a rule and advising a taxpayer, and keeping it is what lets practitioners take part at all.</li>
+                <li><strong>A share is paid on use, never on outcome.</strong> The same amount whether the answer was a nil gain or a large one. It is a licence fee for an artefact, not a fee contingent on anyone's tax.</li>
+                <li><strong>Everything lapses.</strong> Signatures and shares attach to a hash for an effective period. When the file changes, or the law does, they end, and the new file starts at zero. Nobody earns on stale law.</li>
+            </ol>
+            <h2>How we get from here to there</h2>
+            <p>We do not intend to switch the whole programme over on a date. The steps are small and each is useful on its own:</p>
+            <ol>
+                <li><strong>Signatures first.</strong> Every rule-file bounty now ends with the signature question, and the registry counts signatures on the deployed hash. This exists today.</li>
+                <li><strong>Count use.</strong> When a file is deployed, every answer records which hash produced it. This is needed for the tier label on answers anyway.</li>
+                <li><strong>Keep the ledger before paying from it.</strong> The programme will record the notional split of each use (maintainer, signers, finders' pool, programme) long before any of it is paid out. Signers will be able to see what their share would have been. This tells everyone, including us, whether the numbers are worth anything before anyone is asked to rely on them.</li>
+                <li><strong>Settle the legal shape.</strong> Whether a signer's share is best paid per use into escrow or as a banded licence fee on a schedule is the question put to legal practitioners in Bounty #15. We will follow that answer.</li>
+                <li><strong>Offer it to existing signers first.</strong> The first shares go to people who already signed a hash under the bounty programme, as an addition to the fee they were paid, not a replacement.</li>
+                <li><strong>Open authoring last.</strong> Letting people outside LodgeiT write rule files for the programme needs the dispute process and the sandboxing of rule files to be proven. It comes after the rest.</li>
+            </ol>
+            <h2>How the network pays for itself</h2>
+            <p>Today LodgeiT funds every bounty. The programme becomes self-sustaining when its share of the tolls paid to run rules covers three things: the bounties, the engines, and a floor for the long tail of rules that are correct and rarely used. We will publish that line on the registry and show where we are against it.</p>
+            <table>
+                <thead>
+                    <tr><th>Stage</th><th>Who pays to run a rule</th><th>Who funds the bounties</th><th>What is switched on</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>0, now</td><td>Nobody; rules run free inside Tax Genii</td><td>LodgeiT</td><td>Signatures, the registry, computed tiers</td></tr>
+                    <tr><td>1, count</td><td>Still free; every answer records the hash that produced it</td><td>LodgeiT</td><td>Metering, and a notional ledger of what each use would have shared, visible to signers, paying nothing</td></tr>
+                    <tr><td>2, pay to play</td><td>Every run settles a small toll through the metered interface. LodgeiT prepays tolls for its own subscribers; third parties pay directly</td><td>LodgeiT, increasingly from the programme's toll share</td><td>The ledger becomes money held in escrow, not yet paid out</td></tr>
+                    <tr><td>3, payout</td><td>As stage 2</td><td>The finders' pool and the long-tail floor are funded from tolls first; LodgeiT's top-up declines</td><td>Signer and maintainer shares paid from escrow as they vest, in the legal shape Bounty #15 settles</td></tr>
+                    <tr><td>4, self-sustaining</td><td>As stage 2</td><td>Tolls alone</td><td>The break-even line is crossed and published</td></tr>
+                    <tr><td>5, transferable</td><td>As stage 2</td><td>Tolls</td><td>A signer's or maintainer's share in a hash's stream can be assigned to someone else; the registry records the assignment; a market can form. Whether and how such shares may be offered or traded is a financial-product question that will be put to legal review before this stage opens</td></tr>
+                </tbody>
+            </table>
+            <p>The stages are additive. Nothing in an earlier stage is undone by a later one, and the programme can stop at any stage and still be useful.</p>
+            <h2>Fiat on the surface, sats underneath</h2>
+            <p>End users buy Tax Genii and LodgeiT in Australian dollars (or pounds, or US dollars), by subscription or invoice, as they do now. Practitioners are paid in dollars against invoices. Neither ever needs to hold or see anything else.</p>
+            <p>Underneath, each run of a rule is settled machine to machine over the Lightning network in satoshis, through the metered interface described in <a href="/blog/2026-07-01-why-l402-not-x402/" class="text-lodgeit-light hover:text-white underline">Why L402, not x402</a>. That layer is there because it is global, works in fractions of a cent, needs no account, and has no issuer who can reverse a payment, which keeps the audit chain whole from the rule's hash to the payment that ran it. It is the settlement layer of record. The dollar layer on top is what a firm sees, and if the dollar layer were ever removed the engine room would not change.</p>
+            <h2>Global by design</h2>
+            <p>A rule file is registered against its hash, its reasoner version, its jurisdiction and its effective period. A file for another country is a different jurisdiction tag, a different practitioner register to check reviewers against, and otherwise the same programme: the same bounty shapes, the same signature question, the same tiers. Logical English, the language the rules are written in, is maintained by a team that has done the work of writing it in languages other than English, so a rule file for a non-English jurisdiction can be read by that jurisdiction's practitioners in their own words. The programme is built for that from the start, and Australian tax law is where it is being proven.</p>
+            <h2>What we are not promising</h2>
+            <p>That the shares will be large. Use of a rule file is counted in cents, and a share of cents is cents until the volume is real. For a long time the flat fee and the findings bonus will be most of what a reviewer earns, and we would rather say that now than have you discover it. The share is a stake in something that may become valuable, held by the people who made it trustworthy, with the downside pointed at carelessness and the upside pointed at being right. That seems to us the correct shape, and we would rather build it slowly and in public than quickly and alone.</p>
+
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
