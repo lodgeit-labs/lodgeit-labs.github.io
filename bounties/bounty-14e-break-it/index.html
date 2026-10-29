@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bounty #14e: break it | LodgeiT Bounties</title>
+    <meta name="description" content="Construct an in-scope fact pattern where cgt_a1.le returns a plausible figure that is wrong under the Act. $150 ex GST per accepted case, up to five.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' }, obsidian: '#0a0f1a', slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' } },
+            fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+            boxShadow: { 'neon': '0 0 20px rgba(0, 102, 255, 0.4)', 'glow': '0 0 40px rgba(0, 102, 255, 0.2)' } } } }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text { background: linear-gradient(to right, #ffffff, #4D94FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .grid-bg { background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 0 20px rgba(0, 102, 255, 0.2); border-color: #4D94FF; }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit h4 { font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit blockquote { border-left: 3px solid #4D94FF; padding-left: 1rem; margin: 1.5rem 0; color: #94a3b8; font-style: italic; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; <a href="/bounties/bounty-14-cgt-a1-le-rules/" class="hover:text-lodgeit-light transition">Bounty #14</a>
+                &nbsp;/&nbsp; 14e
+            </p>
+        </div>
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex items-center justify-between mb-6">
+                <span class="font-mono text-xs uppercase tracking-widest text-lodgeit-light">Bounty 14e &middot; Rule review &middot; <span class="text-green-400">OPEN</span></span>
+                <span class="text-white bg-lodgeit-blue px-4 py-2 rounded-full text-sm font-mono font-bold">$150 ex GST / case</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6"><span class="gradient-text">Bounty #14e: break it</span></h1>
+            <p class="text-slate-300 text-lg leading-relaxed mb-6">Construct a fact pattern within the file&rsquo;s scope where it returns a plausible figure that is wrong under the Act. Open to anyone with a practising credential; may be combined with 14a&ndash;14d.</p>
+            <div class="flex flex-wrap gap-3 text-xs font-mono"><span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">Open</span><span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">Rules: whole file.</span><span class="text-slate-400 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full">Rules, not a calculator</span></div>
+        </section>
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 prose-lodgeit">            <p><strong>Effort:</strong> open &middot; <strong>Fee:</strong> $150 ex GST per accepted case, up to five per reviewer &middot; <strong>Open to:</strong> anyone with a practising credential; may be combined with 14a&ndash;14d.</p>            <h3>Provisions</h3><p>any in-scope provision (not on the refusal list).</p>            <p><strong>Where we looked ourselves:</strong> where we looked ourselves: s11, s13, s52, s54.</p>            <h3>What to send</h3><ol>                <li>Give the facts in the file&rsquo;s own sentences (see <code>HOW_TO_READ.md</code>), the figure you expect with provisions, and the figure you believe the file gives if you traced it.</li>                <li>Accepted means we reproduce the wrong figure on the hash above; it then becomes a finding, is fixed, and rolls the hash.</li>                <li>Optional: enter scenario s7 in the ATO CGT record-keeping tool and report its figure (our automated attempt did not complete; see <code>ato_comparison.md</code>).</li>            </ol>
+            <h3>Common to every family page</h3>
+            <ul>
+                <li><strong>File:</strong> <code>cgt_a1.le</code> v1.2, SHA-256 <code>3cdb679a&hellip;2ad00</code>, reasoner LogicalEnglish2 <code>bc5cb5d1&hellip;</code>, SWI-Prolog 9.0.4. 114 rules, 62 fictional scenarios, 163 embedded tests, every expected figure worked by hand from the Act above its scenario. No software to run.</li>
+                <li><strong>Reviewer pack:</strong> <a href="/bounties/bounty-14-cgt-a1-le-rules/artefacts/COVER_NOTE.md" class="text-lodgeit-light hover:text-white underline"><code>COVER_NOTE.md</code></a>, <a href="/bounties/bounty-14-cgt-a1-le-rules/artefacts/HOW_TO_READ.md" class="text-lodgeit-light hover:text-white underline"><code>HOW_TO_READ.md</code></a>, <a href="/bounties/bounty-14-cgt-a1-le-rules/artefacts/VERDICT_FORM.md" class="text-lodgeit-light hover:text-white underline"><code>VERDICT_FORM.md</code></a> v1.2.1 (fill in only the rows for your family plus &sect;3, &sect;11 and &sect;12), <a href="/bounties/bounty-14-cgt-a1-le-rules/artefacts/open_questions.md" class="text-lodgeit-light hover:text-white underline"><code>open_questions.md</code></a>, <a href="/bounties/bounty-14-cgt-a1-le-rules/artefacts/scenario_table.md" class="text-lodgeit-light hover:text-white underline"><code>scenario_table.md</code></a>, and the canonical <a href="/bounties/bounty-14-cgt-a1-le-rules/artefacts/cgt_a1.le.txt" class="text-lodgeit-light hover:text-white underline"><code>cgt_a1.le</code></a>.</li>
+                <li><strong>Paid for the review whatever you find.</strong> A clean family earns the same as one with three defects; an accepted defect earns the finding bonus on top. Paid whether or not you sign.</li>
+                <li><strong>Status shown on the file:</strong> &#9723; unreviewed until signatures exist on this hash (see <a href="/bounties/bounty-14f-cgt-a1-sign-off/" class="text-lodgeit-light hover:text-white underline">14f</a>).</li>
+                <li><strong>Out of scope</strong> (the file refuses these with a reason): main residence, Div 152, roll-overs, deceased estates, foreign residents at the event, indexation, events other than A1, K7, Subdiv 115-C, life insurance companies, pre-9 May 2012 foreign residency periods, substituted accounting periods, leases granted.</li>
+                <li><strong>Attestation and signature:</strong> &sect;11 (your own judgement; AI use disclosed) and &sect;12 (do you sign this hash for the scope in its header: yes / no / yes once findings N&ndash;M are fixed). A &ldquo;yes&rdquo; from a family reviewer is recorded as a signature for the whole file, so answer &sect;12 only if you have read the whole file; otherwise answer &ldquo;no&rdquo; and consider <a href="/bounties/bounty-14f-cgt-a1-sign-off/" class="text-lodgeit-light hover:text-white underline">14f</a>.</li>
+            </ul>
+
+            <h3>How we work</h3>
+            <p>
+                <a href="/bounties/logical-english-best-practice/" class="text-lodgeit-light hover:text-white underline">Rules, models and human judgement &mdash; how LodgeiT writes tax law as Logical English</a>. This is a rule-review bounty, like Bounties <a href="/bounties/bounty-11-div36-loss-sequencing-le-rules/" class="text-lodgeit-light hover:text-white underline">#11</a> and <a href="/bounties/bounty-12-div36-loss-sequencing-revision-2/" class="text-lodgeit-light hover:text-white underline">#12</a>: you check the law written out as rules, not a calculator, and tell us whether we stated it correctly. No software to install.
+            </p>
+
+            <h3>Your deliverable</h3>
+            <p>
+                The filled-in <a href="/bounties/bounty-14-cgt-a1-le-rules/artefacts/VERDICT_FORM.md" class="text-lodgeit-light hover:text-white underline"><code>VERDICT_FORM.md</code></a> (v1.2.1) &mdash; complete the row(s) for this family in &sect;2, plus &sect;3 (break-it), &sect;11 (attestation) and &sect;12 (signature) &mdash; attached to an email to <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a>. Free-form prose is equally acceptable. &sect;12 is a separate act from the verdict, and you are paid for the review whatever you answer there.
+            </p>
+        </article>        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Reserve &amp; send your verdict</p>
+            <h2 class="text-3xl font-bold text-white mb-6">Reserve 14e, then send your verdict</h2>
+            <p class="text-slate-400 leading-relaxed mb-6">
+                Email us to reserve it before you start, then send the completed verdict form to <a href="mailto:support@lodgeit.net.au?subject=Bounty%2014e%20-%20CGT%20A1%20-%20Reservation%20or%20verdict" class="text-lodgeit-light hover:text-white underline">support@lodgeit.net.au</a>.
+            </p>
+            <a href="mailto:support@lodgeit.net.au?subject=Bounty%2014e%20-%20CGT%20A1%20-%20Reservation%20or%20verdict" class="inline-block px-8 py-4 bg-lodgeit-blue hover:bg-lodgeit-light text-white font-bold rounded-lg transition-all shadow-neon">support@lodgeit.net.au</a>
+        </section>
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <div class="flex justify-between items-center">
+                <a href="/bounties/bounty-14-cgt-a1-le-rules/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">&larr; Bounty #14 overview</a>
+                <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>
+            </div>
+        </section>
+    </main>
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
