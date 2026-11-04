@@ -2,7 +2,7 @@
 
 Round one of these rules was Bounty #11, now closed. Revision 2 is reviewed as its own bounty, #12.
 
-**To:** Devashish Magoon, Sami Charaf
+**To:** Devashish Magoon, Sami Charaf, Jenny Haines
 **From:** Andrew Noble, LodgeiT
 **Date:** 2026-09-26
 
