@@ -1,5 +1,5 @@
 # LodgeiT Labs — Calculator Constellation
-Last updated: 2026-10-17
+Last updated: 2026-11-06
 
 > Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
 > No authentication, no key, no client library. Designed to be called by agents.
