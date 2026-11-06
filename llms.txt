@@ -33,7 +33,9 @@ GET /v1/modules              the modules (fbt, div7a, depreciation), each with i
                              election groups, and its calculators[] in registry order
 GET /openapi.json            full OpenAPI 3 document
 GET /v1/rates/{period_uri}   registered rate tables for a period, with content hashes
-GET /healthz                 liveness
+GET /livez                   liveness (use /livez, not /healthz: on Cloud Run the literal
+                             path /healthz is intercepted by Google's edge and 404s for
+                             external traffic; the gateway serves liveness at /livez)
 
 Prefer discovery over hardcoding. The registry is authoritative for which period URNs
 each calculator accepts.

@@ -149,8 +149,8 @@ and re-check this page before assuming it still resolves.
   <dd>Full OpenAPI 3 document for every route.</dd>
   <dt>GET /v1/rates/{period_uri}</dt>
   <dd>The statutory rate tables registered for a period, each with a content hash.</dd>
-  <dt>GET /healthz</dt>
-  <dd>Liveness.</dd>
+  <dt>GET /livez</dt>
+  <dd>Liveness. (Use <code>/livez</code>, not <code>/healthz</code>: on Cloud Run the literal path <code>/healthz</code> is intercepted by Google's edge layer and 404s for external traffic, so the gateway exposes liveness at the non-reserved <code>/livez</code>.)</dd>
 </dl>
 
 <h2>How the responses are shaped</h2>
