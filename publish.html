@@ -69,8 +69,8 @@ properties.</p>
   <dd>lists every calculator you serve: a stable URN, a JSON Schema reference for its input, and the period URNs it accepts.</dd>
   <dt>GET /openapi.json</dt>
   <dd>a complete OpenAPI 3 document for the surface.</dd>
-  <dt>GET /healthz</dt>
-  <dd>liveness.</dd>
+  <dt>GET /livez</dt>
+  <dd>liveness. (We serve this at <code>/livez</code> rather than <code>/healthz</code> because Cloud Run's edge layer intercepts the literal path <code>/healthz</code> and 404s it for external traffic; expose liveness at a non-reserved path like <code>/livez</code> if you host behind the same edge. Any stable, model-free liveness path is fine.)</dd>
   <dt>GET /v1/rates/{period_uri}</dt>
   <dd>the rate tables for a period, each with a SHA-256 content hash (see §3).</dd>
 </dl>
