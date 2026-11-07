@@ -29,7 +29,7 @@ BASE: https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app
 
 GET /v1/calculators          every calculator URN, input schema ref, accepted period URNs
 GET /v1/calculators?module=  the calculators in one module only (unknown module URN -> 404)
-GET /v1/modules              the modules (fbt, div7a, depreciation), each with its statutes,
+GET /v1/modules              the modules (fbt, div7a, depreciation, hp), each with its statutes,
                              election groups, and its calculators[] in registry order
 GET /openapi.json            full OpenAPI 3 document
 GET /v1/rates/{period_uri}   registered rate tables for a period, with content hashes
@@ -375,7 +375,7 @@ framing. Read it; the distinction is load-bearing.
 404  unknown calculator URN, or a period URN this calculator does not accept. Body names
      what it does accept.
 5xx  our fault. Retry is reasonable.
-Codes: a 422 carries detail[].type (e.g. money_not_cent_quantised, mutually_exclusive_inputs, non_cent_boundary); a 400 carries detail.refusal_class (e.g. pool_asset_out_of_t6_scope, myr_year_beyond_loan_term, myr_year_not_after_loan_year, money_not_cent_quantised, fbt_year_outside_cohort, unsupported_frequency). A 502 body says unrecognised_engine_error and names the term.
+Codes: a 422 carries detail[].type (e.g. money_not_cent_quantised, mutually_exclusive_inputs, non_cent_boundary); a 400 carries detail.refusal_class (e.g. pool_asset_out_of_t6_scope, myr_year_beyond_loan_term, myr_year_not_after_loan_year, fbt_year_outside_cohort, unsupported_frequency). A 502 body says unrecognised_engine_error and names the term.
 
 A 4xx from the engine behind the gateway is never surfaced as a 5xx. A 5xx means something is
 genuinely wrong on our side, not that your request was bad.
