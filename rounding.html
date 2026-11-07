@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rounding — LodgeiT Labs</title>
+<meta name="description" content="The constellation rounding standard, lodgeit-rounding-1.0: exact inside, round once at emission, cents with ties away from zero, whole dollars only at the ATO label. Rules, reasons and worked examples.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/fano.html">Fano</a>
+      <a href="/proof-of-control.html">Proof-of-Control</a>
+      <a href="/rounding.html">Rounding</a>
+      <a href="/design.html">Design</a>
+      <a href="/publish.html">Publish</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Rounding</h1>
+
+<p class="lede"><em>One rule for every calculator in the constellation, so the same facts give the
+same cents wherever they are computed.</em><br>
+<em>LodgeiT Labs · November 2026 · policy <code>lodgeit-rounding-1.0</code></em></p>
+
+<h2>Why a page about cents</h2>
+
+<p>A single calculation that is a cent out is a curiosity. A million calculations that are each a
+cent out, in the same direction, is a ledger that does not reconcile, a return that does not match
+its working papers, and an agent that cannot tell a defect from a convention. Rounding is where
+otherwise-correct engines most often disagree, and the disagreement is almost never about the
+arithmetic; it is about <em>where</em> and <em>how often</em> a figure was rounded.</p>
+
+<p>So the constellation has one standard, every response names it, and any change to it is a new,
+dated policy, never a silent one.</p>
+
+<h2>The standard: <code>lodgeit-rounding-1.0</code></h2>
+
+<ol>
+  <li><strong>Exact inside.</strong> Arithmetic is exact (rational or arbitrary-precision decimal).
+  No binary floating point between the parsed input and the emitted figure.</li>
+  <li><strong>One rounding point.</strong> A figure is rounded once, when it is emitted. A rounded
+  value is never fed back into arithmetic, except as rule 6 allows.</li>
+  <li><strong>Cents, ties away from zero.</strong> Money emits at 2 dp, ties away from zero
+  (<code>ROUND_HALF_UP</code>, <code>MidpointRounding.AwayFromZero</code>, Excel
+  <code>ROUND</code>). Rates and factors emit at 4 dp on the same rule.</li>
+  <li><strong>Cent-quantised in, refused otherwise.</strong> Money inputs must already be cents. A
+  finer value is refused with <code>422 money_not_cent_quantised</code> naming the field, never
+  silently rounded.</li>
+  <li><strong>Published totals foot.</strong> Where lines and a total are published together, the
+  total is the sum of the published lines, and any difference from the exact total is shown as a
+  working (for example <code>totals.rounding_residual</code>).</li>
+  <li><strong>The posted unit is the rounded line.</strong> When one rounded figure is apportioned
+  into posted periods, each period is rounded and the last carries the difference. This is the only
+  place a rounded value is carried.</li>
+  <li><strong>Schedules never absorb.</strong> A schedule is not forced to close at zero. A non-zero
+  end balance is a fact about the contract or the rate, and is reported as such.</li>
+  <li><strong>Whole dollars only at the label.</strong> Whole dollars appear only where an authority's
+  form label requires them (for Australian returns, the ATO label), once, by one named function
+  applying that label's stated direction. Never by a cast, and never inside a running balance.</li>
+</ol>
+
+<p>Every <code>200</code> names the policy in force in <code>manifest.rounding_policy</code>, and its
+advisory says which of rules 3, 5, 6 and 7 apply.</p>
+
+<h2>Three consequences people ask about</h2>
+
+<h3>Balances carry cents, not dollars</h3>
+
+<p>A pool balance, a written-down value or a loan balance is a running ledger, not a form label. It
+carries cents from year to year. Rounding it to whole dollars inside the calculation, then using the
+rounded figure next year, loses up to fifty cents a year and compounds. Whole dollars are produced
+when the figure is placed on a return label, and only there (rule 8).</p>
+
+<h3>Round the total, not each line</h3>
+
+<p>Two balancing adjustments on one return, from our own fixtures:</p>
+
+<table>
+<thead><tr><th></th><th>Exact</th><th>Each line rounded to dollars, then added</th><th>Added exactly, rounded once</th></tr></thead>
+<tbody>
+<tr><td>Asset 1</td><td>626.4916</td><td>626</td><td>626.49</td></tr>
+<tr><td>Asset 2</td><td>1,470.0205</td><td>1,470</td><td>1,470.02</td></tr>
+<tr><td><strong>Label</strong></td><td>2,096.5121</td><td><strong>2,096</strong></td><td><strong>2,097</strong></td></tr>
+</tbody>
+</table>
+
+<p>The exact total is 2,096.51; to the nearest dollar that is 2,097. Rounding each asset first gives
+2,096, a dollar short, and the error grows with the number of lines. The constellation emits each
+asset in cents and leaves the single whole-dollar step to whoever assembles the return.</p>
+
+<h3>Why ties away from zero, not to even</h3>
+
+<p>Rounding half to even ("banker's rounding") removes a small upward bias when <em>many already-rounded
+values are added together</em>. Under rule 2 that never happens: totals are computed from exact values
+and rounded once. What is left is the rare exact half-cent, where ties away from zero matches what
+practitioners, spreadsheets (<code>ROUND</code>) and most published calculators do. The choice
+between the two moves at most a cent on an exact tie; rounding more than once moves dollars.</p>
+
+<h2>Days, years and leap years</h2>
+
+<p>Where a statute apportions by time, the calculator uses the statute's formula, not a calendar
+library's. For Australian decline in value that is <em>days held ÷ 365</em>, where days held can be
+366 in a leap year (ATO formula). So a full income year containing 29 February gives 366/365 of the
+annual amount. That is the law, not a defect, and a calculator using 366/366 is the one that
+disagrees with it. Each calculator states its day-count rule in its description.</p>
+
+<h2>Versioning: how the rule changes</h2>
+
+<ul>
+  <li><strong>Never silently.</strong> A change in rounding behaviour is a new policy identifier
+  (for example <code>lodgeit-rounding-1.1</code>), published here with its first effective period.</li>
+  <li><strong>On a period boundary.</strong> A new policy applies from a stated income year. A result
+  computed for an earlier period keeps the policy it was computed under.</li>
+  <li><strong>Always named.</strong> Because every response carries its policy and its rate-table
+  hashes, any historical result can be reproduced, and any difference between two results can be
+  traced to the rule that caused it.</li>
+  <li><strong>Jurisdictions may differ.</strong> Where an authority mandates a different direction
+  for a label or a line, that is a named policy for that jurisdiction, not a local exception inside
+  one calculator.</li>
+</ul>
+
+<h2>Comparing a constellation figure with another system</h2>
+
+<p>Other software, including LodgeiT's own product, may round intermediate figures, carry whole
+dollars between years, or round half to even. Until those systems adopt this standard, expect small,
+explainable differences. Work through them in this order:</p>
+
+<table>
+<thead><tr><th>Difference</th><th>Usual cause</th></tr></thead>
+<tbody>
+<tr><td>1–2 cents on one line</td><td>A half-cent tie rounded to even, or a stored input with more decimals than it displays</td></tr>
+<tr><td>A dollar or so on a whole-dollar total</td><td>Lines rounded (or truncated) to dollars before adding</td></tr>
+<tr><td>Cents on a pool or written-down balance</td><td>The other system carries whole dollars between years</td></tr>
+<tr><td>About 0.27% in a leap year</td><td>A different day-count rule (366/366 against the statutory 366/365)</td></tr>
+</tbody>
+</table>
+
+<p>The constellation figure follows the published standard; a difference explained by this table is a
+convention to record, not a defect to chase. If it is not explained by this table, please
+<a href="/llms.txt">report it</a>: the request, the response, the figure you expected and where that
+expectation comes from.</p>
+
+<h2>For calculator authors</h2>
+
+<ul>
+  <li>Use a decimal or rational type end to end, including any hop between your own services.</li>
+  <li>Keep one rounding function per scale (cents, 4 dp, whole-dollar label) and call it only at
+  emission.</li>
+  <li>Emit <code>manifest.rounding_policy</code> on every <code>200</code>.</li>
+  <li>Put an exact half-cent tie, a multi-line total and (if you apportion by days) a leap-year case
+  in your fixture.</li>
+</ul>
+
+<p>The full publishing standard is on <a href="/publish.html">Publish</a>; the design principles
+behind it are on <a href="/design.html">Design</a>.</p>
+
+<footer class="site">
+  <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; LodgeiT Labs — open-source financial infrastructure.</p>
+</footer>
+
+</div>
+</body>
+</html>

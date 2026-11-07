@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design for a million calculators — LodgeiT Labs</title>
+<meta name="description" content="The design criteria that let deterministic tax and accounting calculators scale to millions of distributed, independently operated engines, paid over L402 and discovered over Nostr.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="home" href="/">lodgeit labs</a>
+    <nav>
+      <a href="/calculators.html">Overview</a>
+      <a href="/depreciation.html">Depreciation</a>
+      <a href="/div7a.html">Division 7A</a>
+      <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/fano.html">Fano</a>
+      <a href="/proof-of-control.html">Proof-of-Control</a>
+      <a href="/rounding.html">Rounding</a>
+      <a href="/design.html">Design</a>
+      <a href="/publish.html">Publish</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>Design for a million calculators</h1>
+
+<p class="lede"><em>What has to stay true when the constellation is not twenty-five calculators on
+one gateway but millions, run by many operators, paid per call over L402 and found over Nostr.</em><br>
+<em>LodgeiT Labs · November 2026 · design note, draft v1</em></p>
+
+<p>This page separates what is <strong>live</strong> from what is <strong>planned</strong>. Live: the
+gateway, the contract on <a href="/publish.html">Publish</a>, the rounding standard on
+<a href="/rounding.html">Rounding</a>, and Nostr-based signing for
+<a href="/proof-of-control.html">Proof-of-Control</a>. Planned: L402 payment at calculator endpoints
+(see <a href="/blog/2026-07-01-why-l402-not-x402/">why L402, not x402</a>) and a signed registry
+carried over Nostr relays. The criteria below are written so that what is live today does not need
+re-architecture when the planned parts arrive.</p>
+
+<h2>The one idea: determinism is verifiability</h2>
+
+<p>A deterministic calculator returns byte-identical output for the same request, period and
+rate-table hashes. At scale that property does more than make tests pass: it means <em>any</em> party
+can check <em>any</em> answer by running the same request against another conformant engine, or
+against the published source. Trust in a million calculators does not come from trusting a million
+operators. It comes from every answer being re-computable. Every criterion below protects that.</p>
+
+<h2>1. Identity: every answer says exactly what produced it</h2>
+
+<ul>
+  <li><strong>Stable names.</strong> Calculator, period and rate table are URNs
+  (<code>urn:sbrm:calculator:{module}:{name}</code>, <code>urn:sbrm:period:{module}:{scope}</code>,
+  <code>urn:sbrm:rate:{module}:{period}:{rate-type}</code>). A name, once published, is never reused
+  for different behaviour.</li>
+  <li><strong>Jurisdiction is explicit.</strong> Every registry entry carries a jurisdiction (for example
+  <code>AU</code>) and its statutes, so an agent never infers the country from a module name.</li>
+  <li><strong>The manifest is the fingerprint.</strong> Engine version, rate-table hashes and rounding
+  policy travel with every <code>200</code>. Two answers with the same fingerprint must be identical;
+  two with different fingerprints explain their own difference.</li>
+  <li><strong>Distinct law, distinct name.</strong> Two statutory thresholds that happen to share a
+  value today are still two rate tables. Values coincide; provisions do not.</li>
+</ul>
+
+<h2>2. Statelessness: the caller carries the state</h2>
+
+<ul>
+  <li>One call computes one period from the facts supplied. Opening balances, prior elections and
+  history come in the request, are taken as given, and are echoed in the working.</li>
+  <li>No accounts, sessions or stored client data in an engine. That is what lets any instance, run by
+  any operator anywhere, answer any call, and what makes horizontal scale a deployment detail.</li>
+  <li>A multi-year result is a chain of single-year calls, each reproducible on its own.</li>
+</ul>
+
+<h2>3. Canonical requests and receipts</h2>
+
+<ul>
+  <li><strong>Canonical form.</strong> A request has one canonical serialisation (JSON Canonicalization
+  Scheme, RFC 8785), so its hash is the same wherever it is computed.</li>
+  <li><strong>Receipt key.</strong> <code>sha256(canonical request ‖ calculator URN ‖ period URN ‖
+  engine version ‖ rate-table hashes ‖ rounding policy)</code> identifies an answer. Identical keys
+  mean identical answers, which makes answers safely cacheable and retries idempotent.</li>
+  <li><strong>Signed receipts (planned).</strong> An operator may sign the receipt key and response hash
+  with its Nostr key, giving the caller a portable, offline-verifiable record of who computed what.</li>
+</ul>
+
+<h2>4. Numbers</h2>
+
+<ul>
+  <li>Decimal strings on every wire, including hops between an operator's own services. No binary
+  floats anywhere on the path.</li>
+  <li>One rounding standard, named in every response, changed only by a new dated policy
+  (<a href="/rounding.html">Rounding</a>).</li>
+  <li>Money in is cent-quantised or refused. Statutory day counts follow the statute.</li>
+</ul>
+
+<h2>5. Rate tables are published, hashed facts</h2>
+
+<ul>
+  <li>Every year-dependent value (a car limit, a threshold, a benchmark rate) is a rate-table node with
+  a primary-source citation and a content hash, served at <code>/v1/rates/{period_uri}</code>. None
+  is a constant in code.</li>
+  <li>There is one source per value. An engine that holds its own copy tests it against the published
+  table, so the two cannot drift.</li>
+  <li>New income years are added ahead of time, on a calendar, not when a caller first hits a refusal.</li>
+</ul>
+
+<h2>6. Refusals are a shared vocabulary</h2>
+
+<ul>
+  <li>The status codes are contractual: <code>422</code> malformed, <code>400</code> refused with a
+  <code>refusal_class</code>, <code>404</code> unknown name or period, <code>5xx</code> operator fault.</li>
+  <li>Refusal classes come from a published list, so an agent can act on a refusal from a calculator it
+  has never seen (for example: ask for a missing effective life, or try another period).</li>
+  <li>A calculator that cannot answer refuses. It never guesses, and never fills a gap with a model.</li>
+</ul>
+
+<h2>7. Payment: L402 at the edge <span class="pill wip">planned</span></h2>
+
+<ul>
+  <li><strong>Price in discovery.</strong> Each calculator states its price per call, so an agent knows
+  the cost before it calls.</li>
+  <li><strong>Validate before invoicing.</strong> A malformed, unknown or refused request
+  (<code>422</code>, <code>404</code>, <code>400</code>) is answered without payment; an invoice is
+  issued only for a request the engine can compute.</li>
+  <li><strong>Payment is the credential.</strong> The macaroon is scoped by caveats to the calculator
+  URN, period and an expiry, and the paid preimage proves settlement. No account, no key, no signup.</li>
+  <li><strong>Retries are free.</strong> A retry carrying the same proof and the same receipt key gets
+  the same answer without a second charge.</li>
+  <li><strong>Operators are paid directly.</strong> Payment goes to the operator's endpoint; LodgeiT
+  charges a routing fee only on calls that come through its own gateway or MCP surface.</li>
+</ul>
+
+<h2>8. Discovery and trust over Nostr <span class="pill wip">planned</span></h2>
+
+<ul>
+  <li><strong>Registry entries are signed events.</strong> An operator publishes each calculator as a
+  signed, replaceable Nostr event: URN, base URL, jurisdiction, input schema reference, price and
+  current manifest fingerprint. Relays are interchangeable carriers; the signature, not the relay, is
+  the source of truth.</li>
+  <li><strong>Attestations are signed events too.</strong> A conformance result is signed by whoever
+  ran it; a practitioner attestation is signed by the practitioner. The tiers on
+  <a href="/publish.html">Publish</a> (<code>unattested</code> → <code>conformance-passed</code> →
+  <code>practitioner-attested</code> → <code>jurisdiction-owned</code>) become verifiable claims an
+  agent checks before it calls.</li>
+  <li><strong>No LodgeiT endpoint in the trust path.</strong> As with Proof-of-Control, verification is
+  a signature check against public keys over public relays.</li>
+  <li><strong>Existing building blocks first.</strong> Event kinds will use established NIPs where they
+  fit (addressable events for registry entries, labels for attestations, and the data-vending-machine
+  pattern for paid jobs) before anything bespoke is defined.</li>
+</ul>
+
+<h2>9. Operating a fleet</h2>
+
+<ul>
+  <li><strong>Reproducible builds.</strong> Dependencies are pinned and locked; the deployed image is
+  identified by digest. A library upgrade that changes output is a change, not an accident.</li>
+  <li><strong>Canary deploys.</strong> A new version serves no traffic until a smoke test against it
+  passes.</li>
+  <li><strong>One conformance suite, run by anyone.</strong> The same suite LodgeiT runs at listing is
+  published, so an operator can run it before asking and a caller can run it at any time.</li>
+  <li><strong>Independent re-runs.</strong> Disagreement between independent implementations is the
+  cheapest way to find a defect; the constellation invites it.</li>
+  <li><strong>Engines behind a gateway stay private.</strong> Where an engine sits behind a gateway, only
+  the gateway can call it; the public surface is the gateway's.</li>
+</ul>
+
+<h2>What we will not do</h2>
+
+<ul>
+  <li>Put a model in a calculation path.</li>
+  <li>Change rounding, rates or behaviour under an existing name or policy.</li>
+  <li>Plug a residual to make a schedule close or a total foot.</li>
+  <li>Require an account, a key or a client library to get an answer.</li>
+  <li>Ask callers to trust an operator instead of checking the answer.</li>
+</ul>
+
+<p>Comments and objections are welcome; the design is meant to be argued with before it is built.
+— Andrew Noble, LodgeiT Labs</p>
+
+<footer class="site">
+  <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; LodgeiT Labs — open-source financial infrastructure.</p>
+</footer>
+
+</div>
+</body>
+</html>
