@@ -1,5 +1,5 @@
 # LodgeiT Labs — Calculator Constellation
-Last updated: 2026-11-06
+Last updated: 2026-11-07
 
 > Deterministic Australian tax and accounting calculators behind one public HTTP gateway.
 > No authentication, no key, no client library. Designed to be called by agents.
@@ -388,7 +388,13 @@ computed under the wrong rules.
 
 Money and rates are returned as DECIMAL STRINGS, not JSON floats — "9830.60", not 9830.6.
 Internal arithmetic is exact rational; only emitted values are quantised. Parse as decimal.
-Rounding: exact inside, rounded once at emission, cents with ties away from zero; the full standard is at https://lodgeit.org/publish.html.
+Rounding: lodgeit-rounding-1.0 — exact inside, rounded once at emission, cents with ties away
+from zero; balances (pools, written-down values) carry cents; whole dollars only at a return
+label, once. Every 200 names the policy in manifest.rounding_policy; a change is a new, dated
+policy identifier, never a silent one. Full rules, reasons and worked examples:
+https://lodgeit.org/rounding.html
+Day counts follow the statute: Australian decline in value is days held / 365, where days held
+can be 366 in a leap year.
 Money inputs are cent-quantised (at most 2 dp), as a JSON number or a decimal string; a finer value is refused with 422 money_not_cent_quantised naming the field.
 
 ## Limits
@@ -435,3 +441,9 @@ The full statement: https://lodgeit.org/proof-of-control.html
 Build a bounded, deterministic tax or accounting calculator? Publish it into the constellation:
 you host it, we point at it, and it lands on calculators.html and in this file the same week it
 clears conformance. The standard and the invitation: https://lodgeit.org/publish.html
+
+Two routes: host it yourself and we point at it (own base URL, as with Coal LSL), or build the
+engine and we run it privately behind this gateway so it appears in the same discovery.
+Design criteria for scaling to many independently operated calculators (identity, statelessness,
+canonical requests, L402 payment and Nostr-signed registry — the last two planned, not live):
+https://lodgeit.org/design.html
