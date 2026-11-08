@@ -17,6 +17,8 @@
       <a href="/depreciation.html">Depreciation</a>
       <a href="/div7a.html">Division 7A</a>
       <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/hp.html">Hire Purchase</a>
+      <a href="/coal-lsl.html">Coal LSL</a>
       <a href="/fano.html">Fano</a>
       <a href="/proof-of-control.html">Proof-of-Control</a>
       <a href="/rounding.html">Rounding</a>
@@ -188,7 +190,46 @@ loan takes <code>interestChargedByEmployer</code> and <code>otherwiseDeductibleP
 interchangeable.
 </div>
 
-<h2>Worked example</h2>
+<h2>Worked example — statutory formula (default method)</h2>
+
+<p>FBT fields are <strong>camelCase</strong> and <code>fbtType</code> is Title Case with a space
+(<code>"Type 1"</code>). A $45,000 car with $5,000 of accessories, available all year (365 days),
+$1,200 employee contribution, Type&nbsp;1:</p>
+
+<pre><code>curl -s -X POST \
+  "$BASE/v1/calculators/urn:sbrm:calculator:fbt:car-statutory-formula/urn:sbrm:period:fbt:fy2026" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "baseValue": 45000,
+    "accessories": 5000,
+    "daysAvailable": 365,
+    "employeeContribution": 1200,
+    "fbtType": "Type 1"
+  }'</code></pre>
+
+<pre><code>{
+  "gross_taxable_value": "10000.00",
+  "taxable_value": "8800.00",
+  "gross_up_factor": "2.0802",
+  "grossed_up_taxable_value": "18305.76",
+  "fbt_payable": "8603.71",
+  "employee_contribution": "1200.00",
+  "rounding_policy": "lodgeit-rounding-1.0",
+  "manifest": {
+    "rate_table_uris": [{
+      "uri": "urn:sbrm:rate:fbt:fy2026:statutory-fraction",
+      "content_hash": "31b00d8bd461bca03827679c34d99421c64555f72ca3548b2fc024b99443e826",
+      "hash_algorithm": "sha256"
+    }, "… 3 more"],
+    "rounding_policy": "lodgeit-rounding-1.0"
+  },
+  "advisory": { ... }
+}</code></pre>
+
+<p>Check: (45,000 + 5,000) &times; 20% &times; 365/365 = 10,000.00; &minus; 1,200 = 8,800.00;
+&times; 2.0802 = 18,305.76; &times; 47% = 8,603.7072 &rarr; <strong>8,603.71</strong>.</p>
+
+<h2>Worked example — operating-cost method</h2>
 
 <p>A car fringe benefit under the operating-cost method: 75% business use, owned vehicle costing
 $40,000 acquired 1&nbsp;July&nbsp;2023, held the full FBT year (365 days), $3,000

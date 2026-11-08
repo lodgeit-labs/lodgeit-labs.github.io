@@ -17,6 +17,8 @@
       <a href="/depreciation.html">Depreciation</a>
       <a href="/div7a.html">Division 7A</a>
       <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/hp.html">Hire Purchase</a>
+      <a href="/coal-lsl.html">Coal LSL</a>
       <a href="/fano.html">Fano</a>
       <a href="/proof-of-control.html">Proof-of-Control</a>
       <a href="/rounding.html">Rounding</a>
@@ -209,7 +211,7 @@ run it behind our gateway, privately, so it appears in the same discovery as our
 name stays on it. The engine then answers only the gateway, and the gateway supplies discovery, the
 manifest hashes and the advisory.</p>
 
-<h2>What we'll do with a calculator that meets the standard</h2>
+<h2 id="ladder">What we'll do with a calculator that meets the standard</h2>
 
 <p><strong>Today</strong> (manual, but real):</p>
 
@@ -226,7 +228,7 @@ manifest hashes and the advisory.</p>
   <li><strong>A signed registry</strong> — <code>llms.txt</code> grown up: one index entry per calculator carrying base URL, manifest schema, jurisdiction, conformance result and <em>attestation tier</em>. Tiers are how a million entries stay usable: <code>unattested</code> → <code>conformance-passed</code> → <code>practitioner-attested</code> → <code>jurisdiction-owned</code>. An agent reads the tier before it calls. Entries and attestations are
   designed to travel as signed events over Nostr relays, so an agent can verify them without asking
   us (see <a href="/design.html">Design</a>).</li>
-  <li><strong>Attestation through bounties</strong> — our existing mechanism, where paid practitioner reviewers try to break a bounded statutory question and their <code>ACCEPT / REJECT / FIX</code> verdicts become public, hash-receipted records. Your calculator would be eligible for the same review, and a practitioner-attested tier is what a conservative accountant will trust: not because a model said so, but because a named peer tried to break the deterministic engine and couldn't.</li>
+  <li id="practitioner-attestation"><strong>Attestation through bounties</strong> — our existing mechanism, where paid practitioner reviewers try to break a bounded statutory question and their <code>ACCEPT / REJECT / FIX</code> verdicts become public, hash-receipted records. Your calculator would be eligible for the same review, and a practitioner-attested tier is what a conservative accountant will trust: not because a model said so, but because a named peer tried to break the deterministic engine and couldn't.</li>
 </ul>
 
 <h2>How you'd earn from it — the future state, stated plainly</h2>

@@ -17,6 +17,8 @@
       <a href="/depreciation.html">Depreciation</a>
       <a href="/div7a.html">Division 7A</a>
       <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/hp.html">Hire Purchase</a>
+      <a href="/coal-lsl.html">Coal LSL</a>
       <a href="/fano.html">Fano</a>
       <a href="/proof-of-control.html">Proof-of-Control</a>
       <a href="/rounding.html">Rounding</a>
@@ -90,12 +92,31 @@ it lands on this page and in <code>llms.txt</code> the same week it clears confo
 
 <pre><code>https://lodgeit.org/llms.txt</code></pre>
 
-<p>That file is the entire API surface in plain text — every endpoint, every field, the day-count
-semantics, the error contract, the known limitations, and how the numbers are represented. An
-agent can read it once and call these calculators correctly without parsing a single HTML page.</p>
+<p>That file is the orientation layer in plain text — every endpoint, the day-count semantics, the
+error contract, the known limitations, and how the numbers are represented. For the complete,
+machine-readable input schemas of every calculator (field names, types and casing), fetch
+<code>GET /openapi.json</code> from the gateway; <code>llms.txt</code> points an agent at it rather
+than duplicating it.</p>
 
 <p>It is written to be read by a machine and understood by a person. If you are evaluating whether
 this is worth your time, that file will tell you faster than these pages will.</p>
+
+<h2>Use it from Claude</h2>
+
+<p>The gateway speaks the Model Context Protocol, so you can add it to Claude as a custom connector
+and ask tax questions in plain language. Each calculator is a tool; a tool call returns the same
+figures as the REST API.</p>
+
+<ol>
+  <li>In Claude, open <strong>Settings &rarr; Connectors &rarr; Add custom connector</strong>.</li>
+  <li>Set the URL to <code>https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app/mcp</code>.</li>
+  <li>No sign-in is required — the connector is public and read-only.</li>
+</ol>
+
+<p>Then ask, for example: <em>“Work out the FBT on a $45,000 car with $5,000 of accessories,
+available all year, with a $1,200 employee contribution, Type&nbsp;1.”</em> Claude calls the
+<code>fbt-car-statutory-formula</code> tool and answers <strong>$8,603.71</strong> — the same figure
+the REST endpoint returns.</p>
 
 <h2>Base URL</h2>
 

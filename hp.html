@@ -17,6 +17,8 @@
       <a href="/depreciation.html">Depreciation</a>
       <a href="/div7a.html">Division 7A</a>
       <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/hp.html">Hire Purchase</a>
+      <a href="/coal-lsl.html">Coal LSL</a>
       <a href="/fano.html">Fano</a>
       <a href="/proof-of-control.html">Proof-of-Control</a>
       <a href="/rounding.html">Rounding</a>
@@ -99,9 +101,10 @@ instalment:</p>
     "fy_end_month": 6
   }'</code></pre>
 
-<p>From the live response:</p>
+<p>From the live response (captured by Argon, 7&nbsp;November&nbsp;2026):</p>
 
-<pre><code>totals.interest          "32531.96"
+<pre><code>totals.interest          "32531.91"
+totals.rounding_residual "0.05"
 final_balance            "0.11"
 rate_precision_residual  "0.11"
 
@@ -114,6 +117,12 @@ fy_position["2025-06-30"] = {
   "non_current_unexpired": "188.77",
   "non_current_net": "58991.25"
 }</code></pre>
+
+<p><code>totals.interest</code> (<code>"32531.91"</code>) is the sum of the published, per-row rounded
+interest values. The exact total interest is $32,531.955…, which rounds half-up to $32,531.96;
+<code>totals.rounding_residual</code> (<code>"0.05"</code>) is that difference, surfaced rather than
+hidden. This replaces the pre-<code>hp-schedule-1.1.0</code> figure (which printed
+<code>totals.interest "32531.96"</code> with no residual).</p>
 
 <footer class="site">
   <p><a href="/calculators.html">← Calculator Constellation</a> &nbsp;·&nbsp; Not advice. Consult a registered tax agent.</p>
