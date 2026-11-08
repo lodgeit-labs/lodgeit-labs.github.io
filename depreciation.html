@@ -17,6 +17,8 @@
       <a href="/depreciation.html">Depreciation</a>
       <a href="/div7a.html">Division 7A</a>
       <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/hp.html">Hire Purchase</a>
+      <a href="/coal-lsl.html">Coal LSL</a>
       <a href="/fano.html">Fano</a>
       <a href="/proof-of-control.html">Proof-of-Control</a>
       <a href="/rounding.html">Rounding</a>
@@ -132,8 +134,8 @@ where it defaults to <code>actual/actual</code>. Whichever applies is echoed in 
 
 <h2>Charge over a range</h2>
 
-<p>August 2023 alone, on an asset acquired 1&nbsp;July&nbsp;2023. Both endpoints of the range are
-inclusive — 1 to 31 August is 31 days.</p>
+<p>The full FY2026 year on a $10,000 asset acquired 1&nbsp;July&nbsp;2024, five-year prime-cost
+accounting life. Money inputs are decimal strings. Both endpoints of the range are inclusive.</p>
 
 <pre><code>curl -s -X POST \
   "$BASE/v1/calculators/depreciation/range/urn:sbrm:period:depreciation:unscoped" \
@@ -141,26 +143,31 @@ inclusive — 1 to 31 August is 31 days.</p>
   -d '{
     "basis": "accounting",
     "asset": {
-      "cost": 10000,
-      "acquisition_date": "2023-07-01",
+      "cost": "10000.00",
+      "acquisition_date": "2024-07-01",
       "accounting_useful_life_years": 5,
       "accounting_method": "prime_cost"
     },
-    "from_date": "2023-08-01",
-    "to_date": "2023-08-31",
-    "day_count": "actual/actual"
+    "day_count": "actual/actual",
+    "from_date": "2025-07-01",
+    "to_date": "2026-06-30"
   }'</code></pre>
 
 <pre><code>{
-  "from_date": "2023-08-01",
-  "to_date": "2023-08-31",
+  "rounding_policy": "lodgeit-rounding-1.0",
+  "basis": "accounting",
+  "from_date": "2025-07-01",
+  "to_date": "2026-06-30",
   "day_count": "actual/actual",
-  "days_in_range": 31,
-  "range_dep": "169.40",
-  "opening_wdv": "9830.60",
-  "closing_wdv": "9661.20",
-  "truncated": false
+  "days_in_range": 365,
+  "range_dep": "2000.00",
+  "opening_wdv": "8000.00",
+  "closing_wdv": "6000.00",
+  "truncated": false,
+  "manifest": { "rate_table_uris": [], "rounding_policy": "lodgeit-rounding-1.0" }
 }</code></pre>
+
+<p>Check: 10,000 &divide; 5 = 2,000 per year; opening WDV 8,000 after year one; closing 6,000.</p>
 
 <h3>The ledger identity</h3>
 

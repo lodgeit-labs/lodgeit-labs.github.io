@@ -40,7 +40,7 @@ GET /livez                   liveness (use /livez, not /healthz: on Cloud Run th
 Prefer discovery over hardcoding. The registry is authoritative for which period URNs
 each calculator accepts.
 
-Selecting a calculator: pick in three steps. Module (fbt, div7a or depreciation). Benefit
+Selecting a calculator: pick in three steps. Module (fbt, div7a, depreciation or hp). Benefit
 type is a fact — establish it from what actually happened, testing the specific FBT types in
 resolution order (car, debt waiver, loan, expense payment, housing, LAFHA, board, meal
 entertainment, tax-exempt body entertainment, car parking, property) before residual, which
@@ -48,6 +48,32 @@ is defined by exclusion. Method: where a benefit type has more than one valuatio
 selection.kind is election or statutory_default — the method is the employer's choice, not
 yours. Compute every method in the group the records support, present them side by side with
 the election provision, and let the employer choose. Never pick the method for them.
+
+Routes: every calculator is reachable at the generic POST /v1/calculators/{calc_uri}/{period_uri}
+(this is the path all 19 FBT calculators use). Three modules also have convenience routes that
+reach the same handler: POST /v1/calculators/depreciation/at/{period_uri},
+POST /v1/calculators/div7a/at/{period_uri}, and POST /v1/calculators/hp/schedule. Hire purchase is
+not period-scoped: its period URN is urn:sbrm:period:hp:unscoped, so the generic route is
+POST /v1/calculators/urn:sbrm:calculator:hp:schedule/urn:sbrm:period:hp:unscoped. Depreciation is
+likewise urn:sbrm:period:depreciation:unscoped. (Note: GET /v1/rates/{period} returns 404 for the
+:unscoped periods — those calculators consume no period-scoped rate table.)
+
+## MCP
+
+The gateway speaks the Model Context Protocol: standard JSON-RPC 2.0 over HTTP POST at /mcp.
+The lifecycle is supported — initialize (negotiates protocolVersion, advertises capabilities and
+serverInfo), notifications/initialized (accepted, HTTP 202, no body), and ping ({}). The surface is
+stateless: tools/list and tools/call also work with no prior initialize. GET /mcp returns 405
+(POST only).
+
+Each calculator is a tool. tools/list enumerates them; tools/call runs the calculator in process
+and returns the SAME body as the equivalent REST call — content[0].text is the JSON body and
+structuredContent is the same object. A 4xx is returned as isError: true with the REST error body
+(the uniform 400 / 422 shapes above) as the text content. Two widget resources are exposed via
+resources/list and resources/read.
+
+Claude custom connector: Settings -> Connectors -> Add custom connector, URL
+https://fbt-calculator-api-qkp3j5bjnq-ts.a.run.app/mcp, no sign-in (public, read-only).
 
 ## Depreciation
 
@@ -362,7 +388,12 @@ manifest.rate_table_uris — the statutory rate tables the calculation actually 
 with a content hash. Emitted by the computation, not attached by hand: if the list changes,
 the arithmetic changed. An empty list means the figure derives from your inputs alone.
 
-manifest.rounding_policy — the rounding standard the engine applied, currently lodgeit-rounding-1.0 (the eight rules in publish.html). Emitted by the engine; absent only if the engine did not declare it.
+manifest.rounding_policy — the rounding standard the engine applied. The gateway modules
+(fbt, div7a, depreciation, hp) declare lodgeit-rounding-1.0 (the eight rules at
+https://lodgeit.org/rounding.html). It is NOT universal across the constellation: the external
+Coal LSL calculator declares its own rounding_policy, half_up_cent_final_step. Always read the
+policy the response actually names; do not assume lodgeit-rounding-1.0. Emitted by the engine;
+absent only if the engine did not declare it.
 
 advisory — what kind of figure this is and what it is not. Varies by calculator. An AASB 116
 carrying amount carries a warning against tax use; a Division 7A figure carries the tax-agent
@@ -377,6 +408,18 @@ framing. Read it; the distinction is load-bearing.
 5xx  our fault. Retry is reasonable.
 Codes: a 422 carries detail[].type (e.g. money_not_cent_quantised, mutually_exclusive_inputs, non_cent_boundary); a 400 carries detail.refusal_class (e.g. pool_asset_out_of_t6_scope, myr_year_beyond_loan_term, myr_year_not_after_loan_year, fbt_year_outside_cohort, unsupported_frequency). A 502 body says unrecognised_engine_error and names the term.
 
+Uniform 400 shape (all four gateway modules): detail is an object with refusal_class,
+refusal_payload, engine (one of fbt, div7a, depreciation, hp) and message. refusal_class is always
+at the top level of detail — branch on it directly. The two Division 7A refusal names are
+myr_year_not_after_loan_year and myr_year_beyond_loan_term.
+
+Uniform 422 shape: detail is a list; each entry's loc starts with "body" (e.g.
+["body", "amalgamated_base"], ["body", "baseValue"]).
+
+Deprecated keys: earlier responses carried error, field and engine_detail (and a stringified
+refusal body) on some modules. Those are deprecated — read refusal_class / refusal_payload /
+engine / message instead. Do not parse a stringified engine_detail to recover refusal_class.
+
 A 4xx from the engine behind the gateway is never surfaced as a 5xx. A 5xx means something is
 genuinely wrong on our side, not that your request was bad.
 
@@ -390,12 +433,21 @@ Money and rates are returned as DECIMAL STRINGS, not JSON floats — "9830.60", 
 Internal arithmetic is exact rational; only emitted values are quantised. Parse as decimal.
 Rounding: lodgeit-rounding-1.0 — exact inside, rounded once at emission, cents with ties away
 from zero; balances (pools, written-down values) carry cents; whole dollars only at a return
-label, once. Every 200 names the policy in manifest.rounding_policy; a change is a new, dated
+label, once. Every 200 names its policy in manifest.rounding_policy (the gateway modules name
+lodgeit-rounding-1.0; Coal LSL names half_up_cent_final_step); a change is a new, dated
 policy identifier, never a silent one. Full rules, reasons and worked examples:
 https://lodgeit.org/rounding.html
 Day counts follow the statute: Australian decline in value is days held / 365, where days held
 can be 366 in a leap year.
 Money inputs are cent-quantised (at most 2 dp), as a JSON number or a decimal string; a finer value is refused with 422 money_not_cent_quantised naming the field.
+
+Field naming differs by module. FBT fields are camelCase and fbtType is Title Case with a space
+(e.g. baseValue, daysAvailable, employeeContribution, fbtType: "Type 1"); enum values like
+formOfFinance use lowercase snake_case ("hire_purchase"). Depreciation, Division 7A and hire
+purchase use snake_case field names (amalgamated_base, amount_financed, accounting_useful_life_years).
+Hire purchase money inputs must be decimal strings ("273269.35"); FBT, Division 7A and depreciation
+also accept JSON numbers. The complete per-calculator input schemas (names, types, casing) are in
+GET /openapi.json.
 
 ## Limits
 

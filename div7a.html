@@ -17,6 +17,8 @@
       <a href="/depreciation.html">Depreciation</a>
       <a href="/div7a.html">Division 7A</a>
       <a href="/fbt.html">Fringe Benefits Tax</a>
+      <a href="/hp.html">Hire Purchase</a>
+      <a href="/coal-lsl.html">Coal LSL</a>
       <a href="/fano.html">Fano</a>
       <a href="/proof-of-control.html">Proof-of-Control</a>
       <a href="/rounding.html">Rounding</a>
@@ -66,7 +68,7 @@ registered rate table returns 404 naming the ones that do.</p>
   <dd>Array of repayments made during the income year. Empty array if none.</dd>
 </dl>
 
-<h2>Worked example</h2>
+<h2>Worked example — FY2025</h2>
 
 <p>A $70,000 amalgamated base, seven-year unsecured term, first MYR year, no repayments made:</p>
 
@@ -78,30 +80,73 @@ registered rate table returns 404 naming the ones that do.</p>
     "loan_term_years": 7,
     "loan_origination_date": "2024-06-01",
     "income_year_start_date": "2024-07-01",
-    "is_first_real_myr_year": true,
     "repayments": []
   }'</code></pre>
 
 <pre><code>{
   "period_uri": "urn:sbrm:period:div7a:fy2025",
-  "amalgamated_base": "70000.0",
+  "amalgamated_base": "70000.00",
   "benchmark_rate": "0.0877",
-  "remaining_term_years": 6,
-  "statutory_myr": "15497.53",
+  "remaining_term_years": 7,
+  "statutory_myr": "13801.18",
   "total_repayments": "0.00",
-  "shortfall": "15497.53",
+  "shortfall": "13801.18",
   "is_complying": false,
-  "deemed_dividend": "15497.53",
+  "deemed_dividend": "13801.18",
   "interest_accrued": "6122.18",
+  "rounding_policy": "lodgeit-rounding-1.0",
   "manifest": {
     "rate_table_uris": [{
       "uri": "urn:sbrm:rate:div7a:fy2025:benchmark-interest",
       "content_hash": "eb203be2431484215fd5b8ce310fa1645a5638e7dcda2491712faeea6fff4045",
       "hash_algorithm": "sha256"
-    }]
+    }],
+    "rounding_policy": "lodgeit-rounding-1.0"
   },
   "advisory": { ... }
 }</code></pre>
+
+<p>Check: 70,000 &times; 0.0877 &divide; (1 &minus; 1.0877<sup>&minus;7</sup>) = 13,801.1788 &rarr;
+<strong>13,801.18</strong>, matching the ATO Div&nbsp;7A calculator. (Until the D57 fix on
+28&nbsp;September&nbsp;2026 this endpoint returned the wrong remaining term <code>n&nbsp;=&nbsp;6</code>
+and <code>statutory_myr "15497.53"</code>; if you tested it before that date, retest.)</p>
+
+<h2>Worked example — FY2026</h2>
+
+<p>The same loan a year later — the FY2026 benchmark rate is 8.37% (per the ATO), so the minimum
+yearly repayment falls:</p>
+
+<pre><code>curl -s -X POST \
+  "$BASE/v1/calculators/div7a/at/urn:sbrm:period:div7a:fy2026" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amalgamated_base": 70000,
+    "loan_term_years": 7,
+    "loan_origination_date": "2025-06-01",
+    "income_year_start_date": "2025-07-01",
+    "repayments": []
+  }'</code></pre>
+
+<pre><code>{
+  "period_uri": "urn:sbrm:period:div7a:fy2026",
+  "benchmark_rate": "0.0837",
+  "remaining_term_years": 7,
+  "statutory_myr": "13615.68",
+  "interest_accrued": "5842.95",
+  "rounding_policy": "lodgeit-rounding-1.0",
+  "manifest": {
+    "rate_table_uris": [{
+      "uri": "urn:sbrm:rate:div7a:fy2026:benchmark-interest",
+      "content_hash": "e34ad275d625b8a1bfa4fa719d2da2d060a14760d464926758a251665b5e1c12",
+      "hash_algorithm": "sha256"
+    }],
+    "rounding_policy": "lodgeit-rounding-1.0"
+  },
+  "advisory": { ... }
+}</code></pre>
+
+<p>Check: 70,000 &times; 0.0837 &divide; (1 &minus; 1.0837<sup>&minus;7</sup>) = 13,615.6778 &rarr;
+<strong>13,615.68</strong>.</p>
 
 <h2>Output fields</h2>
 
