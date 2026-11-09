@@ -123,6 +123,7 @@ Boundary rules on /range/:
 
 opening_wdv is the carrying amount immediately before from_date. It is 0.00 if the asset is
 acquired on or after from_date, including on from_date itself.
+truncated is true when from_date is before acquisition_date, or when the carrying amount reaches 0.00 on or before to_date.
 
 Events (on /at/ and /range/):
   event_type             "cost_addition" | "useful_life_reassessment" | "opening_balance"

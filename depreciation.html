@@ -192,6 +192,8 @@ twelve monthly calls sum to the annual charge, with no rounding drift to reconci
 <code>0.00</code> if the asset is acquired on or after <code>from_date</code>, including on
 <code>from_date</code> itself.</p>
 
+<p><code>truncated</code> is true when <code>from_date</code> is before <code>acquisition_date</code>, or when the carrying amount reaches <code>0.00</code> on or before <code>to_date</code>.</p>
+
 <h3>Ranges that include the acquisition or a cost addition</h3>
 
 <p>When the range recognises cost — because it includes the acquisition, or because a cost-addition
@@ -235,10 +237,20 @@ carries:</p>
 
 <p>An <code>opening_balance</code> event dated after <code>from_date</code> and on or before
 <code>to_date</code> is refused:</p>
-<pre><code>400  {"detail": {
-       "refusal_class": "range_spans_opening_balance",
-       "refusal_payload": {"hint": "split the range at event_date"}
-     }}</code></pre>
+<pre><code>400  {
+  "detail": {
+    "detail": "range spans an opening_balance event; split the range at event_date",
+    "refusal_class": "range_spans_opening_balance",
+    "refusal_payload": {
+      "event_date": "2023-07-01",
+      "from_date": "2023-06-01",
+      "to_date": "2023-12-31",
+      "hint": "split the range at event_date"
+    },
+    "engine": "depreciation",
+    "message": "range spans an opening_balance event; split the range at event_date"
+  }
+}</code></pre>
 
 <h2>Refusals</h2>
 
