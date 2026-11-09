@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineering Level 3 Counterfactuals &mdash; deterministic 'what-if' tax simulation in SWI-Prolog | LodgeiT.org</title>
+    <meta name="description" content="Operationalizing Judea Pearl's Abduction-Action-Prediction cycle with SBRM hypercubes and Logical English in SWI-Prolog &mdash; counterfactual tax and accounting simulation without latent vector leakage.">
+
+    <meta property="og:title" content="Engineering Level 3 Counterfactuals &mdash; deterministic 'what-if' tax simulation in SWI-Prolog">
+    <meta property="og:description" content="How we invert the SWI-Prolog query to run Pearl's Abduction-Action-Prediction cycle deterministically, with InvErr=0 and a human operator-approval firewall.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://lodgeit.org/blog/2026-11-08-engineering-level-3-counterfactuals/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- MathJax for LaTeX notation -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit h2 {
+            color: #ffffff;
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 700;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            border-top: 1px solid rgba(30, 41, 59, 0.5);
+            padding-top: 2.5rem;
+        }
+        .prose-lodgeit h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        .prose-lodgeit h3 {
+            color: #ffffff;
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-lodgeit p {
+            font-size: 1.0625rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+        .prose-lodgeit ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-lodgeit ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-lodgeit li {
+            margin-bottom: 0.5rem;
+            font-size: 1.0625rem;
+            line-height: 1.7;
+        }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 600; }
+        .prose-lodgeit em { color: #4D94FF; font-style: normal; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: #4D94FF;
+            background-color: rgba(77, 148, 255, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+        .prose-lodgeit pre {
+            background-color: #0b1120;
+            border: 1px solid rgba(30, 41, 59, 0.8);
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            margin: 1.75rem 0;
+            overflow-x: auto;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        .prose-lodgeit pre code {
+            font-family: 'JetBrains Mono', monospace;
+            color: #cbd5e1;
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: inherit;
+        }
+        .prose-lodgeit blockquote {
+            border-left: 3px solid #0066FF;
+            padding-left: 1.25rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #94a3b8;
+        }
+        .prose-lodgeit table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+        .prose-lodgeit th, .prose-lodgeit td {
+            border: 1px solid rgba(30, 41, 59, 0.8);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            vertical-align: top;
+            line-height: 1.6;
+        }
+        .prose-lodgeit th { color: #ffffff; background-color: rgba(77, 148, 255, 0.06); font-weight: 600; }
+        .prose-lodgeit .table-wrap { overflow-x: auto; }
+
+        .pull-card {
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.08), rgba(77, 148, 255, 0.02));
+            border: 1px solid rgba(77, 148, 255, 0.25);
+            border-radius: 1rem;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+        }
+        .pull-card p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Article -->
+        <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+
+            <!-- Breadcrumb -->
+            <p class="mb-8">
+                <a href="/blog/" class="text-slate-500 hover:text-white font-mono text-xs uppercase tracking-widest transition">&larr; Blog</a>
+            </p>
+
+            <!-- Meta -->
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">The Discipline</span>
+                <span class="text-slate-500 font-mono text-xs">2026-11-08</span>
+                <span class="text-slate-500 font-mono text-xs">&middot; 11 min read</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Engineering Level 3 Counterfactuals</span> &mdash; deterministic &lsquo;what-if&rsquo; simulations in SWI-Prolog
+            </h1>
+            <p class="text-xl text-slate-400 leading-relaxed mb-12">
+                Operationalizing Judea Pearl&rsquo;s Abduction&ndash;Action&ndash;Prediction (AAP) cycle with SBRM hypercubes and Logical English &mdash; without latent vector leakage.
+            </p>
+
+            <div class="prose-lodgeit">
+
+                <p>In our companion post, <a href="/blog/2026-11-08-mind-the-causal-ladder/">Mind the Causal Ladder</a>, we examined Paolo Di Prodi&rsquo;s October 2026 TMLR paper (<em>Mind the Ladder: A Benchmark for Level 1&ndash;3 Causal Reasoning in World Models</em>) and why flat-latent neural networks fail at Pearl&rsquo;s Level 3 (Counterfactual Reasoning).</p>
+
+                <p>Understanding why neural world models fail at counterfactuals is only half the battle. The real engineering challenge is building an engine that succeeds.</p>
+
+                <p>In a standard compliance run, a deterministic tax and accounting engine operates forward and deductively:</p>
+
+                <p style="text-align:center">$$\text{SBRM Facts} + \text{Logical English Rules} \implies \text{Statutory Outcome}$$</p>
+
+                <p>In a &ldquo;What-If&rdquo; advisory, restructuring, or audit defense scenario, we already know the factual outcome&mdash;often an undesirable tax consequence we want to mitigate or verify&mdash;and we need the engine to answer Pearl&rsquo;s Level 3 query:</p>
+
+                <blockquote>
+                    &ldquo;Given that we observed ledger state $X$ and statutory outcome $Y$, what would $Y$ have been if we had intervened on $X^*$&mdash;and what is the minimal valid intervention required to change $Y$ without corrupting the rest of the financial report?&rdquo;
+                </blockquote>
+
+                <p>To build a true Level 3 Counterfactual Engine in the LodgeiT Labs stack, we take Pearl&rsquo;s Abduction&ndash;Action&ndash;Prediction (AAP) cycle from Di Prodi&rsquo;s paper and invert how our SWI-Prolog and Logical English engine is queried.</p>
+
+                <h2>1. Partitioning the SBRM fact base: immutable vs. intervenable (<code>do</code>-able)</h2>
+
+                <p>In Section 3.5 of <em>Mind the Ladder</em>, Di Prodi demonstrates why neural world models fail at counterfactuals: when you intervene in a continuous 192-dimensional latent space via vector translation ($z_{cf} = z_{fact} + \delta v$), the model suffers from <strong>Single-Factor Leakage</strong>. Shifting the vector to alter one variable (room hue) inadvertently mutates unrelated variables (the agent&rsquo;s episode step index and physical distance to the goal) by nearly a full standard deviation.</p>
+
+                <p>In financial terms, Single-Factor Leakage is catastrophic: it is the equivalent of testing a counterfactual tax election and having the model silently alter historical bank balances or fixed-asset cost bases in the background.</p>
+
+                <p>To prevent this in Standard Business Report Modeling (SBRM), our Markdown + YAML frontmatter contracts partition facts into three strict Pearlian buckets before SWI-Prolog ever executes a &ldquo;What-If&rdquo; branch:</p>
+
+                <pre><code>sbrm_contract: "counterfactual_partition_schema"
+version: "1.0.0"
+rounding_policy: "half_away_from_zero"
+balance_convention: "signed_numbers_sum_to_zero" # Positive = Debit, Negative = Credit
+
+fact_partitions:
+  # 1. Exogenous &amp; Immutable (U_settled)
+  settled_historical_facts:
+    mutable_by_do_operator: false
+    examples:
+      - bank_statement_movement
+      - asic_incorporation_date
+      - locked_prior_period_closing_balance
+
+  # 2. Abducible Unknowns (U_abduced)
+  abducible_context_facts:
+    mutable_by_do_operator: true
+    requires_evidence_anchor: true
+    examples:
+      - s109n_written_agreement_executed
+      - cgt_a1_contract_execution_date
+      - market_valuation_at_transfer
+
+  # 3. Actionable Levers (X_controllable)
+  controllable_intervention_levers:
+    mutable_by_do_operator: true
+    examples:
+      - dividend_declaration_resolution
+      - trust_income_streaming_election
+      - cgt_small_business_rollover_choice</code></pre>
+
+                <ul>
+                    <li><strong>Historical / Settled Facts ($U_{settled}$):</strong> Past bank transactions, settled trial balance movements after period lock, or statutory registration dates. No $do()$ operator is permitted to mutate these unless explicitly simulating a retrospective prior-year amendment.</li>
+                    <li><strong>Abducible Unknowns ($U_{abduced}$):</strong> Facts missing from the raw trial balance that govern which statutory branch fires&mdash;for example, whether a complying written loan agreement under s 109N ITAA 1936 exists, whether a disposal contract date for CGT Event A1 preceded settlement across a 30 June boundary, or whether an entity satisfies the maximum net asset value test.</li>
+                    <li><strong>Actionable Levers ($X_{controllable}$):</strong> Pre-lodgment or pre-year-end elections, dividend declarations, minimum yearly repayments (MYR) via journal set-offs, or choice of capital gains concessions.</li>
+                </ul>
+
+                <h2>2. The symbolic AAP cycle in SWI-Prolog + Logical English</h2>
+
+                <p>Instead of shifting an entangled neural embedding vector, ClawDog and our FOL_solvers substrate execute Pearl&rsquo;s Abduction&ndash;Action&ndash;Prediction cycle via abductive meta-interpretation and isolated transactional snapshots in SWI-Prolog.</p>
+
+                <h3>Step 1: Abduction (generating the proof tree &amp; missing assumptions)</h3>
+
+                <p>When a client&rsquo;s ledger is loaded, the engine evaluates the factual baseline ($z_{fact}$). If an undesirable tax outcome fires&mdash;such as a $120,000 Division 7A deemed dividend or a spiked CGT Event A1 net capital gain&mdash;the engine captures the exact deductive proof tree: every ground atom and negated condition (<code>\+</code>) that caused the rule to succeed.</p>
+
+                <p>Conversely, if a draft filing claims no tax liability applies despite a debit shareholder loan balance, Prolog uses Abductive Logic Programming (ALP) to abduce the minimal set of unobserved facts $\Delta \subseteq U_{abduced}$ required to make that claim hold:</p>
+
+                <p style="text-align:center">$$\text{Logical English Rules} \cup \text{SBRM Facts}_{fact} \cup \Delta \models \neg\,\text{deemed\_dividend}(T)$$</p>
+
+                <p>For example, Prolog abduces:</p>
+
+                <pre><code>% Abduced Evidentiary Requirement (Delta):
+abduced_hypothesis([
+    converted_to_complying_s109N_loan(tx_42, 2026),
+    agreement_in_writing_before_lodgment_day(tx_42, '2027-05-15')
+]).</code></pre>
+
+                <p>Under our Proof-of-Control and Brain Pattern discipline, any abduced fact $\Delta$ automatically generates an evidentiary checklist item that must be anchored by a verifiable document before lodgment.</p>
+
+                <h3>Step 2: Action (the <code>do()</code> meta-predicate via isolated snapshots)</h3>
+
+                <p>To evaluate a counterfactual &ldquo;What-If&rdquo; scenario, we never mutate the Git-backed Markdown source of truth in place. Instead, we pass an explicit intervention <code>do(AddFacts, RetractFacts)</code> into a sandboxed SWI-Prolog transactional snapshot (<code>snapshot/1</code>):</p>
+
+                <pre><code>% Deterministic Level 3 Counterfactual Evaluator in SWI-Prolog
+evaluate_what_if(DoAdd, DoRetract, TargetGoal, FactualOut, CounterfactualOut, InvErr) :-
+    % 1. Guardrail: Reject any intervention that touches immutable historical facts
+    validate_intervention_permissions(DoAdd, DoRetract),
+
+    % 2. Compute Factual Baseline &amp; Orthogonal Trial Balance Invariant
+    findall(TargetGoal, call(TargetGoal), FactualOut),
+    immutable_cash_and_equity_invariant(Invariant_Fact),
+
+    % 3. Execute Pearl's do() operator inside an isolated memory snapshot
+    snapshot((
+        forall(member(R, DoRetract), retractall(R)),
+        forall(member(A, DoAdd), assertz(A)),
+        findall(TargetGoal, call(TargetGoal), CounterfactualOut),
+        immutable_cash_and_equity_invariant(Invariant_CF)
+    )),
+
+    % 4. Verify Di Prodi's Structural Invariance Error (InvErr == 0.0)
+    InvErr is abs(Invariant_Fact - Invariant_CF),
+    InvErr =:= 0.</code></pre>
+
+                <p>Because <code>snapshot/1</code> isolates all asserted and retracted clauses in thread-local memory and rolls them back automatically upon completion, the engine can evaluate hundreds of counterfactual &ldquo;What-If&rdquo; branches in parallel in milliseconds with zero risk of state pollution.</p>
+
+                <h3>Step 3: Prediction &amp; causal delta diffing</h3>
+
+                <p>The engine compares <code>FactualOut</code> against <code>CounterfactualOut</code> across the entire SBRM hypercube. Because the rules are written in Logical English over explicit parent nodes:</p>
+
+                <ul>
+                    <li><strong>True Causal Dependents Propagate Cleanly:</strong> If we assert <code>do(declare_franked_dividend(company_A, trust_B, 45000))</code> to satisfy a Division 7A Minimum Yearly Repayment (MYR), the counterfactual branch doesn&rsquo;t just clear the s 109D shortfall&mdash;it deterministically updates <code>distributable_surplus</code>, debits the <code>franking_account_balance</code>, and flows the grossed-up franked distribution into <code>trust_B</code>&rsquo;s counterfactual net income.</li>
+                    <li><strong>Zero Orthogonal Leakage ($InvErr = 0.0$):</strong> Unrelated SBRM structures&mdash;such as fixed-asset depreciation pools, GST control accounts, or settled bank movements&mdash;remain mathematically invariant.</li>
+                </ul>
+
+                <h2>3. Two high-leverage &ldquo;What-If&rdquo; workflows in production</h2>
+
+                <p>Wiring Pearl&rsquo;s AAP cycle into SWI-Prolog unlocks two distinct operational modes for practitioners and autonomous agents.</p>
+
+                <h3>Mode A: Forward &ldquo;What-If&rdquo; simulation (stress testing)</h3>
+
+                <p>An operator or agent asks:</p>
+
+                <blockquote>
+                    &ldquo;What if the disposal contract for Commercial Property X was executed on 29 June 2026 instead of 2 July 2026, even though settlement occurred in August 2026?&rdquo;
+                </blockquote>
+
+                <ul>
+                    <li><strong>The <code>do()</code> Intervention:</strong> Under s 104-10(3) ITAA 1997, CGT Event A1 happens when the disposal contract is entered into, not at settlement. The engine runs: <code>do(Add: [contract_execution_date(asset_x, '2026-06-29')], Retract: [contract_execution_date(asset_x, '2026-07-02')])</code></li>
+                    <li><strong>Multi-Period Evaluation:</strong> Both the 2025&ndash;26 and 2026&ndash;27 SBRM hypercubes are re-evaluated inside the snapshot.</li>
+                    <li><strong>SBRM Counterfactual Diff:</strong> The engine returns a structured diff table showing not only that the capital gain shifted tax years, but whether pulling the event forward to 29 June 2026 breached the 12-month holding threshold for the 50% CGT discount or absorbed carried-forward capital losses a year earlier.</li>
+                </ul>
+
+                <h3>Mode B: Inverse counterfactual search (&ldquo;minimum intervention advisory&rdquo;)</h3>
+
+                <p>This is where declarative logic programming leaves neural world models completely behind. Instead of the practitioner manually guessing which &ldquo;What-If&rdquo; parameters to tweak, the practitioner specifies the <strong>Target Counterfactual Outcome</strong> as a constraint:</p>
+
+                <blockquote>
+                    &ldquo;Find all valid interventions in $X_{controllable}$ prior to Lodgment Day that reduce <code>s109D_deemed_dividend</code> to $0 while keeping total group tax delta under $15,000.&rdquo;
+                </blockquote>
+
+                <p>Using SWI-Prolog&rsquo;s backtracking and constraint solvers (<code>library(clpq)</code> for exact rational arithmetic alongside half-away-from-zero statutory rounding), the engine searches backwards through the Logical English rule graph to synthesize every compliant option:</p>
+
+                <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Synthesized branch</th>
+                            <th>Required <code>do()</code> intervention ($X_{controllable}$)</th>
+                            <th>Primary statutory effect</th>
+                            <th>Secondary ripple effects (SBRM diff)</th>
+                            <th>InvErr</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Branch 1:</strong> s 109N complying loan</td>
+                            <td><code>assert(s109n_agreement(tx_42, '7_year_unsecured'))</code> before lodgment day</td>
+                            <td>2026 Deemed Dividend: $0.00 (down from $100,000)</td>
+                            <td>Triggers mandatory MYR + benchmark interest starting in 2027 tax year</td>
+                            <td>0.000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Branch 2:</strong> Dividend set-off</td>
+                            <td><code>assert(declare_franked_dividend(entity_a, assoc_b, 100000))</code></td>
+                            <td>Offset balances loan to $0.00</td>
+                            <td>Consumes $42,857 in franking credits; increases <code>assoc_b</code> taxable income</td>
+                            <td>0.000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Branch 3:</strong> s 109RB discretion</td>
+                            <td><code>abduce(honest_mistake_or_inadvertent_omission(tx_42))</code></td>
+                            <td>Flags potential relief subject to Commissioner ruling</td>
+                            <td>Requires external statutory declaration attachment</td>
+                            <td>0.000</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <h2>4. Guarding the boundary: the &ldquo;counterfactual compiler&rdquo; pattern</h2>
+
+                <p>Where does the Large Language Model (LLM) sit in this workflow?</p>
+
+                <p>Neither a human practitioner nor a DIY business operator wants to write raw Prolog <code>snapshot/1</code> predicates by hand. They want to ask a natural-language question:</p>
+
+                <blockquote>
+                    &ldquo;What happens if Richtide Holdings streams the capital gain to the family trust instead of retaining it in the corporate beneficiary?&rdquo;
+                </blockquote>
+
+                <p>In the ClawDog architecture, the LLM acts strictly as a <strong>Counterfactual Compiler</strong>:</p>
+
+                <ol>
+                    <li><strong>Natural Language &rarr; Candidate <code>do()</code> Spec:</strong> The LLM translates the user&rsquo;s question into a proposed YAML/Logical English intervention (<code>do(Add, Retract)</code>).</li>
+                    <li><strong>The Operator-Approval Firewall:</strong> Before execution, the UI surfaces the exact symbolic intervention for human or policy-gate approval:
+                        <blockquote>&ldquo;Proposing Counterfactual Branch #1: Modifying <code>trust_distribution_resolution</code> from 0% to 100%. All historical bank movements and immutable facts locked.&rdquo;</blockquote>
+                    </li>
+                    <li><strong>Deterministic Execution &amp; Proof Receipt:</strong> SWI-Prolog executes the snapshot, verifies that all SBRM trial-balance sums equal zero (under our positive-debit / negative-credit convention) and that Structural Invariance Error ($InvErr$) is strictly zero, and returns the exact dollar delta backed by a cryptographic proof receipt.</li>
+                </ol>
+
+                <p>Neural networks are extraordinary translators, but they cannot be trusted to hold the causal graph of a financial report inside a flat vector of floating-point weights. By compiling natural-language &ldquo;What-If&rdquo; questions into SBRM and Logical English interventions executed by SWI-Prolog, we turn Pearl&rsquo;s Level 3 Counterfactual Ladder from an AI research benchmark into deterministic financial infrastructure.</p>
+
+                <div class="pull-card">
+                    <p>This is the engineering half of a pair. For the conceptual case &mdash; why financial truth requires a deterministic firewall in the first place &mdash; read the companion post, <a href="/blog/2026-11-08-mind-the-causal-ladder/">Mind the Causal Ladder</a>.</p>
+                </div>
+
+                <h2>References</h2>
+                <ul>
+                    <li>Di Prodi, P. (2026). <em>Mind the Ladder: A Benchmark for Level 1&ndash;3 Causal Reasoning in World Models</em>. Transactions on Machine Learning Research (10/2026). <a href="https://openreview.net/forum?id=01WKivD009" target="_blank" rel="noopener noreferrer">OpenReview</a>.</li>
+                    <li>Pearl, J. (2009). <em>Causality: Models, Reasoning, and Inference</em>. Cambridge University Press.</li>
+                    <li>Kowalski, R., &amp; Datoo, A. (2022). Logical English meets Legal English for Swaps and Derivatives. <em>Artificial Intelligence and Law</em>.</li>
+                </ul>
+
+                <hr class="border-slate-800 my-12" />
+
+                <p class="text-slate-500 text-sm">
+                    The methodology behind this programme is public in <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" rel="noopener noreferrer">brain-pattern</a>. The statutory calculators underneath it are verified in the open through the <a href="/bounties/">bounty programme</a>, where practitioner reviewers are paid to break our reasoning against statute.
+                </p>
+
+            </div>
+
+        </article>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-obsidian py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-6 w-auto opacity-75">
+                <span class="text-slate-500 font-mono text-xs font-bold mt-0.5">Labs</span>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="https://github.com/lodgeit-labs" class="text-slate-500 hover:text-white transition">GitHub</a>
+                <a href="https://lodgeit.net.au" class="text-slate-500 hover:text-white transition">LodgeiT Commercial</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
