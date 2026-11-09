@@ -161,6 +161,7 @@ accounting life. Money inputs are decimal strings. Both endpoints of the range a
   "day_count": "actual/actual",
   "days_in_range": 365,
   "range_dep": "2000.00",
+  "cost_additions": "0.00",
   "opening_wdv": "8000.00",
   "closing_wdv": "6000.00",
   "truncated": false,
@@ -171,36 +172,73 @@ accounting life. Money inputs are decimal strings. Both endpoints of the range a
 
 <h3>The ledger identity</h3>
 
-<p><code>closing_wdv = opening_wdv − range_dep</code>, exactly, to the cent. The balances are
-computed and the movement is derived from them, so consecutive ranges telescope: twelve monthly
-calls sum to the annual charge, with no rounding drift to reconcile.</p>
+<p><code>closing_wdv = opening_wdv + cost_additions − range_dep</code>, exactly, to the cent.
+<code>cost_additions</code> is the cost recognised within the range — the asset's initial cost
+when the range includes its acquisition, plus any cost-addition events dated inside the range.
+The balances are computed and the movement is derived from them, so consecutive ranges telescope:
+twelve monthly calls sum to the annual charge, with no rounding drift to reconcile.</p>
 
 <h3>Boundaries</h3>
 
 <table>
-<thead><tr><th>from_date relative to acquisition</th><th>opening_wdv</th><th>truncated</th></tr></thead>
+<thead><tr><th>from_date relative to acquisition</th><th>opening_wdv</th></tr></thead>
 <tbody>
-<tr><td>before</td><td><code>0.00</code></td><td><code>true</code></td></tr>
-<tr><td>equal</td><td>cost</td><td><code>false</code></td></tr>
-<tr><td>after</td><td>the fold's value at that date</td><td><code>false</code></td></tr>
+<tr><td>on or before acquisition</td><td><code>0.00</code> (cost is recognised within the range, so <code>cost_additions</code> includes it)</td></tr>
+<tr><td>after acquisition</td><td>the carrying amount immediately before <code>from_date</code></td></tr>
 </tbody>
 </table>
 
-<div class="note warn">
-<strong>Known limitation — ranges that span the acquisition date do not reconcile.</strong>
-When <code>from_date</code> falls before <code>acquisition_date</code>, the asset's cost enters
-during the window and the response carries no column for it. The three published figures then fail
-the identity above:
-<pre><code>from 2023-05-01 to 2023-08-31, acquired 2023-07-01
-  opening_wdv  0.00
-  range_dep    338.80
-  closing_wdv  9661.20      ← 0.00 − 338.80 ≠ 9661.20</code></pre>
-The correct form is <code>closing_wdv = opening_wdv + cost_additions − range_dep</code>, and
-<code>cost_additions</code> is not yet emitted. Not yet fixed. Until it is, treat a
-range spanning the acquisition as informational: <code>range_dep</code> and <code>closing_wdv</code>
-are correct; the roll-forward is not closable from the response alone. Ranges that start on or after
-the acquisition date are unaffected.
-</div>
+<p><code>opening_wdv</code> is the carrying amount immediately before <code>from_date</code>. It is
+<code>0.00</code> if the asset is acquired on or after <code>from_date</code>, including on
+<code>from_date</code> itself.</p>
+
+<h3>Ranges that include the acquisition or a cost addition</h3>
+
+<p>When the range recognises cost — because it includes the acquisition, or because a cost-addition
+event falls inside it — <code>cost_additions</code> carries that amount and the identity closes
+exactly.</p>
+
+<p>A range that includes the acquisition. Acquired 2023-07-01, from 2023-05-01 to 2023-08-31:</p>
+<pre><code>{
+  "range_dep": "338.80",
+  "cost_additions": "10000.00",
+  "opening_wdv": "0.00",
+  "closing_wdv": "9661.20",
+  "truncated": true
+}</code></pre>
+<p>Check: 0.00 + 10000.00 &minus; 338.80 = 9661.20.</p>
+
+<p>A range with a cost-addition event. Acquired 2022-07-01, from 2023-05-01 to 2023-12-31, with a
+<code>cost_addition</code> of 2,000.00 dated 2023-09-15:</p>
+<pre><code>{
+  "range_dep": "1540.81",
+  "cost_additions": "2000.00",
+  "opening_wdv": "8334.25",
+  "closing_wdv": "8793.44",
+  "truncated": false
+}</code></pre>
+<p>Check: 8334.25 + 2000.00 &minus; 1540.81 = 8793.44.</p>
+
+<h3>Events</h3>
+
+<p>Both <code>/at/</code> and <code>/range/</code> accept an <code>events</code> list. Each event
+carries:</p>
+<table>
+<thead><tr><th>field</th><th>rule</th></tr></thead>
+<tbody>
+<tr><td><code>event_type</code></td><td><code>cost_addition</code> | <code>useful_life_reassessment</code> | <code>opening_balance</code></td></tr>
+<tr><td><code>event_date</code></td><td>ISO date</td></tr>
+<tr><td><code>amount</code></td><td>money; required for <code>cost_addition</code> and <code>opening_balance</code>, forbidden for <code>useful_life_reassessment</code></td></tr>
+<tr><td><code>new_useful_life_years</code></td><td>int; required for <code>useful_life_reassessment</code> only</td></tr>
+</tbody>
+</table>
+
+<p>An <code>opening_balance</code> event dated after <code>from_date</code> and on or before
+<code>to_date</code> is refused:</p>
+<pre><code>400  {"detail": {
+       "refusal_class": "range_spans_opening_balance",
+       "refusal_payload": {"hint": "split the range at event_date"}
+     }}</code></pre>
 
 <h2>Refusals</h2>
 
