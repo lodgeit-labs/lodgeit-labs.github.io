@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind the Causal Ladder &mdash; why financial truth requires a deterministic firewall | LodgeiT.org</title>
+    <meta name="description" content="What recent peer-reviewed research on Pearl's Ladder of Causality proves about latent world models, SBRM, and Logical English &mdash; and why statutory truth belongs in deterministic logic, not a flat latent vector.">
+
+    <meta property="og:title" content="Mind the Causal Ladder &mdash; why financial truth requires a deterministic firewall">
+    <meta property="og:description" content="Di Prodi's October 2026 TMLR benchmark proves neural world models fail Pearl's Level 3 counterfactual reasoning. Why that validates the SBRM + Logical English deterministic firewall.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://lodgeit.org/blog/2026-11-08-mind-the-causal-ladder/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- MathJax for LaTeX notation -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit h2 {
+            color: #ffffff;
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 700;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            border-top: 1px solid rgba(30, 41, 59, 0.5);
+            padding-top: 2.5rem;
+        }
+        .prose-lodgeit h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        .prose-lodgeit h3 {
+            color: #ffffff;
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-lodgeit p {
+            font-size: 1.0625rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+        .prose-lodgeit ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-lodgeit ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-lodgeit li {
+            margin-bottom: 0.5rem;
+            font-size: 1.0625rem;
+            line-height: 1.7;
+        }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 600; }
+        .prose-lodgeit em { color: #4D94FF; font-style: normal; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: #4D94FF;
+            background-color: rgba(77, 148, 255, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+        .prose-lodgeit blockquote {
+            border-left: 3px solid #0066FF;
+            padding-left: 1.25rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #94a3b8;
+        }
+        .prose-lodgeit table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+        .prose-lodgeit th, .prose-lodgeit td {
+            border: 1px solid rgba(30, 41, 59, 0.8);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            vertical-align: top;
+            line-height: 1.6;
+        }
+        .prose-lodgeit th { color: #ffffff; background-color: rgba(77, 148, 255, 0.06); font-weight: 600; }
+        .prose-lodgeit .table-wrap { overflow-x: auto; }
+
+        .pull-card {
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.08), rgba(77, 148, 255, 0.02));
+            border: 1px solid rgba(77, 148, 255, 0.25);
+            border-radius: 1rem;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+        }
+        .pull-card p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- Article -->
+        <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+
+            <!-- Breadcrumb -->
+            <p class="mb-8">
+                <a href="/blog/" class="text-slate-500 hover:text-white font-mono text-xs uppercase tracking-widest transition">&larr; Blog</a>
+            </p>
+
+            <!-- Meta -->
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">The Discipline</span>
+                <span class="text-slate-500 font-mono text-xs">2026-11-08</span>
+                <span class="text-slate-500 font-mono text-xs">&middot; 10 min read</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Mind the Causal Ladder</span> &mdash; why financial truth requires a deterministic firewall
+            </h1>
+            <p class="text-xl text-slate-400 leading-relaxed mb-12">
+                What recent peer-reviewed research on Pearl&rsquo;s Ladder of Causality proves about latent world models, SBRM, and Logical English.
+            </p>
+
+            <div class="prose-lodgeit">
+
+                <p>At LodgeiT Labs, our core architectural premise is simple: <strong>probabilistic AI belongs at the perception boundary; statutory and financial truth belongs in deterministic logic.</strong></p>
+
+                <p>Across our open-source ecosystem&mdash;from <strong>ClawDog</strong> (our neurosemantic accounting engine pairing LLM flexibility in front with SWI-Prolog rigor behind) to our <strong>Logical English</strong> statutory rulesets and the <strong>Fano Classifier</strong> deterministic firewall&mdash;we refuse to let neural networks calculate tax liabilities, validate balance sheet invariants, or simulate regulatory counterfactuals inside a flat latent vector.</p>
+
+                <p>A common pushback from the pure deep-learning camp is that scaling foundation models or adopting modern <strong>Joint-Embedding Predictive Architectures (JEPA)</strong>&mdash;world models that learn internal simulations directly from raw data&mdash;will eventually allow neural networks to internalize domain rules without explicit symbolic schemas like <strong>Standard Business Report Modeling (SBRM)</strong> or <strong>Logical English</strong>.</p>
+
+                <p>A landmark paper published last month in <em>Transactions on Machine Learning Research</em> (TMLR, October 2026) by Paolo Di Prodi, <strong>&ldquo;Mind the Ladder: A Benchmark for Level 1&ndash;3 Causal Reasoning in World Models&rdquo;</strong>, provides the definitive mathematical and empirical refutation of that claim.</p>
+
+                <p>Here is what Di Prodi&rsquo;s findings prove, and why they validate the exact neurosymbolic architecture we are building at LodgeiT Labs.</p>
+
+                <h2>1. The illusion of &ldquo;emergent understanding&rdquo; vs. Pearl&rsquo;s Ladder</h2>
+
+                <p>Modern latent world models (such as LeWorldModel, or LEWM) are evaluated using Violation-of-Expectation (VoE) paradigms. When a physical rule is violated (for example, an agent teleporting through a solid wall), the model&rsquo;s latent prediction error&mdash;its <strong>&ldquo;surprise&rdquo;</strong>&mdash;spikes dramatically, whereas superficial visual changes produce very little surprise. Proponents often interpret this as emergent understanding of underlying rules.</p>
+
+                <p>Di Prodi&rsquo;s paper asks a sharper question grounded in Judea Pearl&rsquo;s <strong>Ladder of Causality</strong>:</p>
+                <ol>
+                    <li><strong>Level 1 &mdash; Association ($P(y \mid x)$):</strong> <em>Seeing.</em> Recognizing statistical correlations in observational data (&ldquo;What does a symptom tell me about a disease?&rdquo;).</li>
+                    <li><strong>Level 2 &mdash; Intervention ($P(y \mid do(x))$):</strong> <em>Doing.</em> Predicting the effect of an action within the training distribution (&ldquo;What if I do $X$?&rdquo;).</li>
+                    <li><strong>Level 3 &mdash; Counterfactuals ($P(y_{x^*} \mid x, y)$):</strong> <em>Imagining &amp; Auditing.</em> Reasoning about what would have happened under different structural conditions or rules, given observed evidence (&ldquo;What if I had acted differently, or what if this parameter were altered while holding the rest of the world constant?&rdquo;).</li>
+                </ol>
+
+                <p>By Pearl&rsquo;s <strong>Causal Hierarchy Theorem (CHT)</strong>, knowledge at Level $k$ is mathematically insufficient to answer queries at Level $k+1$. Di Prodi demonstrates that a neural world model&rsquo;s &ldquo;surprise&rdquo; metric is at best a Level 1/Level 2 quantity. A model can achieve low prediction error and high VoE surprise by memorizing associative heuristics (&ldquo;wall $\rightarrow$ no passing&rdquo;) while completely failing Level 3 counterfactual reasoning.</p>
+
+                <p>In accounting, tax compliance, and statutory audit, <strong>almost every meaningful question is a Level 3 question</strong>:</p>
+                <ul>
+                    <li><em>What would the deemed dividend under Division 7A have been if the loan had been placed under a complying s 109N written agreement prior to lodgment day?</em></li>
+                    <li><em>Would CGT Event A1 have fallen into the prior income year if the disposal contract date preceded the settlement date?</em></li>
+                    <li><em>Does reclassifying a ledger narrative alter the underlying statutory obligation?</em></li>
+                </ul>
+
+                <h2>2. The &ldquo;Glitched Hue&rdquo; confound: how neural models latch onto shortcuts</h2>
+
+                <p>To test whether latent world models learn true mechanisms or spurious shortcuts, Di Prodi introduces the <strong>Glitched Hue Two Room</strong> experiment:</p>
+                <ul>
+                    <li><strong>The True Causal Mechanism ($X \rightarrow Y$):</strong> Stepping on a $1 \times 1$ white <strong>Teleport Pixel</strong> ($X$) causes the agent to teleport from Room 1 to Room 2 ($Y$).</li>
+                    <li><strong>The Spurious Confounder ($W$):</strong> During training, all 2,882 teleportation events occur exclusively in <strong>Blue Rooms</strong>, while zero occur in <strong>Green Rooms</strong>.</li>
+                </ul>
+
+                <p>From the perspective of an observational neural network, room color (<code>Blue</code>) and the true causal mechanism (<code>Teleport Pixel</code>) are perfectly correlated. Because a global background hue is spectrally simpler for an over-parameterized network to learn than a localized $1 \times 1$ trigger, the neural model latches onto the background hue as a load-bearing shortcut.</p>
+
+                <p>When Di Prodi subjects the model to a <strong>Double-Blind Test (Option C+A)</strong>&mdash;reversing the confound at test time so teleportation happens in a Green Room while masking the direct visual shortcut so the model must rely on its internal causal state&mdash;<strong>the model&rsquo;s causal reasoning collapses across every diagnostic</strong>. Its Abduction&ndash;Action&ndash;Prediction (AAP) surprise ratio crosses the failure threshold ($1.240$ ratio-of-means; $1.23 \pm 0.07$ per-episode across seeds), and its latent representation entangles completely.</p>
+
+                <h3>The accounting equivalent of &ldquo;Room Hue&rdquo;</h3>
+
+                <p>Financial datasets are saturated with &ldquo;Blue Room&rdquo; confounds. In historical general ledgers, an advancement to a shareholder is almost always posted to an account named <code>"Director Loan"</code> or <code>"Shareholder Drawings"</code>.</p>
+
+                <p>If you train an end-to-end neural model on historical tax filings, it learns the associative shortcut:</p>
+
+                <p style="text-align:center">$$\text{Account Label: "Director Loan"} \implies \text{Division 7A Applies}$$</p>
+
+                <p>Now imagine a real-world audit edge case (Option C: Confound Reversal): a payment to an associate of a shareholder is buried inside an account labeled <code>"Trade Creditors - Sundry"</code> or <code>"Subcontractors"</code> (a Green Room). A flat-latent neural model gets confused by the surface label, whereas a bona fide commercial supplier payment accidentally coded to <code>"Director Loan"</code> triggers a false positive.</p>
+
+                <p>In our stack, <strong>Logical English</strong> and <strong>SWI-Prolog</strong> are immune to &ldquo;Room Hue&rdquo; by construction. A statutory rule in Logical English conditions strictly on the true legal parents&mdash;whether the payer is a private company, whether the recipient is a shareholder or associate, whether a distributable surplus exists, and whether a complying agreement was executed. The surface ledger label does not appear in the body of the rule.</p>
+
+                <h2>3. Single-Factor Leakage vs. SBRM structural invariance</h2>
+
+                <p>Perhaps the most damning empirical finding in Di Prodi&rsquo;s paper is in <strong>Section 3.5 (Single-Factor Leakage)</strong> and <strong>Section 3.6 (Validation Against Ground-Truth Counterfactuals)</strong>.</p>
+
+                <p>To ask a neural world model a counterfactual &ldquo;what-if&rdquo; question in latent space ($z \in \mathbb{R}^{192}$), researchers perform an Abduction&ndash;Action&ndash;Prediction (AAP) cycle: encode the factual state into $z_{fact}$, apply a linear vector shift along the hue direction ($z_{cf} = z_{fact} + \delta v$) to simulate $do(\text{hue} = \text{green})$, and predict the next state.</p>
+
+                <p>Di Prodi tests whether shifting <em>only</em> the room hue in latent space leaves unrelated variables intact&mdash;a metric he formalizes as <strong>Structural Invariance Error ($InvErr$)</strong>. He discovers two critical failures:</p>
+                <ol>
+                    <li><strong>Cross-Factor Leakage:</strong> Intervening on room hue in the 192-dimensional latent vector inadvertently perturbs the model&rsquo;s internal estimate of the <strong>episode step index</strong> ($InvErr/\text{std} = 1.18$) and <strong>distance to target</strong> ($InvErr/\text{std} = 0.90$) by nearly a full standard deviation.</li>
+                    <li><strong>Counterfactual Drift:</strong> When compared against a real ground-truth counterfactual rollout from the simulator, the latent translation $z_{cf}$ lands $6.1\text{&ndash;}6.2\times \|\delta v\|$ away from the true counterfactual state, underestimating the model&rsquo;s true counterfactual surprise by <strong>22x to 44x</strong>.</li>
+                </ol>
+
+                <p>Think about what <strong>Single-Factor Leakage</strong> means in financial modeling. If you ask a latent neural model a counterfactual advisory question&mdash;<em>&ldquo;What happens to our net tax position if we elect to apply the small business CGT rollover?&rdquo;</em>&mdash;the neural intervention bleeds across the flat embedding vector, silently perturbing the company&rsquo;s reported share capital, depreciation schedule, or opening retained earnings.</p>
+
+                <h3>Why SBRM + Prolog guarantees $InvErr = 0.0$</h3>
+
+                <p>In Section 6.8 (<em>Oracle Calibration</em>), Di Prodi constructs an idealized benchmark anchor (<code>true_cause_predict</code>)&mdash;a symbolic function that reads only the true physical variables (<code>dist_to_pad</code> and <code>teleport_enabled</code>) and ignores <code>hue</code>. On this symbolic oracle, the AAP Surprise Ratio hits its mathematical ceiling of <strong>$1.0000 \pm 0.0000$</strong> with <strong>zero cross-factor leakage</strong>.</p>
+
+                <p>What Di Prodi hand-coded as a theoretical calibration ceiling is the exact baseline execution model of <strong>SBRM + Logical English</strong>:</p>
+                <ul>
+                    <li><strong>SBRM (Standard Business Report Modeling)</strong> replaces the flat, entangled vector ($z \in \mathbb{R}^{192}$) with strictly typed hypercubes, dimensions, and signed trial-balance movements.</li>
+                    <li><strong>SWI-Prolog &amp; Logical English</strong> execute Pearl&rsquo;s $do()$ operator via isolated logical snapshots (<code>snapshot/1</code>). Intervening on a statutory election or loan agreement status propagates strictly along the directed acyclic graph (DAG) of explicit statutory rules. Orthogonal balances have a <strong>Structural Invariance Error of exactly $0.000000$ by mathematical proof</strong>.</li>
+                </ul>
+
+                <h2>4. Why scaling will never fix observational blindness</h2>
+
+                <p>Could a larger foundation model&mdash;moving from a 5.7M-parameter ViT-Tiny to a 307M-parameter ViT-Large or a multi-billion-parameter Transformer&mdash;solve this?</p>
+
+                <p>In <strong>Section 7.1</strong>, Di Prodi proves why scaling cannot bridge the Causal Gap:</p>
+                <ol>
+                    <li><strong>The Loss Landscape is Degenerate to Causality:</strong> Standard self-supervised and predictive losses minimize expectation over the Level 1 observational distribution $\mathcal{L} = \mathbb{E}[\|P(E(o_t), a_t) - E(o_{t+1})\|^2]$. When two features are correlated in training data, conditioning on the shortcut achieves the exact same minimum loss as conditioning on the true cause ($\min_{f \in \mathcal{F}} \mathcal{L}(f) = \min_{f \in \mathcal{F}_{causal}} \mathcal{L}(f)$). Scaling the model only expands the space of loss-equivalent shortcuts.</li>
+                    <li><strong>Observational Discovery Gets Causality Backwards:</strong> When Di Prodi runs the standard PC causal-discovery algorithm on tabular observational data from the experiment (Section 6.6), it doesn&rsquo;t just fail&mdash;it <strong>confidently inverts the causal arrow (<code>teleported -> hue</code>)</strong>, concluding that teleporting caused the room to turn blue.</li>
+                    <li><strong>Flat Latent Vectors Lack Causal Inductive Bias:</strong> Because every dimension in a flat vector $z \in \mathbb{R}^D$ has full read/write access to every other dimension, entanglement is guaranteed without an explicit graph.</li>
+                </ol>
+
+                <p>When Di Prodi outlines the ultimate solution in <strong>Section 7.2 (Pathway #4)</strong>, he writes:</p>
+                <blockquote>
+                    &ldquo;Ultimately, replacing the flat 192-dimensional embedding with an explicit Structural Causal Model (SCM) provides the strongest guarantee&hellip; this requires learning both a disentangled representation (a small DAG of latent groups) and an identified causal graph where the predictor conditions only on parent nodes.&rdquo;
+                </blockquote>
+
+                <h2>5. How we operationalize <em>Mind the Ladder</em> at LodgeiT Labs</h2>
+
+                <p>Di Prodi&rsquo;s benchmark doesn&rsquo;t just validate our split between neural perception and symbolic execution&mdash;it gives us a concrete diagnostic protocol for testing our own neurosymbolic boundary:</p>
+
+                <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Layer in LodgeiT stack</th>
+                            <th>Role in Pearl&rsquo;s hierarchy</th>
+                            <th>How we apply Di Prodi&rsquo;s framework</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Fano Classifier &amp; upstream agents</strong></td>
+                            <td><strong>Level 1 perception &rarr; candidate facts</strong></td>
+                            <td>Tested via <strong>Option C+A (Double-Blind Confound Reversal)</strong>: we disguise shareholder advances inside sundry trade accounts (&ldquo;Green Rooms&rdquo;) and mask surface labels to verify our extractors identify structural relationships rather than text correlates.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Brain Pattern (Proofing 0 &amp; 1)</strong></td>
+                            <td><strong>Graph integrity &amp; coherence</strong></td>
+                            <td>Prevents latent drift and ensures system memory and statutory contracts remain anchored in Git-backed Markdown, YAML frontmatter, and Prolog coherence checks.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SBRM + Logical English (<code>ClawDog</code>)</strong></td>
+                            <td><strong>Level 2 intervention &amp; Level 3 counterfactuals</strong></td>
+                            <td>Replaces the flat latent vector with an explicit SCM. Executes Abduction&ndash;Action&ndash;Prediction (AAP) cycles deterministically in SWI-Prolog with $InvErr = 0$ and zero cross-account leakage.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <p>Surprise is not understanding, and correlation is not statute. By pairing probabilistic extraction in front with <strong>SBRM</strong>, <strong>Logical English</strong>, and <strong>SWI-Prolog</strong> behind an operator-approval firewall, we don&rsquo;t have to hope a world model climbs Pearl&rsquo;s Ladder of Causality&mdash;we compile the ladder directly into the code.</p>
+
+                <div class="pull-card">
+                    <p>This is the conceptual half of a pair. For the engineering half &mdash; how we actually invert the SWI-Prolog query to run Pearl&rsquo;s Abduction&ndash;Action&ndash;Prediction cycle deterministically &mdash; read the companion post, <a href="/blog/2026-11-08-engineering-level-3-counterfactuals/">Engineering Level 3 Counterfactuals</a>.</p>
+                </div>
+
+                <h2>References</h2>
+                <ul>
+                    <li>Di Prodi, P. (2026). <em>Mind the Ladder: A Benchmark for Level 1&ndash;3 Causal Reasoning in World Models</em>. Transactions on Machine Learning Research (10/2026). <a href="https://openreview.net/forum?id=01WKivD009" target="_blank" rel="noopener noreferrer">OpenReview</a>.</li>
+                    <li>Pearl, J. (2009). <em>Causality: Models, Reasoning, and Inference</em>. Cambridge University Press.</li>
+                    <li>Bareinboim, E., Correa, J. D., Ibeling, D., &amp; Icard, T. (2022). <em>On Pearl&rsquo;s Hierarchy and the Foundations of Causal Inference</em>. ACM.</li>
+                </ul>
+
+                <hr class="border-slate-800 my-12" />
+
+                <p class="text-slate-500 text-sm">
+                    The methodology behind this programme is public in <a href="https://github.com/lodgeit-labs/brain-pattern" target="_blank" rel="noopener noreferrer">brain-pattern</a>. The statutory calculators underneath it are verified in the open through the <a href="/bounties/">bounty programme</a>, where practitioner reviewers are paid to break our reasoning against statute.
+                </p>
+
+            </div>
+
+        </article>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-obsidian py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-6 w-auto opacity-75">
+                <span class="text-slate-500 font-mono text-xs font-bold mt-0.5">Labs</span>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="https://github.com/lodgeit-labs" class="text-slate-500 hover:text-white transition">GitHub</a>
+                <a href="https://lodgeit.net.au" class="text-slate-500 hover:text-white transition">LodgeiT Commercial</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
