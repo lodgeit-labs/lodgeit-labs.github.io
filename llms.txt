@@ -55,8 +55,9 @@ reach the same handler: POST /v1/calculators/depreciation/at/{period_uri},
 POST /v1/calculators/div7a/at/{period_uri}, and POST /v1/calculators/hp/schedule. Hire purchase is
 not period-scoped: its period URN is urn:sbrm:period:hp:unscoped, so the generic route is
 POST /v1/calculators/urn:sbrm:calculator:hp:schedule/urn:sbrm:period:hp:unscoped. Depreciation is
-likewise urn:sbrm:period:depreciation:unscoped. (Note: GET /v1/rates/{period} returns 404 for the
-:unscoped periods — those calculators consume no period-scoped rate table.)
+likewise urn:sbrm:period:depreciation:unscoped. (Note: GET /v1/rates/{period} returns 200 with an
+empty entries list for these :unscoped periods — those calculators consume no period-scoped rate
+table.)
 
 ## MCP
 
@@ -120,7 +121,8 @@ KNOWN LIMITATION: when from_date precedes acquisition_date, the asset's cost ent
 the window and no cost_additions field is emitted. The three published figures then fail the
 ledger identity. Correct form is closing_wdv = opening_wdv + cost_additions - range_dep.
 range_dep and closing_wdv are correct; the roll-forward is not closable from the response
-alone. Ranges starting on or after acquisition_date are unaffected. Fix is queued.
+alone. Ranges starting on or after acquisition_date are unaffected. Not yet fixed; this note will be
+removed when it is.
 
 This is an ACCOUNTING figure. It is not a deduction under ITAA 1997 Division 40 and the tax
 figure will not equal it. Do not carry it into a tax return.

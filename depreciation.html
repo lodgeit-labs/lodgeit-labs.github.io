@@ -196,7 +196,7 @@ the identity above:
   range_dep    338.80
   closing_wdv  9661.20      ← 0.00 − 338.80 ≠ 9661.20</code></pre>
 The correct form is <code>closing_wdv = opening_wdv + cost_additions − range_dep</code>, and
-<code>cost_additions</code> is not yet emitted. The engine change is queued. Until it ships, treat a
+<code>cost_additions</code> is not yet emitted. Not yet fixed. Until it is, treat a
 range spanning the acquisition as informational: <code>range_dep</code> and <code>closing_wdv</code>
 are correct; the roll-forward is not closable from the response alone. Ranges that start on or after
 the acquisition date are unaffected.
