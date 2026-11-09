@@ -99,11 +99,15 @@ Request:
                                      defaulting to actual/actual. Always echoed.
 
 Response (/at/):    wdv_at, period_dep_at, day_count, schedule_summary, manifest, advisory
-Response (/range/): range_dep, opening_wdv, closing_wdv, days_in_range, truncated,
-                    day_count, manifest, advisory
+Response (/range/): range_dep, cost_additions, opening_wdv, closing_wdv, days_in_range,
+                    truncated, day_count, manifest, advisory
 
-Ledger identity on /range/:  closing_wdv = opening_wdv - range_dep, exact to the cent.
-Consecutive ranges telescope; twelve monthly calls sum to the annual charge.
+cost_additions is always present: a 2 dp string, always >= 0. It is the cost recognised
+within the range — the asset's initial cost when from_date <= acquisition_date <= to_date,
+plus any cost_addition events dated inside the range.
+
+Ledger identity on /range/:  closing_wdv = opening_wdv + cost_additions - range_dep, exact
+to the cent. Consecutive ranges telescope; twelve monthly calls sum to the annual charge.
 
 Day-count semantics:
   actual/actual  anniversary-year denominators. Each year charges exactly cost/life and the
@@ -113,16 +117,23 @@ Day-count semantics:
   monthly        equal monthly instalments, rounded per month and summed.
 
 Boundary rules on /range/:
-  from_date < acquisition_date   opening_wdv 0.00, truncated true
-  from_date = acquisition_date   opening_wdv = cost, truncated false
-  from_date > acquisition_date   opening_wdv = fold value at that date
+  from_date <= acquisition_date  opening_wdv 0.00; the asset's cost is recognised within the
+                                 range, so cost_additions includes it
+  from_date > acquisition_date   opening_wdv = carrying amount immediately before from_date
 
-KNOWN LIMITATION: when from_date precedes acquisition_date, the asset's cost enters during
-the window and no cost_additions field is emitted. The three published figures then fail the
-ledger identity. Correct form is closing_wdv = opening_wdv + cost_additions - range_dep.
-range_dep and closing_wdv are correct; the roll-forward is not closable from the response
-alone. Ranges starting on or after acquisition_date are unaffected. Not yet fixed; this note will be
-removed when it is.
+opening_wdv is the carrying amount immediately before from_date. It is 0.00 if the asset is
+acquired on or after from_date, including on from_date itself.
+truncated is true when from_date is before acquisition_date, or when the carrying amount reaches 0.00 on or before to_date.
+
+Events (on /at/ and /range/):
+  event_type             "cost_addition" | "useful_life_reassessment" | "opening_balance"
+  event_date             ISO date
+  amount                 money; required for cost_addition and opening_balance,
+                         forbidden for useful_life_reassessment
+  new_useful_life_years  int; required for useful_life_reassessment only
+
+An opening_balance event dated after from_date and on or before to_date is refused —
+400 range_spans_opening_balance, hint "split the range at event_date".
 
 This is an ACCOUNTING figure. It is not a deduction under ITAA 1997 Division 40 and the tax
 figure will not equal it. Do not carry it into a tax return.
