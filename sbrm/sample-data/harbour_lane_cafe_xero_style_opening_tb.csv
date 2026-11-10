@@ -1,0 +1,9 @@
+Account Code,Account,Debit,Credit
+090,Cash at Bank,20000,
+610,Accounts Receivable,5000,
+710,Equipment,30000,
+711,Accumulated Depreciation - Equipment,,6000
+800,Accounts Payable,,4000
+900,Business Loan,,15000
+970,Owner Capital,,10000
+960,Retained Earnings,,20000

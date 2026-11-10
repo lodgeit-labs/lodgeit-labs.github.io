@@ -1,0 +1,25 @@
+Date,Source,Description,Reference,Account Code,Account,Debit,Credit,Journal ID,Amount
+15/08/2025,Invoice,Catering sales invoices,J02,610,Accounts Receivable,44000,,J02,44000
+15/08/2025,Invoice,Catering sales invoices,J02,200,Sales,,40000,J02,-40000
+15/08/2025,Invoice,Catering sales invoices,J02,820,GST Payable,,4000,J02,-4000
+30/09/2025,Payment,Customer receipts,J03,090,Cash at Bank,40000,,J03,40000
+30/09/2025,Payment,Customer receipts,J03,610,Accounts Receivable,,40000,J03,-40000
+31/10/2025,Bill,Food and supplies,J04,310,Cost of Sales,12000,,J04,12000
+31/10/2025,Bill,Food and supplies,J04,820,GST Payable,1200,,J04,1200
+31/10/2025,Bill,Food and supplies,J04,800,Accounts Payable,,13200,J04,-13200
+30/11/2025,Bill Payment,Supplier payments,J05,800,Accounts Payable,14000,,J05,14000
+30/11/2025,Bill Payment,Supplier payments,J05,090,Cash at Bank,,14000,J05,-14000
+31/01/2026,Spend Money,Staff wages,J06,477,Wages,9000,,J06,9000
+31/01/2026,Spend Money,Staff wages,J06,090,Cash at Bank,,9000,J06,-9000
+31/03/2026,Spend Money,Shop rent,J07,469,Rent,6000,,J07,6000
+31/03/2026,Spend Money,Shop rent,J07,820,GST Payable,600,,J07,600
+31/03/2026,Spend Money,Shop rent,J07,090,Cash at Bank,,6600,J07,-6600
+30/04/2026,Spend Money,Loan repayment,J08,900,Business Loan,3000,,J08,3000
+30/04/2026,Spend Money,Loan repayment,J08,437,Interest Expense,900,,J08,900
+30/04/2026,Spend Money,Loan repayment,J08,090,Cash at Bank,,3900,J08,-3900
+31/05/2026,Spend Money,BAS payment,J09,820,GST Payable,1500,,J09,1500
+31/05/2026,Spend Money,BAS payment,J09,090,Cash at Bank,,1500,J09,-1500
+30/06/2026,Spend Money,New coffee machine,J10,710,Equipment,5000,,J10,5000
+30/06/2026,Spend Money,New coffee machine,J10,090,Cash at Bank,,5000,J10,-5000
+30/06/2026,Manual Journal,Annual depreciation,J11,416,Depreciation,3000,,J11,3000
+30/06/2026,Manual Journal,Annual depreciation,J11,711,Accumulated Depreciation - Equipment,,3000,J11,-3000

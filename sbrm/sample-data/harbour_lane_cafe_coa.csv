@@ -1,0 +1,16 @@
+Name,Classification,AccountType,AccountSubType
+Cash at Bank,Asset,Current Assets,Bank
+Accounts Receivable,Asset,Current Assets,Accounts Receivable
+Equipment,Asset,Non-current Assets,Fixed Assets
+Accumulated Depreciation - Equipment,Asset,Non-current Assets,Fixed Assets
+Accounts Payable,Liability,Current Liabilities,Accounts Payable
+GST Payable,Liability,Current Liabilities,Other Current Liabilities
+Business Loan,Liability,Non-current Liabilities,Long Term Liabilities
+Owner Capital,Equity,Equity,Owner Equity
+Retained Earnings,Equity,Equity,Retained Earnings
+Sales,Revenue,Revenue,Sales
+Cost of Sales,Expense,Expenses,Cost of Goods Sold
+Wages,Expense,Expenses,Payroll Expenses
+Rent,Expense,Expenses,Occupancy
+Interest Expense,Expense,Expenses,Finance Costs
+Depreciation,Expense,Expenses,Depreciation
