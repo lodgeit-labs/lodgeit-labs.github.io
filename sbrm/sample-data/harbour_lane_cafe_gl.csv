@@ -1,0 +1,33 @@
+Journal ID,Date,Account,Amount,Memo/Description,Transaction Type
+J01,2025-06-30,Cash at Bank,20000,Opening balance,Opening Balance
+J01,2025-06-30,Accounts Receivable,5000,Opening balance,Opening Balance
+J01,2025-06-30,Equipment,30000,Opening balance,Opening Balance
+J01,2025-06-30,Accumulated Depreciation - Equipment,-6000,Opening balance,Opening Balance
+J01,2025-06-30,Accounts Payable,4000,Opening balance,Opening Balance
+J01,2025-06-30,Business Loan,15000,Opening balance,Opening Balance
+J01,2025-06-30,Owner Capital,10000,Opening balance,Opening Balance
+J01,2025-06-30,Retained Earnings,20000,Opening balance,Opening Balance
+J02,2025-08-15,Accounts Receivable,44000,Catering sales invoices,Invoice
+J02,2025-08-15,Sales,40000,Catering sales invoices,Invoice
+J02,2025-08-15,GST Payable,4000,Catering sales invoices,Invoice
+J03,2025-09-30,Cash at Bank,40000,Customer receipts,Payment
+J03,2025-09-30,Accounts Receivable,-40000,Customer receipts,Payment
+J04,2025-10-31,Cost of Sales,12000,Food and supplies,Bill
+J04,2025-10-31,GST Payable,-1200,Food and supplies,Bill
+J04,2025-10-31,Accounts Payable,13200,Food and supplies,Bill
+J05,2025-11-30,Accounts Payable,-14000,Supplier payments,Bill Payment
+J05,2025-11-30,Cash at Bank,-14000,Supplier payments,Bill Payment
+J06,2026-01-31,Wages,9000,Staff wages,Spend Money
+J06,2026-01-31,Cash at Bank,-9000,Staff wages,Spend Money
+J07,2026-03-31,Rent,6000,Shop rent,Spend Money
+J07,2026-03-31,GST Payable,-600,Shop rent,Spend Money
+J07,2026-03-31,Cash at Bank,-6600,Shop rent,Spend Money
+J08,2026-04-30,Business Loan,-3000,Loan repayment,Spend Money
+J08,2026-04-30,Interest Expense,900,Loan repayment,Spend Money
+J08,2026-04-30,Cash at Bank,-3900,Loan repayment,Spend Money
+J09,2026-05-31,GST Payable,-1500,BAS payment,Spend Money
+J09,2026-05-31,Cash at Bank,-1500,BAS payment,Spend Money
+J10,2026-06-30,Equipment,5000,New coffee machine,Spend Money
+J10,2026-06-30,Cash at Bank,-5000,New coffee machine,Spend Money
+J11,2026-06-30,Depreciation,3000,Annual depreciation,Manual Journal
+J11,2026-06-30,Accumulated Depreciation - Equipment,-3000,Annual depreciation,Manual Journal

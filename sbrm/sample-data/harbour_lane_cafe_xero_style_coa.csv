@@ -1,0 +1,16 @@
+*Code,*Name,*Type,*Tax Code
+090,Cash at Bank,Bank,BAS Excluded
+610,Accounts Receivable,Current Asset,BAS Excluded
+710,Equipment,Fixed Asset,BAS Excluded
+711,Accumulated Depreciation - Equipment,Fixed Asset,BAS Excluded
+800,Accounts Payable,Current Liability,BAS Excluded
+820,GST Payable,Current Liability,BAS Excluded
+900,Business Loan,Non-current Liability,BAS Excluded
+970,Owner Capital,Equity,BAS Excluded
+960,Retained Earnings,Equity,BAS Excluded
+200,Sales,Revenue,BAS Excluded
+310,Cost of Sales,Direct Costs,BAS Excluded
+477,Wages,Expense,BAS Excluded
+469,Rent,Expense,BAS Excluded
+437,Interest Expense,Expense,BAS Excluded
+416,Depreciation,Depreciation,BAS Excluded
