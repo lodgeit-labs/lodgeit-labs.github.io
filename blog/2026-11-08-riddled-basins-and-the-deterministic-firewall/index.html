@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riddled basins &mdash; why you cannot prompt-engineer your way to deterministic accounting | LodgeiT.org</title>
-    <meta name="description" content="A landmark University of Sydney study in Nature Machine Intelligence proves that neural network unpredictability is a fractal geometry problem. Why ten billion times more precision buys zero reproducibility &mdash; and how SBRM and Logical English collapse the fractal before it touches the ledger.">
+    <meta name="description" content="Ly and Gong's Nature Machine Intelligence study links neural network non-reproducibility to fractal 'riddled' basin geometry. Why LodgeiT Labs keeps statutory calculation in deterministic logic behind SBRM and Logical English.">
 
     <meta property="og:title" content="Riddled basins &mdash; why you cannot prompt-engineer your way to deterministic accounting">
-    <meta property="og:description" content="Fractal basin geometry proves neural unpredictability is mathematical, not an engineering flaw. Why LodgeiT Labs isolates probabilistic AI behind SBRM and Logical English.">
+    <meta property="og:description" content="Ly and Gong's Nature Machine Intelligence study links neural network non-reproducibility to fractal 'riddled' basin geometry. Why LodgeiT Labs keeps statutory calculation in deterministic logic behind SBRM and Logical English.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://lodgeit.org/blog/2026-11-08-riddled-basins-and-the-deterministic-firewall/">
 
@@ -176,6 +176,7 @@
             <div class="flex items-center space-x-3 mb-6">
                 <span class="text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Architecture</span>
                 <span class="text-slate-500 font-mono text-xs">2026-11-08</span>
+                <span class="text-slate-500 font-mono text-xs">&middot; Updated 2026-11-10</span>
                 <span class="text-slate-500 font-mono text-xs">&middot; 9 min read</span>
             </div>
 
@@ -184,164 +185,173 @@
                 <span class="gradient-text">Riddled basins</span> &mdash; why you cannot prompt-engineer your way to deterministic accounting
             </h1>
             <p class="text-xl text-slate-400 leading-relaxed mb-12">
-                A landmark physics paper published this week in <em>Nature Machine Intelligence</em> proves that neural network unpredictability is rooted in fractal basin geometry. Here is why ten orders of magnitude of extra precision buys zero reproducibility &mdash; and why LodgeiT Labs isolates probabilistic AI behind SBRM and Logical English.
+                A physics paper published this week in <em>Nature Machine Intelligence</em> finds that the outcome of training a neural network can depend on differences too small for extra precision to remove. Here&rsquo;s what that does and doesn&rsquo;t mean for financial software &mdash; and why LodgeiT Labs keeps probabilistic AI on one side of a hard boundary and the law on the other.
             </p>
 
             <div class="prose-lodgeit">
 
-                <h2>The &ldquo;next model will fix it&rdquo; fallacy</h2>
+                <h2>The &ldquo;next model will fix it&rdquo; objection</h2>
 
-                <p>Whenever we walk practitioners or enterprise engineers through the LodgeiT Labs stack, the same objection eventually surfaces. It usually sounds like this:</p>
+                <p>Whenever we walk practitioners or engineers through the LodgeiT Labs stack, the same objection eventually comes up:</p>
 
                 <blockquote>
-                    &ldquo;We understand why you built SWI-Prolog calculators and Logical English rules today. LLMs hallucinate denominators and invert statutory anti-avoidance tests. But frontier models are getting better every six months. Once we have deterministic hardware kernels, <code>temperature = 0</code>, pinned seeds, and models fine-tuned directly on the tax legislation, won&rsquo;t the neural network just compute the return directly?&rdquo;
+                    &ldquo;We understand why you built SWI-Prolog calculators and Logical English rules today. LLMs hallucinate denominators and invert statutory anti-avoidance tests. But frontier models are getting better every six months. Once we have deterministic hardware kernels, <code>temperature = 0</code>, pinned seeds, and models fine-tuned on the legislation, won&rsquo;t the neural network just compute the return directly?&rdquo;
                 </blockquote>
 
-                <p>It is a tempting story. It implies that AI unpredictability is merely an engineering blemish &mdash; a byproduct of stochastic data shuffling, floating-point hardware noise, or insufficient training scale. If you just tighten the tolerances, the thinking goes, a neural network will eventually behave like a calculator.</p>
+                <p>It&rsquo;s a reasonable question. It assumes AI unpredictability is an engineering blemish &mdash; stochastic data shuffling, floating-point noise, not enough training &mdash; and that tightening the tolerances will eventually make a neural network behave like a calculator.</p>
 
-                <p>This week, two physicists at the University of Sydney proved mathematically that this story is false.</p>
+                <p>New research suggests at least part of that assumption is wrong.</p>
 
-                <p>In a paper published in <em>Nature Machine Intelligence</em> (<em>&ldquo;Fractal basin geometry and the limits to predictability and reproducibility in deep learning&rdquo;</em>, DOI: <code>10.1038/s42256-026-01336-3</code>), Ph.D. researcher Andrew Ly and Professor Pulin Gong from the University of Sydney&rsquo;s School of Physics demonstrated that the unpredictability of deep learning is not an engineering flaw or a hardware quirk. It is a fundamental mathematical property of how gradient-based neural networks learn.</p>
-
-                <p>You cannot engineer your way out of it by increasing precision. You can only architect around it.</p>
+                <p>In a paper published in <em>Nature Machine Intelligence</em> (<em>&ldquo;Fractal basin geometry and the limits to predictability and reproducibility in deep learning&rdquo;</em>, DOI: <code>10.1038/s42256-026-01336-3</code>), PhD researcher Andrew Ly and Professor Pulin Gong of the University of Sydney&rsquo;s School of Physics report that unpredictability in deep learning <em>training</em> isn&rsquo;t just a hardware quirk. In the settings they studied, it comes from the geometry of how gradient-based learning works &mdash; and more precision doesn&rsquo;t remove it.</p>
 
                 <h2>A basin with no inside</h2>
 
-                <p>To understand what Ly and Gong discovered, consider how a neural network learns. During training, an optimization algorithm navigates a massive, high-dimensional landscape of millions or billions of parameters, adjusting weights step by step to minimize error.</p>
+                <p>To see what Ly and Gong found, think about how a network is trained. An optimiser moves through a huge landscape of millions or billions of parameters, adjusting weights step by step to reduce error.</p>
 
-                <p>Mathematicians think of this landscape as a map divided into <strong>&ldquo;basins of attraction.&rdquo;</strong> Every possible starting setup for a model is a coordinate on that map, colored according to the final behavior (or internal solution) the network eventually settles into. If Blue represents Outcome A and Orange represents Outcome B, an ordinary, well-behaved basin has an <em>inside</em>. Close to the boundary ridge between Blue and Orange, a tiny nudge might tip your model from one outcome to the other. But deep inside the Blue basin, a whole neighborhood of points leads reliably to the exact same destination. If you increase your numerical precision and shrink your uncertainty, you stand clear of the border.</p>
+                <p>Mathematicians describe this landscape as a map divided into <strong>basins of attraction</strong>. Each possible starting configuration is a point on the map, coloured by where training ends up. If blue is Outcome A and orange is Outcome B, an ordinary basin has an <em>inside</em>. Near the border, a small nudge can tip you from blue to orange. But deep inside the blue region, a whole neighbourhood of nearby starting points ends up in the same place. Increase your precision and you can stay clear of the border.</p>
 
-                <p>Ly and Gong trained roughly <strong>500,000 neural networks</strong> across image recognition and text processing architectures in fully deterministic computing environments &mdash; stripping away external randomness like data-presentation order and hardware variation.</p>
+                <p>Ly and Gong trained roughly <strong>500,000 neural networks</strong> across image recognition and text-processing architectures, in fully deterministic computing environments &mdash; removing external randomness such as data-presentation order and hardware variation.</p>
 
-                <p>What they found is that neural network basins do not have a safe &ldquo;inside.&rdquo; Instead, they are organized as intricate fractals known in dynamical systems theory as <strong>riddled basins</strong>.</p>
+                <p>They report that, in many of these settings, the basins don&rsquo;t have a safe inside. They are organised as fractals known in dynamical systems theory as <strong>riddled basins</strong>.</p>
 
                 <div class="pull-card">
-                    <p><strong>The geometry of a riddled basin.</strong> In a riddled landscape, the basin is inseparable from its own border. Every single point leading to Outcome A lies arbitrarily close to points &mdash; of positive volume &mdash; that lead to Outcome B. No matter how many times you zoom in, Blue is shot through with Orange at every scale, all the way down.</p>
+                    <p><strong>The geometry of a riddled basin.</strong> In a riddled landscape, every point that leads to Outcome A sits arbitrarily close to a region &mdash; of positive volume &mdash; that leads to Outcome B. However far you zoom in, blue is shot through with orange.</p>
                 </div>
 
-                <p>The empirical numbers from the study should stop every financial software architect cold:</p>
+                <p>The headline numbers are striking:</p>
                 <ul>
-                    <li><strong>Ten billion times more precision bought nothing.</strong> In one larger network experiment, increasing the numerical precision of the starting conditions by ten orders of magnitude ($10^{10}$) produced <strong>zero measurable improvement in reproducibility</strong>.</li>
-                    <li><strong>A single-bit flip.</strong> Altering a network&rsquo;s initial configuration by the smallest quantity a computer can register &mdash; a single least-significant bit &mdash; sent the model to a completely different internal configuration in <strong>nearly half (about 48%) of all cases</strong>.</li>
-                    <li><strong>The capability-reproducibility trap.</strong> The researchers discovered a structural trade-off between performance and reproducibility. The exact hyperparameter settings (such as higher learning rates) that enable neural networks to learn complex patterns effectively are the same settings that drive the system into chaotic, riddled fractal regimes. When the team reduced the learning rate to force reproducibility, the basins smoothed out &mdash; <strong>but the networks lost their ability to learn effectively</strong>.</li>
+                    <li><strong>Ten billion times more precision bought nothing.</strong> In one larger-network experiment, increasing the precision of the starting conditions by ten orders of magnitude ($10^{10}$) produced no measurable improvement in reproducibility.</li>
+                    <li><strong>A single-bit change.</strong> Changing a network&rsquo;s initial configuration by the smallest amount a computer can represent &mdash; one least-significant bit &mdash; sent training to a different final configuration in <strong>about 48% of cases</strong>.</li>
+                    <li><strong>A capability&ndash;reproducibility trade-off.</strong> The settings that help networks learn complex patterns well, such as higher learning rates, were the same ones that pushed training into riddled regimes. Lowering the learning rate smoothed the basins, but the networks then learned less effectively.</li>
                 </ul>
 
-                <p>In short: the mathematical dynamics that make a neural network smart are the exact dynamics that make its internal state space fractal and non-reproducible.</p>
+                <p>In short: in the regimes they studied, the dynamics that make a network learn well are the same dynamics that make its training outcome hard to reproduce.</p>
 
-                <h2>Why a riddled manifold cannot hold a ledger</h2>
+                <h2>What this does and doesn&rsquo;t mean for a ledger</h2>
 
-                <p>In consumer applications, a riddled basin is a curiosity. If two identically trained language models converge on different internal weight configurations and phrase an email slightly differently, nobody gets audited.</p>
+                <p>It&rsquo;s worth being precise here, because it&rsquo;s easy to overclaim.</p>
 
-                <p>In statutory accounting and tax compliance, a riddled basin is fatal.</p>
+                <p><strong>What the paper is about:</strong> the <em>training</em> process. Two training runs that start almost identically can end up as meaningfully different trained networks &mdash; and you can&rsquo;t engineer that away with more precision.</p>
 
-                <p>A trial balance is a zero-sum algebraic identity: debits (positive) and credits (negative) either sum to zero, or the books are out of balance. Under Division 7A of the <em>ITAA 1936</em>, a $\$100,000$ amalgamated loan either meets its <code>s 109E</code> minimum yearly repayment by the lodgement day, or a deemed unfranked dividend crystallises under <code>s 109D</code>. Under Parts 3-1 and 3-3 of the <em>ITAA 1997</em>, a CGT Event A1 disposal either satisfies the conditions for a discount and small-business concession, or it does not.</p>
+                <p><strong>What it is not directly about:</strong> a single, frozen model answering questions at inference time. The paper doesn&rsquo;t show that a deployed model flips its answer when you reword a trust deed. That kind of input sensitivity is a real and well-documented problem with LLMs, but it&rsquo;s a separate phenomenon, and riddled training basins aren&rsquo;t its proven cause.</p>
 
-                <p>Statutory law and double-entry bookkeeping do not exist on a continuous probability manifold. They exist in a discrete state space where boundaries are razor-sharp and outcomes are binary or exact to the cent.</p>
+                <p><strong>Where it does bite for us:</strong> every time a model provider retrains, fine-tunes or ships a new checkpoint, you are taking a fresh draw from that riddled landscape. &ldquo;The same model, but updated&rdquo; is not the same function, and Ly and Gong&rsquo;s results suggest you can&rsquo;t make it the same by being more careful. For most software that&rsquo;s fine. For tax and accounting, where the same facts must give the same answer when an auditor replays them three years later, it&rsquo;s a strong reason not to let the model <em>be</em> the calculation.</p>
 
-                <p>When you ask a pure neural network to act as both the reader of messy reality <em>and</em> the executor of statutory logic, you are running compliance inside a riddled basin. Because the model&rsquo;s internal representation is interwoven at every scale, an imperceptible perturbation in context &mdash; an extra line item in a trial balance, a slightly reworded clause in a trust deed, a minor model checkpoint update &mdash; can shift the trajectory across a fractal boundary into an entirely different computational basin.</p>
+                <p>Statutory accounting needs exactly that. A trial balance is a zero-sum identity: debits (positive) and credits (negative) sum to zero, or the books are out of balance. Under Division 7A of the <em>ITAA 1936</em>, a $100,000 amalgamated loan either meets its <code>s 109E</code> minimum yearly repayment by lodgment day, or a deemed dividend arises under <code>s 109D</code>. Under Parts 3-1 and 3-3 of the <em>ITAA 1997</em>, a CGT event A1 either qualifies for the discount and small business concessions, or it doesn&rsquo;t.</p>
 
-                <p>That is the mathematical root of the four failure modes we documented in our <a href="/blog/2026-07-01-logical-english/">Division 7A benchmark</a>: boolean routing collapse, look-through state mutation, advisory inversion on <code>s 109R</code>, and denominator hallucination. Those weren&rsquo;t prompt bugs. They were trajectories jumping across a riddled basin.</p>
+                <p>These rules don&rsquo;t live on a continuous probability surface. They live in a discrete space with sharp boundaries and outcomes that are binary or exact to the cent.</p>
 
-                <h2>How the LodgeiT Labs stack escapes the fractal</h2>
+                <p>When a neural network acts as both the reader of messy reality <em>and</em> the executor of statutory logic, two kinds of instability stack on top of each other: sensitivity to how the question is phrased, and &mdash; per Ly and Gong &mdash; instability in what the network learned in the first place, which changes with every retrain. The four failure modes we documented in our <a href="/blog/2026-07-01-logical-english/">Division 7A benchmark</a> &mdash; boolean routing collapse, look-through state mutation, advisory inversion on <code>s 109R</code>, and denominator hallucination &mdash; are what that instability looks like in practice. We don&rsquo;t claim the paper explains each of them. We do think it removes the hope that they&rsquo;ll reliably disappear with the next model.</p>
 
-                <p>At LodgeiT Labs, our core design rule is explicit:</p>
+                <h2>How the LodgeiT Labs stack is built around it</h2>
+
+                <p>Our core design rule is explicit:</p>
 
                 <blockquote>
-                    The probabilistic ring proposes. The deterministic core disposes. The semantic membrane explains. Nothing crosses inward without a witness. Nothing crosses outward without a rendering.
+                    <strong>The probabilistic ring proposes. The deterministic core disposes. The semantic membrane explains.</strong> Nothing crosses inward without a witness. Nothing crosses outward without a rendering.
                 </blockquote>
 
-                <p>When you view our neurosymbolic stack through the lens of Ly and Gong&rsquo;s paper, the architectural boundary between the LLM, the <strong>Standard Business Report Model (SBRM)</strong>, and <strong>Logical English (SWI-Prolog)</strong> becomes a physical phase transition between two incompatible mathematical universes.</p>
+                <p>Seen through Ly and Gong&rsquo;s paper, the boundary between the LLM and <strong>SBRM</strong> plus <strong>Logical English (SWI-Prolog)</strong> separates two very different kinds of system:</p>
 
                 <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>Architectural dimension</th>
-                            <th>The probabilistic ring (LLMs &amp; neural classifiers)</th>
-                            <th>The deterministic core (SBRM + Logical English / Prolog)</th>
+                            <th>Dimension</th>
+                            <th>Probabilistic ring (LLMs &amp; neural classifiers)</th>
+                            <th>Deterministic core (SBRM + Logical English / Prolog)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Underlying topology</strong></td>
-                            <td>Continuous, high-dimensional manifold governed by <strong>riddled fractal basins</strong>.</td>
-                            <td>Discrete <strong>Herbrand universe</strong> governed by Horn clauses and closed double-entry algebra.</td>
+                            <td><strong>How it&rsquo;s built</strong></td>
+                            <td>Trained by gradient descent; per Ly and Gong, the training outcome can sit in a riddled basin.</td>
+                            <td>Written as explicit rules (Horn clauses) over typed facts and double-entry algebra. No training step.</td>
                         </tr>
                         <tr>
-                            <td><strong>Perturbation sensitivity</strong></td>
-                            <td><strong>Extreme:</strong> A 1-bit shift alters internal configuration ~48% of the time; $10^{10}$ extra precision buys nothing.</td>
-                            <td><strong>Zero:</strong> Unification and SLDNF resolution produce the exact same proof tree on every execution.</td>
+                            <td><strong>Reproducibility</strong></td>
+                            <td>A retrain or checkpoint update can produce a different function; extra numerical precision doesn&rsquo;t guarantee the same result.</td>
+                            <td>Same rules and same facts give the same result and the same proof tree, every run.</td>
                         </tr>
                         <tr>
                             <td><strong>Capability trade-off</strong></td>
-                            <td>High learning rates buy pattern recognition at the cost of fractal instability.</td>
-                            <td>Zero-entropy execution; statutory rules are compiled from human-ratified prose.</td>
+                            <td>Higher learning rates buy pattern recognition at the cost of reproducibility.</td>
+                            <td>No trade-off to manage; the rules are reviewed by practitioners rather than learned.</td>
                         </tr>
                         <tr>
                             <td><strong>Arithmetic &amp; rounding</strong></td>
-                            <td>Approximate token/weight probabilities vulnerable to floating-point drift.</td>
-                            <td>Explicit <strong>half-away-from-zero</strong> deterministic arithmetic enforced at the engine boundary.</td>
+                            <td>Arithmetic emerges from token probabilities and can drift.</td>
+                            <td>Exact decimal arithmetic with explicit <strong>half-away-from-zero</strong> rounding at the engine boundary.</td>
                         </tr>
                         <tr>
                             <td><strong>Audit artefact</strong></td>
-                            <td>Opaque weight configuration across billions of parameters.</td>
-                            <td>Cryptographically hash-bound <strong>Proof Trace</strong> citing exact statutory clauses.</td>
+                            <td>Billions of opaque weights.</td>
+                            <td>A hash-bound <strong>proof trace</strong> citing the statutory provisions that fired.</td>
                         </tr>
                     </tbody>
                 </table>
                 </div>
 
-                <h3>1. Embracing the fractal where we need it (the Proposer)</h3>
+                <h3>1. Use the neural network where it&rsquo;s strong (the proposer)</h3>
 
-                <p>Recall Ly and Gong&rsquo;s trade-off: if you force a neural network to be strictly reproducible by starving its learning rate, it stops learning effectively.</p>
+                <p>Ly and Gong&rsquo;s trade-off cuts both ways: if you starve a network&rsquo;s learning rate to make it reproducible, it stops learning well.</p>
 
-                <p>We <em>want</em> high-capability neural networks in our outer ring. Reading an unstructured 40-page commercial lease, parsing a messy PDF invoice, or classifying raw bank feed narratives requires navigating high-dimensional ambiguity. In our stack &mdash; across <strong>ClawDog</strong>, <strong>TaxGenii</strong>, and the <strong>Fano Classifier</strong> &mdash; we let the neural network operate in its high-learning-rate regime where it excels: proposing structure from chaos.</p>
+                <p>We <em>want</em> capable neural networks in the outer ring. Reading a 40-page commercial lease, parsing a messy PDF invoice or classifying raw bank-feed narratives means handling a lot of ambiguity. Across <strong>ClawDog</strong>, <strong>Tax Genii</strong> and the <strong>Fano Classifier</strong>, that&rsquo;s the job we give neural models: proposing structure from messy inputs. We don&rsquo;t need that layer to be perfectly reproducible, because nothing it says is final.</p>
 
-                <h3>2. SBRM as the phase-transition firewall (discretization)</h3>
+                <h3>2. SBRM as the firewall (discretisation)</h3>
 
-                <p>How do you stop the fractal instability of the neural network from infecting the general ledger or the tax return? You force every neural proposal through a rigid, low-dimensional algebraic funnel before any calculation occurs.</p>
+                <p>The question is how to stop that layer&rsquo;s instability reaching the general ledger or the tax return. Our answer is to force every neural proposal through a rigid, typed structure before any calculation happens.</p>
 
-                <p>In our platform, that funnel is <strong>SBRM</strong> (Charles Hoffman&rsquo;s Standard Business Reporting Model) paired with our <strong>Semantic Firewall</strong> and <strong>Operator-Approval Boundary</strong>.</p>
+                <p>That structure is <strong>SBRM</strong> (Charles Hoffman&rsquo;s Standard Business Reporting Model), together with our <strong>semantic firewall</strong> and <strong>operator-approval boundary</strong>:</p>
                 <ul>
-                    <li>A neural model is never allowed to emit a final tax liability or post directly to a ledger.</li>
-                    <li>Instead, its continuous vector state is forced to collapse into discrete, typed semantic propositions: <em>Entity $X$</em>, <em>CGT Event A1</em>, <em>Contract Date $T_1$</em>, <em>Capital Proceeds $P$</em>, <em>Cost Base Elements $\{C_1, C_2\}$</em>, polarity-checked against a seven-way accounting taxonomy.</li>
-                    <li>Behind an asynchronous staging boundary, the human practitioner inspects the dry-run diff and the source witness. Once ratified, the fuzzy, riddled state space of the neural net is dead. What survives is an immutable, hash-bound YAML/Markdown fact contract.</li>
+                    <li>A neural model never emits a final tax liability or posts directly to a ledger.</li>
+                    <li>Its output has to become discrete, typed propositions &mdash; <em>entity $X$</em>, <em>CGT event A1</em>, <em>contract date $T_1$</em>, <em>capital proceeds $P$</em>, <em>cost base elements $\{C_1, C_2\}$</em> &mdash; polarity-checked against a seven-way accounting taxonomy.</li>
+                    <li>Behind an asynchronous staging boundary, a practitioner reviews the dry-run diff and the source evidence. Once approved, what moves forward is a hash-bound YAML/Markdown fact contract, not the model&rsquo;s internal state.</li>
                 </ul>
 
-                <h3>3. Logical English as a fractal-free zone (the Disposer)</h3>
+                <p><strong>The honest caveat:</strong> this boundary contains the instability; it doesn&rsquo;t eliminate it. If the extraction step proposes the wrong fact and a reviewer approves it, the deterministic core will compute the wrong answer perfectly reproducibly. That&rsquo;s why the review step, the source witness and our extraction testing matter as much as the rules engine.</p>
 
-                <p>Once those discrete facts cross the firewall into <strong>Logical English (<code>.le</code>)</strong> and compile down to <strong>SWI-Prolog</strong>, gradient descent does not exist. There are no loss landscapes, no learning rates, and no riddled basins.</p>
+                <h3>3. Logical English as the calculation layer (the disposer)</h3>
 
-                <p>When our <a href="/bounties/">CGT Event A1 engine</a> (114 rules, 62 worked scenarios, 163 test cases) or our Division 7A engine executes against a ratified fact graph, it performs logical unification and resolution over discrete predicates.</p>
+                <p>Once approved facts cross into <strong>Logical English (<code>.le</code>)</strong> and compile down to <strong>SWI-Prolog</strong>, there is no gradient descent: no loss landscape, no learning rate, no basin to fall into.</p>
+
+                <p>When our <a href="/bounties/">CGT event A1 rules</a> (114 rules, 62 worked scenarios, 163 test cases) or our Division 7A engine run against an approved fact contract, they perform logical resolution over discrete predicates:</p>
                 <ul>
-                    <li>Given the same fact contract, the engine will resolve the exact same statutory liability and emit the exact same proof tree 100% of the time &mdash; today, tomorrow, or when an ATO or HMRC auditor replays the hash receipt three years from now.</li>
-                    <li>And when that fact graph is anchored externally via <strong>Proof-of-Control</strong> (remote signing over Nostr / NIP-46) and settled via <strong>The Scene Protocol</strong>, both the input facts and the logical derivation are cryptographically locked.</li>
+                    <li>Given the same fact contract and the same rule version, the engine produces the same result and the same proof tree every time &mdash; today, next year, or when a reviewer or regulator replays the hash receipt.</li>
+                    <li>When the fact contract is anchored externally through <strong>Proof-of-Control</strong> (remote signing over Nostr / NIP-46) and recorded through <strong>the Scene Protocol</strong>, both the inputs and the derivation are tamper-evident.</li>
                 </ul>
+
+                <p>Determinism isn&rsquo;t the same as correctness. A deterministic rule that misstates the law is reproducibly wrong. That&rsquo;s why the rules are written in English a practitioner can read, published openly, and reviewed by credentialed practitioners through our <a href="/bounties/">bounty programme</a> before we rely on them.</p>
 
                 <h2>Replacing hope with math</h2>
 
-                <p>At the end of their paper, Professor Gong summarizes the challenge facing artificial intelligence across society:</p>
+                <p>Professor Gong sums up the challenge this way:</p>
 
                 <blockquote>
                     &ldquo;To build trustworthy systems, we need not only accurate predictions but also confidence that those predictions can be reproduced. This research provides a new way of understanding the limits of predictability in AI, and how we might overcome them.&rdquo;
                 </blockquote>
 
-                <p>In accounting, tax, and financial reporting, &ldquo;hoping the model behaves consistently&rdquo; was never an acceptable engineering posture. Now we know it is a mathematical impossibility. You cannot prompt-engineer, fine-tune, or scale your way out of a riddled fractal basin.</p>
+                <p>In accounting, tax and financial reporting, &ldquo;hoping the model behaves consistently&rdquo; was never an acceptable engineering posture. Ly and Gong&rsquo;s work suggests it isn&rsquo;t even a reliable bet: reproducibility of a trained network can&rsquo;t simply be bought with more precision or more care.</p>
 
-                <p>The only way to build trustworthy financial AI is to respect the mathematics of both worlds: use probabilistic models to propose structure from messy human activity, collapse their outputs across a hard algebraic boundary (<strong>SBRM</strong>), and execute the law in a deterministic symbolic substrate (<strong>Logical English</strong>) where every rule is ratified by a named practitioner and every answer carries a proof.</p>
+                <p>So we respect what each kind of system is good at. Probabilistic models propose structure from messy human activity. Their proposals are collapsed into typed facts across a hard boundary (<strong>SBRM</strong>) and approved by a person. And the law is executed in a deterministic, readable substrate (<strong>Logical English</strong>), where the rules are open to practitioner review and every answer carries a proof.</p>
 
-                <p>That is why we don&rsquo;t bolt an LLM onto a general ledger. That is why the methodology is the moat.</p>
+                <p>That&rsquo;s why we don&rsquo;t bolt an LLM onto a general ledger.</p>
 
                 <h2>References &amp; further reading</h2>
                 <ol>
-                    <li><strong>Andrew Ly &amp; Pulin Gong (2026).</strong> <em>&ldquo;Fractal basin geometry and the limits to predictability and reproducibility in deep learning.&rdquo;</em> <strong>Nature Machine Intelligence</strong>. DOI: <a href="https://doi.org/10.1038/s42256-026-01336-3" target="_blank" rel="noopener noreferrer"><code>10.1038/s42256-026-01336-3</code></a> (Preprint: <code>arXiv:2510.05606</code>).</li>
-                    <li><strong>University of Sydney / Phys.org (Nov 5, 2026).</strong> <a href="https://phys.org/news/2026-11-fractal-patterns-reveal-hidden-limits.html" target="_blank" rel="noopener noreferrer"><em>&ldquo;Fractal patterns reveal hidden limits to AI predictability.&rdquo;</em></a></li>
+                    <li><strong>Andrew Ly &amp; Pulin Gong (2026).</strong> <em>&ldquo;Fractal basin geometry and the limits to predictability and reproducibility in deep learning.&rdquo;</em> <strong>Nature Machine Intelligence</strong>. DOI: <a href="https://doi.org/10.1038/s42256-026-01336-3" target="_blank" rel="noopener noreferrer"><code>10.1038/s42256-026-01336-3</code></a> (preprint: <code>arXiv:2510.05606</code>).</li>
+                    <li><strong>University of Sydney / Phys.org (5 Nov 2026).</strong> <a href="https://phys.org/news/2026-11-fractal-patterns-reveal-hidden-limits.html" target="_blank" rel="noopener noreferrer"><em>&ldquo;Fractal patterns reveal hidden limits to AI predictability.&rdquo;</em></a></li>
                     <li><strong>LodgeiT Labs.</strong> <a href="/blog/2026-07-01-logical-english/"><em>&ldquo;Logical English &mdash; statute is code, we just haven&rsquo;t compiled it yet.&rdquo;</em></a></li>
                     <li><strong>LodgeiT Labs.</strong> <a href="/blog/2026-07-01-what-we-are-building/"><em>&ldquo;What we are building &mdash; a full sweep for accounting and tax professionals.&rdquo;</em></a></li>
-                    <li><strong>LodgeiT Labs Review Bounties.</strong> <a href="/bounties/">Inspect and ratify Tier-1 Logical English statutory engines &rarr;</a></li>
+                    <li><strong>LodgeiT Labs review bounties.</strong> <a href="/bounties/">Inspect and review our Logical English statutory engines &rarr;</a></li>
                 </ol>
 
+                <p class="text-slate-500 text-sm italic">
+                    Updated 10 November 2026: we clarified that Ly and Gong&rsquo;s findings concern training dynamics rather than a deployed model&rsquo;s answers to reworded inputs, softened &ldquo;mathematical proof&rdquo; language to match what the study shows, and added that determinism contains extraction errors rather than eliminating them.
+                </p>
+
             </div>
+
 
         </article>
 
