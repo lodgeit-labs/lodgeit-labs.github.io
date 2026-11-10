@@ -1,0 +1,16 @@
+AccountName,Debit,Credit
+Cash at Bank,20000,0
+Accounts Receivable,9000,0
+Equipment,35000,0
+Accumulated Depreciation - Equipment,0,9000
+Accounts Payable,0,3500
+GST Payable,0,700
+Business Loan,0,12000
+Owner Capital,0,10000
+Retained Earnings,0,20000
+Sales,0,40000
+Cost of Sales,12300,0
+Wages,9000,0
+Rent,6000,0
+Interest Expense,900,0
+Depreciation,3000,0
