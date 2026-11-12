@@ -25,5 +25,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Fail on HTML entities in CSS content: values
+      - name: "Fail on HTML entities in CSS content: values"
         run: python3 scripts/check_css_content_entities.py
