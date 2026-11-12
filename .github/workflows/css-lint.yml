@@ -1,0 +1,29 @@
+# Pre-PR guard: fail if any CSS `content:` value contains a raw `&` (an HTML entity).
+#
+# Why: CSS `content:` does NOT parse HTML entities. `content: '&mdash;'` renders the
+# literal string "&mdash;" over the first word of every list bullet (the bug fixed in
+# PR #72, 2026-11-12). This runs on every pull_request so the fault is caught before
+# merge, not after deploy.
+#
+# Additive to deploy-site.yml (which is push-on-main). This file is pull_request-only
+# and does not deploy anything.
+
+name: CSS lint
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  css-content-entities:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fail on HTML entities in CSS content: values
+        run: python3 scripts/check_css_content_entities.py
