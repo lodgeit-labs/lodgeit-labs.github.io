@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The research says write the rules first — we already have | LodgeiT</title>
+    <meta name="description" content="TaxCalcBench, DeonticBench, Jurayj et al. and Law&Order on AI tax calculation, the kinds of tax AI on sale, and LodgeiT's Logical English rule files as at 12 November 2026.">
+    <meta property="og:title" content="The research says write the rules first — we already have">
+    <meta property="og:description" content="Recent studies on AI and tax calculation point the same way: a language model alone gets returns wrong, and rules written and tested beforehand fix it. Where that leaves the market, and where LodgeiT stands on 12 November 2026.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://lodgeit.org/blog/2026-11-12-open-rules-paid-receipts/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            color: #4D94FF;
+            background-color: rgba(77, 148, 255, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/blog/" class="hover:text-lodgeit-light transition">&larr; Blog</a>
+            </p>
+        </div>
+        <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">Logic Engine</span>
+                <span class="text-slate-500 font-mono text-xs">2026-11-12</span>
+                <span class="text-slate-500 font-mono text-xs">~5 min read</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6"><span class="gradient-text">The research says write the rules first — we already have</span></h1>
+            <div class="prose-lodgeit">
+<p>A run of studies over sixteen months have tested whether AI can calculate tax. They point the same way. This note sets them beside what is on sale, and beside what we have built, as at 12 November 2026.</p>
+<h2>What the research found</h2>
+<p><strong>A language model alone gets most returns wrong.</strong> <a href="https://arxiv.org/abs/2507.16126" class="text-lodgeit-light hover:text-white underline">TaxCalcBench</a> (Column Tax, July 2025) gave frontier models 51 US federal returns with every input supplied. The best model got fewer than a third strictly right. It misread tax tables, misjudged eligibility and made arithmetic errors. Models have improved since: by September 2026 the best on the benchmark&rsquo;s own leaderboard scored 64% with web search. That is still one return in three wrong.</p>
+<p><strong>Letting the model write the rules at question time does not fix it.</strong> <a href="https://arxiv.org/abs/2604.04443" class="text-lodgeit-light hover:text-white underline">DeonticBench</a> (April 2026) let models translate statute and facts into Prolog on the spot, across 6,232 tasks. On the hard tax subset the best result was 44.4%, even after fine-tuning and reinforcement learning.</p>
+<p><strong>Rules written beforehand do.</strong> <a href="https://arxiv.org/abs/2508.21051" class="text-lodgeit-light hover:text-white underline">Jurayj, Holzenberger and Van Durme</a> (February 2026) gave models statutes already written as logic, and asked them only to turn the facts of a case into inputs. Ordinary chat models then beat reasoning models. When the solver was allowed to refuse instead of guess, the expected cost of errors fell to less than 20% of the average cost of filing.</p>
+<p><strong>But what you write the rules from matters.</strong> Stanford&rsquo;s <a href="https://arxiv.org/abs/2610.02792" class="text-lodgeit-light hover:text-white underline">Law&amp;Order</a> (2026) turned US tax forms and their instructions into code and lifted accuracy on the same 51 returns from 66% to 100%. The source was the forms, not the statute. A form is the tax office&rsquo;s summary of the law. Where the form and the law differ, the code inherits the form. <a href="https://aclanthology.org/2026.finnlp-1.15/" class="text-lodgeit-light hover:text-white underline">CORAL</a> (October 2026) takes a similar path with an older engine as the reference: it repairs a new engine field by field until the two agree, and sends the unclear cases to a person.</p>
+<p><strong>And the answer key can be wrong too.</strong> When <a href="https://heykyoto.com/blog/solving-taxcalcbench" class="text-lodgeit-light hover:text-white underline">Kyoto</a> reported a full score on the newer version of TaxCalcBench in September 2026, it noted one case where the benchmark&rsquo;s official answer followed a formula the tax code does not support, and scored that case on the code instead.</p>
+<p>We have met both points in practice. Our Division 36 work began with an edge case where the worksheet and the Act part ways, a gap we have raised with the ATO. The lesson is the same in both countries: write from the Act, and use forms and other calculators only to compare.</p>
+<h2>What is on sale</h2>
+<p>We name no products. The kinds are what matter.</p>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kind of product</th><th>How it gets a figure</th><th>Can a practitioner read the rule?</th><th>What it does with a missing fact</th></tr></thead>
+<tbody>
+<tr><td>Research assistant with citations</td><td>The model writes prose and cites sources</td><td>There is no rule to read</td><td>Often assumes a typical taxpayer</td></tr>
+<tr><td>Agent that writes code for each job</td><td>The model writes a calculation at question time</td><td>Only if they read code</td><td>Depends on the prompt</td></tr>
+<tr><td>Engine built from forms</td><td>Code written from forms and instructions</td><td>Only if they read code</td><td>Asks for every form field</td></tr>
+<tr><td>Rules written in a programming language</td><td>Rules written by a programmer with a lawyer</td><td>Not without the programmer</td><td>Requires each input</td></tr>
+<tr><td>Closed expert system</td><td>Rules reviewed in private</td><td>No; they are not published</td><td>Fixed questionnaire</td></tr>
+<tr><td><strong>Open rules in controlled English (ours)</strong></td><td>Rules written from the Act, run by a reasoner</td><td><strong>Yes; the rule file is English</strong></td><td><strong>Names the missing fact, or refuses</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p>The research supports the last four rows over the first two. It does not yet say which of the four is best. That is what open challenges are for.</p>
+<h2>Where we are</h2>
+<p>Measured, not promised:</p>
+<ul>
+<li><strong>Division 36, tax losses, revision 3.</strong> 61 rules, 48 worked scenarios, 321 tests, all passing. Written from the Act. Draft, under review. Fingerprint <code>ace4a352…a5dc7</code>.</li>
+<li><strong>CGT event A1, v1.2.</strong> 114 rules, 62 scenarios, 163 tests, all passing. Draft, under review.</li>
+<li><strong>Three answers, never a guess.</strong> A figure with its proof, a named missing fact, or a refusal.</li>
+<li><strong>Practitioners read the rules and found the faults.</strong> In round one on Division 36, five of five reviewers returned "fix". We pay the same fee for any verdict. <a href="/bounties/" class="text-lodgeit-light hover:text-white underline">Sixteen bounties</a> are published.</li>
+<li><strong>Revision 3 is live in <a href="https://lodgeit.net.au/taxgenii/" class="text-lodgeit-light hover:text-white underline">Tax Genii</a></strong>, marked "under review". In our own tests on 2 and 5 November, the same question returned the same figure when the language model behind it was swapped for one from a different provider. The figure comes from the rules, not the model.</li>
+<li><strong>We are part of the language, not only a user of it.</strong> LodgeiT is a named copyright holder in <a href="https://github.com/LogicalContracts/LogicalEnglish2" class="text-lodgeit-light hover:text-white underline">LogicalEnglish2</a>, the open reasoner (Apache 2.0) that runs these files.</li>
+<li><strong>The files and tests are public</strong>, with <a href="/bounties/using-these-files/" class="text-lodgeit-light hover:text-white underline">terms for using them</a>, and <a href="/bounties/division-36-challenge/" class="text-lodgeit-light hover:text-white underline">an open challenge</a> to anyone who claims a deterministic tax engine.</li>
+</ul>
+<p>This fits the Tax Practitioners Board&rsquo;s AI guidance, <a href="https://www.tpb.gov.au/tpbgs-552026-use-artificial-intelligence-and-code-professional-conduct" class="text-lodgeit-light hover:text-white underline">TPB(GS) 55/2026</a>. It asks practitioners to take reasonable care in finding the client&rsquo;s facts and in applying the law, and to keep records that can be checked. A named missing fact, a refusal and a proof tied to a fingerprinted file are built for those duties. Whether they satisfy them in a given case is the practitioner&rsquo;s judgment, not ours.</p>
+<h2>What we have not done</h2>
+<ul>
+<li><strong>No file has a signature.</strong> Review has found faults and we have fixed them. No practitioner has yet signed a file as correct, and until two have, every file stays "under review".</li>
+<li><strong>Two rule files is not tax law.</strong> Coverage grows one file at a time.</li>
+<li><strong>Turning a question into facts is still done by a model.</strong> The research says that is where errors now gather, and we agree. The rules are exact only once the facts are right.</li>
+<li><strong>A fault of our own.</strong> On 12 November we found that when the rules refuse a question, Tax Genii&rsquo;s written answer does not always say that the rules were not used. It is being fixed.</li>
+<li><strong>We have not sat a public benchmark.</strong> The published ones test US law.</li>
+</ul>
+<h2>What comes next</h2>
+<p>We will run the research&rsquo;s own test on Australian law: give frontier models the text of Division 36 and our 48 scenarios, let them answer alone and by writing rules on the spot, and publish the scores beside ours, with the cases where the right answer is to refuse.</p>
+<p>If you build tax AI, the <a href="/bounties/division-36-challenge/" class="text-lodgeit-light hover:text-white underline">challenge</a> is open. If you are a practitioner, <a href="/bounties/take-part/" class="text-lodgeit-light hover:text-white underline">the rules are there to be read</a>.</p>
+<h2>References</h2>
+<ol>
+<li>Bock, Molisee, Ozer and Shah (2025). <a href="https://arxiv.org/abs/2507.16126" class="text-lodgeit-light hover:text-white underline">TaxCalcBench: Evaluating Frontier Models on the Tax Calculation Task</a>.</li>
+<li>Dou, Brena, Deo, Jurayj, Zhang, Holzenberger and Van Durme (2026). <a href="https://arxiv.org/abs/2604.04443" class="text-lodgeit-light hover:text-white underline">DeonticBench: A Benchmark for Reasoning over Rules</a>.</li>
+<li>Jurayj, Holzenberger and Van Durme (2026). <a href="https://arxiv.org/abs/2508.21051" class="text-lodgeit-light hover:text-white underline">Language Models and Logic Programs for Trustworthy Tax Reasoning</a>.</li>
+<li>Han, Takashima, Wei, Li and Genesereth (2026). <a href="https://arxiv.org/abs/2610.02792" class="text-lodgeit-light hover:text-white underline">Law and Order: Tax Law Autoformalization</a>.</li>
+<li>De Raedt, Abdullah and Agrawal (2026). <a href="https://aclanthology.org/2026.finnlp-1.15/" class="text-lodgeit-light hover:text-white underline">CORAL: Closed-loop Oracle Alignment for Agentic Tax Engine Modernization</a>. FinNLP at EMNLP.</li>
+<li>Kyoto (24 September 2026). <a href="https://heykyoto.com/blog/solving-taxcalcbench" class="text-lodgeit-light hover:text-white underline">Solving TaxCalcBench</a>.</li>
+<li>Tax Practitioners Board (22 July 2026). <a href="https://www.tpb.gov.au/tpbgs-552026-use-artificial-intelligence-and-code-professional-conduct" class="text-lodgeit-light hover:text-white underline">TPB(GS) 55/2026, The use of Artificial Intelligence and the Code of Professional Conduct</a>.</li>
+<li>Sergot, Sadri, Kowalski and others (1986). <a href="https://www.doc.ic.ac.uk/~rak/papers/British%20Nationality%20Act.pdf" class="text-lodgeit-light hover:text-white underline">The British Nationality Act as a Logic Program</a>. The start of this line of work.</li>
+</ol>
+            </div>
+            <div class="mt-12 pt-8 border-t border-slate-800/50 flex justify-between items-center">
+                <a href="/blog/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">&larr; All posts</a>
+                <a href="/bounties/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">See where we stand →</a>
+            </div>
+        </article>
+    </main>
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
