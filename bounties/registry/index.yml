@@ -155,3 +155,35 @@ open:
     prize_aud: 2400
     status: open
     note: 'Open, seeking reviewer. Australian legal practitioners. No verdict yet.'
+  - bounty: bounty-13-coal-lsl-levy
+    prize_aud: 800
+    status: open
+    note: 'Open, seeking reviewer. Conformance-passed; needs practitioner attestation. No verdict yet.'
+  - bounty: bounty-15-legal-opinion-signer-payment
+    prize_aud: 2400
+    status: open
+    note: 'Open, seeking reviewer. Australian legal practitioners. No verdict yet.'
+
+in_review:
+  - bounty: bounty-14-cgt-a1-le-rules
+    status: in_review
+    note: 'CGT event A1. Four family reviews reserved for a first review; 14e open.'
+    families:
+      - family: 14a-event-proceeds-cost-base
+        status: reserved
+        reviewer: 'D.M.'
+        date: '2026-11-12'
+      - family: 14b-disregards-exemptions
+        status: reserved
+        reviewer: 'D.M.'
+        date: '2026-11-12'
+      - family: 14c-the-discount
+        status: reserved
+        reviewer: 'D.M.'
+        date: '2026-11-12'
+      - family: 14d-method-statement-losses-scope
+        status: reserved
+        reviewer: 'D.M.'
+        date: '2026-11-12'
+      - family: 14e-break-it
+        status: open
