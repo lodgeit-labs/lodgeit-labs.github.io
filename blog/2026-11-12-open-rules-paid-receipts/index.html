@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open rules, paid receipts — the game theory of a public rulebook | LodgeiT.org</title>
+    <meta name="description" content="Why LodgeiT publishes its Logical English tax rules and tests openly, what a competitor can and cannot copy, and the rules we hold ourselves to. As at 12 November 2026.">
+    <meta property="og:title" content="Open rules, paid receipts — the game theory of a public rulebook">
+    <meta property="og:description" content="We publish our tax rules and their tests, and we plan to charge for running them. A competitor can copy the files. Here is why we publish anyway, and what we will and won&#x27;t charge for.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://lodgeit.org/blog/2026-11-12-open-rules-paid-receipts/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '&mdash;'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            color: #4D94FF;
+            background-color: rgba(77, 148, 255, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <p class="mb-8">
+                <a href="/blog/" class="text-slate-500 hover:text-white font-mono text-xs uppercase tracking-widest transition">&larr; Blog</a>
+            </p>
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">The Discipline</span>
+                <span class="text-slate-500 font-mono text-xs">2026-11-12</span>
+                <span class="text-slate-500 font-mono text-xs">&middot; ~7 min read</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Open rules, paid receipts — the game theory of a public rulebook</span>
+            </h1>
+            <p class="text-xl text-slate-400 leading-relaxed mb-12">We publish our tax rules and their tests, and we plan to charge for running them. A competitor can copy the files. Here is why we publish anyway, and what we will and won&#x27;t charge for.</p>
+            <div class="prose-lodgeit">
+<p><em>As at 12 November 2026.</em></p>
+<p>We write tax law as rules in Logical English, publish the rules with their test cases, and pay practitioners to try to break them. We also intend to earn money when those rules are run. People ask the obvious question: if the rules are public, what stops a competitor copying them?</p>
+<p>Nothing does. This post explains why we publish anyway, and the rules we have set for ourselves.</p>
+<h2>What a copier can take</h2>
+<p>A rule file is text. Its tests are text. The reasoner that runs them is published openly and maintained upstream. Anyone can download all three and get the same answers we do. That is the point of a deterministic rule: same facts, same file, same result, whoever runs it.</p>
+<p>So the price of simply <em>running</em> a public rule falls towards the cost of computing it, which is close to nothing. We don't think that can be fought, and we don't intend to try.</p>
+<p>It goes further. A practitioner's signature is recorded against a file's fingerprint, not against whoever hosts the file. When our files carry signatures, someone running an identical copy will be able to point at our registry and say, truthfully, that this exact file was signed. The review we paid for is a public good.</p>
+<h2>What a copier cannot take</h2>
+<ul>
+<li><strong>The receipt.</strong> Evidence that a particular answer came from a particular file, on a particular reasoner version, from particular inputs, on a particular date.</li>
+<li><strong>Standing behind the run.</strong> Someone accountable for the run having been computed as the file specifies.</li>
+<li><strong>Currency.</strong> Knowing that a rule changed, when, and which earlier answers it affects.</li>
+<li><strong>The record.</strong> Who reviewed which file, what they found, and what was fixed. A changed copy has a new fingerprint and starts with no review at all.</li>
+<li><strong>The names.</strong> Our tier labels and our reviewers' names are not ours to lend and not anyone else's to borrow.</li>
+</ul>
+<p>A practitioner does not need a number. They can get a number anywhere. They need to be able to show, later, how they satisfied themselves that the number was right.</p>
+<h2>The moves, and what we do about each</h2>
+<table>
+<thead><tr><th>Someone else's move</th><th>What happens</th><th>What we do</th></tr></thead>
+<tbody>
+<tr><td>Hosts our files unchanged and charges less</td><td>Same answers, without the receipt</td><td>Count it as adoption</td></tr>
+<tr><td>Changes the rules</td><td>New fingerprint; no review carries over</td><td>Nothing. They start from the bottom tier</td></tr>
+<tr><td>Embeds the rules in a platform for free</td><td>Running becomes free everywhere</td><td>Supply the reviewed, receipted version</td></tr>
+<tr><td>Copies once and never updates</td><td>Stale answers after the law changes</td><td>Keep change and defect notices public</td></tr>
+<tr><td>Claims "verified" with no review</td><td>Buyers cannot tell the difference</td><td>Publish the test scenarios, and never overclaim our own status</td></tr>
+<tr><td>Pays our reviewers more</td><td>Reviewers work for others too</td><td>No exclusivity. Reviewers are free agents</td></tr>
+</tbody></table>
+<h2>The rules we hold ourselves to</h2>
+<ol>
+<li><strong>Rules, tests and defect notices stay public.</strong> We will not close something after opening it.</li>
+<li><strong>We charge only for what we alone supply:</strong> the receipted run, the accountability for it, and telling you what a change means for your past answers.</li>
+<li><strong>We do not charge on the tax outcome.</strong> A run costs the same whatever the answer is.</li>
+<li><strong>We do not claim a status we have not earned.</strong> A file with findings and no signature is "under review", and says so on every answer.</li>
+<li><strong>We do not lock reviewers in.</strong></li>
+</ol>
+<p>Our intention is to charge by status: nothing for a run on a file nobody has signed, and a price for a run on a reviewed and signed file. That is a design, not a price list. No payment rail is live today.</p>
+<p>One thing is not settled, and we would rather say so: the licence on the rule files and tests. Until it is chosen, the files are published for review, testing and comparison.</p>
+<h2>For practitioners</h2>
+<p>Reviewing a rule against the Act is technical work, and it is paid: a flat fee whatever your verdict, and a bonus for each accepted defect. From today we also send a record of the activity that you may be able to put towards your professional education hours. The details are on <strong><a href="/bounties/cpd-record/" class="text-lodgeit-light hover:text-white underline">Your review time and CPD</a></strong>.</p>
+<h2>Where we are</h2>
+<p>As at 12 November 2026:</p>
+<ul>
+<li><strong>Fifteen bounties</strong> published. Ten calculator reviews are paid and reviewed.</li>
+<li><strong>Division 36 loss sequencing.</strong> Round one: five verdicts, all "fix". Revision 2: one of three verdicts in, "fix" with eight findings. Revision 3 was built in response on 9 November: 48 scenarios, 321 tests, all passing.</li>
+<li><strong>CGT event A1.</strong> 114 rules, 62 scenarios, 163 tests, all passing. Open for review in four family-sized pieces. No verdicts yet.</li>
+<li><strong>Signatures: none.</strong> Every rule file is "under review".</li>
+<li><strong>Tax Genii</strong> runs the rules in test, with that label on each answer.</li>
+<li><strong>Payments for runs: not live.</strong></li>
+</ul>
+<h2>Where we are going</h2>
+<ul>
+<li>A first signature, then a second from a different practitioner, on a fixed file.</li>
+<li>A public profile for each reviewer, built from the registry.</li>
+<li>A record of CPD activity with every accepted review.</li>
+<li>A second jurisdiction.</li>
+<li>A metered, receipted interface other software can call.</li>
+</ul>
+<p>Whether paying a signer for each use of a file is the right legal shape is with a lawyer, as <a href="/bounties/" class="text-lodgeit-light hover:text-white underline">Bounty #15</a>. Nothing here is legal advice, and nothing here is an offer.</p>
+<hr class="border-slate-800 my-12" />
+<p>The rules, their tests and the review record are at <a href="/bounties/" class="text-lodgeit-light hover:text-white underline">lodgeit.org/bounties</a>. The earlier post <a href="/blog/2026-07-01-logical-english/" class="text-lodgeit-light hover:text-white underline">Logical English — statute is code</a> explains the medium.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
