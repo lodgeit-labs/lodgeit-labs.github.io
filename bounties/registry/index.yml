@@ -149,3 +149,9 @@ entries:
 in_progress:
   - bounty: bounty-03-instant-asset-write-off
     prize_aud: 450
+
+open:
+  - bounty: bounty-16-legal-opinion-licence
+    prize_aud: 2400
+    status: open
+    note: 'Open, seeking reviewer. Australian legal practitioners. No verdict yet.'

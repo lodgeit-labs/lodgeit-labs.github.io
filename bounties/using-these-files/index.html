@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using these files | LodgeiT Bounties</title>
+    <meta name="description" content="Interim notice: what you may and may not do with LodgeiT rule files and tests while the licence is being settled.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' }, obsidian: '#0a0f1a', slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' } },
+            fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+            boxShadow: { 'neon': '0 0 20px rgba(0, 102, 255, 0.4)', 'glow': '0 0 40px rgba(0, 102, 255, 0.2)' } } } }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text { background: linear-gradient(to right, #ffffff, #4D94FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .grid-bg { background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
+        pre { background: #0b1120; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit h4 { font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit blockquote { border-left: 3px solid #a78bfa; padding-left: 1rem; margin: 1.5rem 0; color: #cbd5e1; }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; Using these files
+            </p>
+        </div>
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">Interim notice</p>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6"><span class="gradient-text">Using these files</span></h1>
+            <p class="text-slate-300 text-lg leading-relaxed mb-6">What you may and may not do with LodgeiT&rsquo;s rule files and tests while the licence is being settled.</p>
+        </section>
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 prose-lodgeit">
+            <p><strong>Interim notice, 12 November 2026.</strong> A formal licence is being settled, with legal review under <a href="/bounties/bounty-16-legal-opinion-licence/" class="text-lodgeit-light hover:text-white underline">Bounty #16</a>. Until it is published, this notice applies to every rule file and test on this site.</p>
+            <p>The rule files and tests on this site are published by LodgeiT Pty Ltd, © 2026.</p>
+            <h3>You may</h3>
+            <ul>
+            <li>read them;</li>
+            <li>download and run them;</li>
+            <li>test them;</li>
+            <li>review them and publish what you find;</li>
+            <li>use them to take part in a <a href="/bounties/division-36-challenge/" class="text-lodgeit-light hover:text-white underline">challenge</a>.</li>
+            </ul>
+            <h3>You may not, without our written agreement</h3>
+            <ul>
+            <li>use them, or anything made from them, in a product or service offered to other people, <strong>unless</strong> that product or service says clearly, wherever an answer draws on them, that it uses LodgeiT rule files, and names the file and its fingerprint;</li>
+            <li>present a changed file under our name or under its original fingerprint;</li>
+            <li>use the names of our review tiers, or our reviewers&rsquo; names.</li>
+            </ul>
+            <h3>In plain terms</h3>
+            <p>Use them. Build on them. Say that you did. A changed file is your file, with its own fingerprint and no review record.</p>
+            <h3>What this notice does not cover</h3>
+            <p>Legislation quoted in the files is © Commonwealth of Australia. The reasoner that runs the files is licensed separately by its authors.</p>
+            <h3>Questions and agreements</h3>
+            <p><strong>support@lodgeit.net.au</strong>. If you want to host the files or call them from your own product, see <a href="/bounties/take-part/" class="text-lodgeit-light hover:text-white underline">Ways to take part</a>.</p>
+        </article>
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-800/50">
+            <div class="flex justify-between items-center">
+                <a href="/bounties/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">&larr; All bounties</a>
+                <a href="/bounties/how-we-pay/" class="text-lodgeit-light hover:text-white transition font-mono text-sm">How we pay</a>
+                <a href="mailto:support@lodgeit.net.au" class="text-lodgeit-light hover:text-white transition font-mono text-sm">Get in touch &rarr;</a>
+            </div>
+        </section>
+    </main>
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
