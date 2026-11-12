@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ways to take part | LodgeiT</title>
+    <meta name="description" content="Six ways to take part in an open rulebook for tax law, what each gets today, and what is designed for later.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '&mdash;'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            color: #4D94FF;
+            background-color: rgba(77, 148, 255, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <p class="font-mono text-xs text-slate-500">
+                <a href="/bounties/" class="hover:text-lodgeit-light transition">&larr; Bounties</a>
+                &nbsp;/&nbsp; Ways to take part
+            </p>
+        </div>
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <p class="text-lodgeit-light font-mono text-xs uppercase tracking-widest mb-4">The programme</p>
+            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Ways to take part</span>
+            </h1>
+            <p class="text-slate-400 leading-relaxed">Six ways to take part in an open rulebook for tax law, what each gets today, and what is designed for later.</p>
+        </section>
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 prose-lodgeit">
+<p><em>As at 12 November 2026.</em> We are building a public rulebook for tax law: rules a practitioner can read, a machine can run, and a second practitioner has checked. It starts in Australia. It is meant to work in any jurisdiction with its own law and its own register of practitioners.</p>
+<p>"Today" below is what exists now. "Designed" is intent, not an offer; see <a href="/bounties/from-bounties-to-ownership/" class="text-lodgeit-light hover:text-white underline">From bounties to ownership</a>.</p>
+<table>
+<thead><tr><th>Role</th><th>What you do</th><th>Today</th><th>Designed</th></tr></thead>
+<tbody>
+<tr><td><strong>Reviewer</strong></td><td>Read a rule family against the Act and report what is wrong</td><td>A flat fee whatever your verdict, a bonus per accepted defect, named credit, a <a href="/bounties/cpd-record/" class="text-lodgeit-light hover:text-white underline">record of CPD activity</a> on request</td><td>A share of the finder pool</td></tr>
+<tr><td><strong>Signer</strong></td><td>Sign a fixed file for its stated scope</td><td>A separate signing fee</td><td>A fee banded by how much the file is used, subject to legal review</td></tr>
+<tr><td><strong>Maintainer</strong></td><td>Keep a rule current as the law changes</td><td>By arrangement</td><td>A share of the file's use</td></tr>
+<tr><td><strong>Publisher</strong></td><td>Run a review programme for your own jurisdiction</td><td>Talk to us; we will share our templates</td><td>A registry listing under your jurisdiction, and a share of your rules' use</td></tr>
+<tr><td><strong>Host</strong></td><td>Run the published rules on your own servers</td><td>The files and tests are public to read, run and test; the licence for hosting them is being settled</td><td>A "runs the registry's rules" listing for hosts that pass the public tests</td></tr>
+<tr><td><strong>Integrator</strong></td><td>Call the rules from your software or agent</td><td>Calculators are callable today, free, with no key</td><td>A metered interface with a receipt for every run</td></tr>
+</tbody></table>
+<h2>Two people, not one</h2>
+<p>A file needs two signatures from different practitioners, at least one currently licensed, before it is called "Ratified". One signature makes it "Reviewed". None, and it stays "under review". Reviewers who work well as a pair, one finding and one signing, are welcome to say so.</p>
+<h2>Challengers</h2>
+<p>You do not need to be a practitioner to tell us we are wrong. See <a href="/bounties/division-36-challenge/" class="text-lodgeit-light hover:text-white underline">the Division 36 challenge</a>.</p>
+<h2>Start here</h2>
+<ul>
+<li>Practitioners: pick an <a href="/bounties/" class="text-lodgeit-light hover:text-white underline">open bounty</a>.</li>
+<li>Developers: <a href="/calculators.html" class="text-lodgeit-light hover:text-white underline">connect to the calculators</a>.</li>
+<li>Professional bodies and firms in other jurisdictions: <strong>support@lodgeit.net.au</strong>.</li>
+</ul>
+        </article>
+    </main>
+
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
