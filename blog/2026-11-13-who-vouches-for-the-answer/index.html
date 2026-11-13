@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who vouches for the answer — institutes, exams and membership when agents know the law | LodgeiT.org</title>
+    <meta name="description" content="The economics of trust in tax and accounting once AI agents know the law: what exams still prove, what institutes still sell, who is paid for what, and where agents fit. LodgeiT Labs, 13 November 2026.">
+    <meta property="og:title" content="Who vouches for the answer — institutes, exams and membership when agents know the law">
+    <meta property="og:description" content="The economics of trust in tax and accounting once AI agents know the law: what exams still prove, what institutes still sell, who is paid for what, and where agents fit. LodgeiT Labs, 13 November 2026.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://lodgeit.org/blog/2026-11-13-who-vouches-for-the-answer/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lodgeit: { blue: '#0066FF', light: '#4D94FF', dark: '#004CCC' },
+                        obsidian: '#0a0f1a',
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#0b1120' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(0, 102, 255, 0.4)',
+                        'glow': '0 0 40px rgba(0, 102, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0f1a; color: #e2e8f0; }
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #4D94FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: #4D94FF;
+        }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .prose-lodgeit { color: #cbd5e1; }
+        .prose-lodgeit p { margin-bottom: 1rem; line-height: 1.75; color: #cbd5e1; }
+        .prose-lodgeit h2 { font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit h3 { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose-lodgeit ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose-lodgeit ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .prose-lodgeit ul li::before { content: '—'; position: absolute; left: 0; color: #4D94FF; }
+        .prose-lodgeit ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-lodgeit ol li { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.7; }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .prose-lodgeit table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .prose-lodgeit th, .prose-lodgeit td { border: 1px solid #1e293b; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        .prose-lodgeit th { background: #0b1120; color: #ffffff; font-weight: 700; }
+        .prose-lodgeit td { color: #cbd5e1; }
+        .prose-lodgeit strong { color: #ffffff; font-weight: 700; }
+        .prose-lodgeit em { color: #94a3b8; }
+        .prose-lodgeit a { color: #4D94FF; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .prose-lodgeit a:hover { color: #ffffff; }
+        .prose-lodgeit code {
+            color: #4D94FF;
+            background-color: rgba(77, 148, 255, 0.08);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased grid-bg selection:bg-lodgeit-blue selection:text-white min-h-screen flex flex-col">
+
+    <header class="border-b border-slate-800 bg-obsidian/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/assets/lodgeit-logo.png" alt="LodgeiT" class="h-8 w-auto">
+                <span class="text-lodgeit-light font-mono text-sm font-bold tracking-tight mt-1">.ORG</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="/scene-protocol/" class="hover:text-white transition">Scene Protocol</a>
+                <a href="/#discipline" class="hover:text-white transition">Discipline</a>
+                <a href="/#ecosystem" class="hover:text-white transition">Ecosystem</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub Organization</a>
+                <a href="https://lodgeit.net.au" target="_blank" class="hover:text-white transition">LodgeiT Commercial</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <p class="mb-8">
+                <a href="/blog/" class="text-slate-500 hover:text-white font-mono text-xs uppercase tracking-widest transition">&larr; Blog</a>
+            </p>
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+                <span class="text-blue-400 bg-blue-400/10 border border-blue-400/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-semibold font-mono">The Discipline</span>
+                <span class="text-slate-500 font-mono text-xs">2026-11-13</span>
+                <span class="text-slate-500 font-mono text-xs">&middot; ~7 min read</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+                <span class="gradient-text">Who vouches for the answer — institutes, exams and membership when agents know the law</span>
+            </h1>
+            <p class="text-xl text-slate-400 leading-relaxed mb-12">An exam hall can prove a person passed on the day. It cannot prove who is behind the next forty years of answers. What institutes, regulators, practitioners, software makers and agents each want in a world of open rules, and how to arrange it so the honest move pays.</p>
+            <div class="prose-lodgeit">
+<p>In March 2026 the world's largest accounting body sent most of its candidates back to the exam hall. ACCA, with more than 250,000 members and 500,000 students, ended remote exams. Its chief executive said AI tools had made remote sittings harder to police, and that people who want to cheat were moving faster than the safeguards.</p>
+<p>It was the right call, and it settles less than it seems to. A supervised exam proves that a person, unaided, passed on the day. It says nothing about the forty years that follow, when that person will work with an agent at their elbow every day, as will everyone else.</p>
+<p>So this note asks the question underneath. When any agent can state the law, who vouches for the answer, and who is paid for what?</p>
+
+<h2>We never could see understanding</h2>
+<p>An exam, a CPD log and a signature on a return were always stand-ins. Nobody has ever seen inside a practitioner's head. We inferred understanding from what they produced, and we accepted the inference because it was expensive to fake.</p>
+<p>Agents have made it cheap to fake. That does not change what the system actually ran on, which was never understanding. It was <strong>answerability</strong>: a named person who can be sued, struck off or embarrassed when the answer is wrong.</p>
+<p>An agent cannot be struck off. That part still needs a person, and it is the part that keeps its value.</p>
+
+<h2>What an institute sells</h2>
+<p>A professional body has sold three things:</p>
+<ul>
+<li><strong>Knowledge:</strong> training, commentary, CPD seminars.</li>
+<li><strong>A credential:</strong> this person met our standard and is bound by our rules.</li>
+<li><strong>A community and a voice:</strong> peers, and someone to speak to government.</li>
+</ul>
+<p>The first is now close to free. An agent will explain a provision at any hour, for almost nothing. The second and third are not free, and no agent supplies them.</p>
+
+<h2>What stays scarce</h2>
+<p>Two things.</p>
+<p><strong>Checking.</strong> Stating the law is cheap. Saying "that answer is wrong, and here is the case that shows it" is not. Our own Division 36 work began because a practitioner noticed that an official worksheet and the Act gave different results. No test caught that. A person who knew the Act did. If that skill fades, nobody catches the next one.</p>
+<p><strong>Standing behind it.</strong> A rule that many people rely on needs named people who say it is right and who answer for it if it is not.</p>
+
+<h2>The actors, and what each one wants</h2>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Actor</th><th>Wants</th><th>The tempting move</th><th>What keeps it honest</th></tr></thead>
+<tbody>
+<tr><td><strong>Client</strong></td><td>A right answer, cheaply, and someone to blame if it is wrong</td><td>Take the free answer from a chatbot</td><td>A receipt: which rule, which version, who signed it</td></tr>
+<tr><td><strong>Practitioner</strong></td><td>To get the work done and stay registered</td><td>Trust the tool and skip the check</td><td>Their own duty of care; a proof they can read in minutes</td></tr>
+<tr><td><strong>Finder</strong> (reviewer who breaks rules)</td><td>A fee and a reputation</td><td>Claim breaks that are not breaks</td><td>A break must come with a case anyone can re-run</td></tr>
+<tr><td><strong>Signer</strong></td><td>A fee for standing behind a file</td><td>Sign without reading</td><td>The signature is public, tied to one version, and a later break is on the record beside it</td></tr>
+<tr><td><strong>Rule host</strong> (us, and others)</td><td>Use of its files</td><td>Call a file trusted before it is</td><td>Trust tiers computed only from signatures; open files anyone can test</td></tr>
+<tr><td><strong>Software maker</strong></td><td>Correct answers without paying for the research</td><td>Use open rules quietly and take the credit</td><td>Terms that require saying so; buyers who ask for the receipt</td></tr>
+<tr><td><strong>Institute</strong></td><td>Members, relevance</td><td>Keep selling knowledge as if it were scarce</td><td>Members who notice</td></tr>
+<tr><td><strong>Regulator</strong></td><td>Fewer wrong returns, someone answerable</td><td>Regulate the tool</td><td>Regulating the person who relies on it, which is what Australian guidance already does</td></tr>
+<tr><td><strong>Agent</strong></td><td>Whatever its principal wants</td><td>Guess with confidence</td><td>A principal who is answerable, and so prefers a signed rule to a guess</td></tr>
+</tbody></table>
+</div>
+<p>Read the last column down. Nearly every entry is the same thing: <strong>a public record that someone else can test.</strong></p>
+
+<h2>Where agents fit</h2>
+<p>Agents are not outside this game. They hold three roles in it.</p>
+<ul>
+<li><strong>They draft.</strong> Our rule files are drafted by agents under a person's direction. That is why the files can be cheap and open.</li>
+<li><strong>They hunt.</strong> Agents will get better at producing cases that break a rule. Much of the finder's work will move to them, with a person judging which breaks are real.</li>
+<li><strong>They buy.</strong> An agent answering for a practitioner has no use for an unsigned guess, because its principal carries the risk. It will pay a small fee for an answer that comes with a receipt, and it will want to be told the moment a rule it relies on changes.</li>
+</ul>
+<p>What an agent cannot do is sign. It has no registration to lose.</p>
+
+<h2>Testing: a gate, then a record</h2>
+<p>The exam hall keeps one job: the entry gate. Sat in person, it proves a baseline.</p>
+<p>Standing after that should come from a record, not from more exams. An hour spent testing a rule file against the Act leaves evidence a seminar never did: the file, its version, the cases tried, the finding. That is what our <a href="/bounties/cpd-record/">review time and CPD record</a> is for.</p>
+<p>Can we tell whether a person or their agent did the hour? No, and we will not pretend to. So we arrange things so that the question matters less:</p>
+<ul>
+<li><strong>The practitioner declares it.</strong> Use of AI is not disqualifying; undisclosed use is.</li>
+<li><strong>Practice carries no prize.</strong> There is no money or ranking on practice scores, so there is nothing to win by cheating.</li>
+<li><strong>A finding is judged on the case.</strong> A real break is worth the same whoever found it.</li>
+<li><strong>A signature needs a verified person.</strong> That is the one place we check hard.</li>
+</ul>
+<p>The most useful exercise may be the plainest: here is an answer, is it right? Checking output is the skill the work now demands.</p>
+
+<h2>Membership: a guild that stays open</h2>
+<p>One good pair of reviewers can sign a rule that a million returns then rely on. That is leverage, and leverage of that kind forms guilds: small, skilled, well paid, learned by sitting beside someone who can already do it.</p>
+<p>Guilds fail in a known way. They close. Members restrict entry, protect each other's work and charge rent.</p>
+<p>Three rules keep this one open:</p>
+<ol>
+<li><strong>The rules and tests are public.</strong> An outsider can break a signed file.</li>
+<li><strong>Standing is earned on the record,</strong> not granted by existing members.</li>
+<li><strong>A break pays the same</strong> whoever finds it, member or not.</li>
+</ol>
+<p>We work in pairs for the same reason. One reviewer hunts for the failing case. A second reads cold, without the first's notes. Where they disagree is usually where the law is unclear, and that is worth knowing. A file stays "under review" until two have signed.</p>
+
+<h2>Where the money goes</h2>
+<p><strong>Today:</strong></p>
+<ul>
+<li>client → practitioner, for the answer;</li>
+<li>practitioner → institute, for the credential and CPD;</li>
+<li>practitioner → publisher, for commentary.</li>
+</ul>
+<p>Two of those three are payments for knowledge.</p>
+<p><strong>What we expect, and are building toward:</strong></p>
+<ul>
+<li>user or agent → rule host: a small fee for an answer with a receipt. Reading, running and testing the rules stays free;</li>
+<li>rule host → signers: a share, for standing behind the file;</li>
+<li>rule host → finders: a fee for each accepted break;</li>
+<li>client → practitioner: for judgment, and for being answerable, on fewer and harder matters.</li>
+</ul>
+<p>The principle is in <a href="/blog/2026-11-12-open-rules-paid-receipts/">Open rules, paid receipts</a>: the rules are open; what is paid for is the receipt, the accountability and being kept current.</p>
+
+<h2>Three moves open to an institute</h2>
+<p>None of them needs our permission, and none needs our software.</p>
+<ol>
+<li><strong>Keep the register.</strong> Who signed which rule, at which version, and whether it has since been broken. A body that already vouches for people is the natural keeper.</li>
+<li><strong>Count rule review as professional development.</strong> It is structured, it is against the Act, and it leaves evidence.</li>
+<li><strong>State the profession's reading.</strong> Where the law is unclear and two reviewers disagree, someone has to say what careful practitioners do. That has always been an institute's work.</li>
+</ol>
+<p>An institute that takes these keeps the credential and gains the record. One that keeps selling seminars is competing with something free.</p>
+
+<h2>What we do not know</h2>
+<ul>
+<li><strong>Whether signers can lawfully be paid per use.</strong> That is <a href="/bounties/bounty-15-legal-opinion-signer-payment/">Bounty #15</a>, open to a lawyer now.</li>
+<li><strong>Whether "say that you used it" can be enforced.</strong> That is <a href="/bounties/bounty-16-legal-opinion-licence/">Bounty #16</a>.</li>
+<li><strong>Whether anyone will pay for a receipt.</strong> Nobody has yet. This is a design, not a result.</li>
+<li><strong>Whether the skill of checking can be taught at scale,</strong> or only passed on one pair at a time.</li>
+</ul>
+
+<h2>Where we are, 13 November 2026</h2>
+<p>Two rule files, both under review. No file signed. Sixteen bounties published; one reviewer now working through the capital gains file, with the second seat open. An <a href="/bounties/using-these-files/">interim notice</a> on using the files, and an <a href="/bounties/division-36-challenge/">open challenge</a> to anyone who says their engine does better.</p>
+<p>If you sit on an institute's board or a regulator's staff and want to talk about the register, write to <strong>support@lodgeit.net.au</strong>. If you are a practitioner who likes finding the case that breaks the rule, <a href="/bounties/take-part/">there is a seat</a>.</p>
+
+<h2>Reference</h2>
+<p>The Accountant (30 December 2025). <a href="https://www.theaccountant-online.com/news/acca-scrap-remote-exams-2026/" target="_blank" rel="noopener">ACCA to scrap remote exams from March 2026</a>, reporting the Financial Times.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer class="border-t border-slate-800 py-8 mt-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+            <p>&copy; 2026 LodgeiT Labs. The methodology is the moat.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/blog/" class="hover:text-white transition">Blog</a>
+                <a href="/bounties/" class="hover:text-white transition">Bounties</a>
+                <a href="https://github.com/lodgeit-labs" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
