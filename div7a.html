@@ -93,7 +93,7 @@ registered rate table returns 404 naming the ones that do.</p>
   "shortfall": "13801.18",
   "is_complying": false,
   "deemed_dividend": "13801.18",
-  "interest_accrued": "6122.18",
+  "interest_accrued": "6139.00",
   "rounding_policy": "lodgeit-rounding-1.0",
   "manifest": {
     "rate_table_uris": [{
@@ -132,7 +132,7 @@ yearly repayment falls:</p>
   "benchmark_rate": "0.0837",
   "remaining_term_years": 7,
   "statutory_myr": "13615.68",
-  "interest_accrued": "5842.95",
+  "interest_accrued": "5859.00",
   "rounding_policy": "lodgeit-rounding-1.0",
   "manifest": {
     "rate_table_uris": [{
@@ -147,6 +147,10 @@ yearly repayment falls:</p>
 
 <p>Check: 70,000 &times; 0.0837 &divide; (1 &minus; 1.0837<sup>&minus;7</sup>) = 13,615.6778 &rarr;
 <strong>13,615.68</strong>.</p>
+
+<div class="note">
+Corrected 21&nbsp;November&nbsp;2026: <code>interest_accrued</code> was one day short and, where repayments were made, showed only unpaid interest. Recompute any interest figure taken from this calculator before that date. Minimum yearly repayment, shortfall and deemed dividend were not affected.
+</div>
 
 <h2>Output fields</h2>
 
@@ -173,7 +177,7 @@ yearly repayment falls:</p>
   <dd>The amount treated as a dividend where the MYR is not met.</dd>
 
   <dt>interest_accrued</dt>
-  <dd>Interest accrued on the amalgamated base at the benchmark rate.</dd>
+  <dd>Total interest for the income year on the daily loan balance at the benchmark rate. Every day from 1&nbsp;July to 30&nbsp;June counts, and a repayment reduces the balance from its own date.</dd>
 </dl>
 
 <h2>Refusals</h2>
